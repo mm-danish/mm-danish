@@ -7,7 +7,7 @@ export const defaultMetadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  keywords: siteConfig.keywords,
+  keywords: [...siteConfig.keywords],
   authors: [{ name: siteConfig.author.name }],
   creator: siteConfig.author.name,
   metadataBase: new URL(siteConfig.url),

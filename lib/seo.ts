@@ -30,7 +30,7 @@ export function generateMetadata({
   return {
     title: metaTitle,
     description: metaDescription,
-    keywords: tags || siteConfig.keywords,
+    keywords: tags || [...siteConfig.keywords],
     authors: [{ name: siteConfig.name }],
     creator: siteConfig.name,
     publisher: siteConfig.name,
