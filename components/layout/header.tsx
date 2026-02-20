@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Navigation } from './navigation';
 import { MobileMenu } from './mobile-menu';
 import { Button } from '@/components/ui/button';
-import { Download, Sparkles } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { CV_DOWNLOAD_URL } from '@/lib/constants';
 
 export function Header() {
@@ -37,8 +38,14 @@ export function Header() {
         `}>
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
+            <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+              <Image
+                src="/profile.png"
+                alt="Profile"
+                width={32}
+                height={32}
+                className="object-cover"
+              />
             </div>
             <span className="text-xl font-bold font-heading tracking-tight">
               MM  <span className="text-primary">Danish</span>

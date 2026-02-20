@@ -26,9 +26,27 @@ export function About() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
             {[
-              { icon: Briefcase, label: 'Experience', value: siteConfig.author.experience, sub: 'Building Products', color: 'from-blue-600 to-indigo-600', shadow: 'shadow-blue-500/20' },
-              { icon: MapPin, label: 'Location', value: siteConfig.author.location, sub: 'Operating Globally', color: 'from-emerald-600 to-teal-600', shadow: 'shadow-emerald-500/20' },
-              { icon: GraduationCap, label: 'Education', value: 'BS CS', sub: 'FUUAST Islamabad', color: 'from-indigo-600 to-purple-600', shadow: 'shadow-indigo-500/20' },
+              {
+                icon: Briefcase,
+                label: 'Experience',
+                value: siteConfig.author.experience,
+                sub: 'Building Products',
+                color: 'from-blue-600 to-indigo-600',
+              },
+              {
+                icon: MapPin,
+                label: 'Location',
+                value: siteConfig.author.location,
+                sub: 'Operating Globally',
+                color: 'from-emerald-600 to-teal-600',
+              },
+              {
+                icon: GraduationCap,
+                label: 'Education',
+                value: 'BS CS',
+                sub: 'FUUAST Islamabad',
+                color: 'from-zinc-600 to-zinc-800',
+              },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -36,17 +54,25 @@ export function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="group relative p-8 rounded-[2rem] border border-border/40 bg-card/40 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden"
+                className="group relative p-6 rounded-[2rem] border border-border/40 bg-card/40 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-4 rounded-2xl bg-gradient-to-br ${item.color} ${item.shadow} shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                    <item.icon className="h-6 w-6 text-white" />
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className={`flex-shrink-0 w-11 h-11 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3`}>
+                    <item.icon className="h-5 w-5 text-white" />
+                  </div>
+
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">
+                      {item.label}
+                    </span>
+                    <h3 className="text-xl font-black font-heading tracking-tight text-foreground leading-none mb-1 truncate">
+                      {item.value}
+                    </h3>
+                    <p className="text-[11px] text-muted-foreground/60 font-medium truncate">
+                      {item.sub}
+                    </p>
                   </div>
                 </div>
-
-                <h3 className="text-3xl font-bold font-heading mb-1">{item.value}</h3>
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">{item.label}</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">{item.sub}</p>
               </motion.div>
             ))}
           </div>
@@ -57,31 +83,43 @@ export function About() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="lg:col-span-7 space-y-6"
+              className="lg:col-span-7 space-y-8"
             >
-              <h3 className="text-2xl font-bold font-heading flex items-center gap-3">
-                <Target className="h-6 w-6 text-primary" />
-                My Mission
-              </h3>
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest">
+                  <Target className="h-3 w-3" />
+                  <span>My Mission</span>
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-black font-heading tracking-tight leading-tight">
+                  Engineering products with <br />
+                  <span className="text-gradient">precision and purpose.</span>
+                </h3>
+              </div>
+
               <div className="prose prose-neutral dark:prose-invert max-w-none">
-                <p className="text-xl text-muted-foreground leading-relaxed">
-                  I specialize in architecting <span className="text-foreground font-medium">high-performance full-stack applications</span>.
+                <p className="text-xl text-muted-foreground leading-relaxed font-light">
+                  I specialize in architecting <span className="text-foreground font-semibold">high-performance full-stack applications</span>.
                   My focus is on creating seamless user experiences powered by robust, scalable backends.
                 </p>
-                <p className="text-lg text-muted-foreground/80 leading-relaxed">
-                  With over 3 years in the industry, I've moved beyond just writing code to <span className="text-foreground font-medium">engineering solutions</span> that drive business value.
+                <p className="text-lg text-muted-foreground/70 leading-relaxed font-light">
+                  With over 3 years in the industry, I've moved beyond just writing code to <span className="text-foreground font-semibold">engineering solutions</span> that drive business value.
                   Whether it's optimizing a React render cycle or designing a distributed system, I bring a meticulous approach to every project.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                 {[
-                  { icon: Zap, text: 'Performance-First Design' },
-                  { icon: Award, text: 'Clean Architecture' },
+                  { icon: Zap, text: 'Performance-First Design', desc: 'Optimized for speed and scale' },
+                  { icon: Award, text: 'Clean Architecture', desc: 'Maintainable and scalable code' },
                 ].map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-muted/50 border border-border/50">
-                    <feature.icon className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{feature.text}</span>
+                  <div key={i} className="group flex flex-col gap-3 p-6 rounded-[1.5rem] bg-card/40 border border-border/40 hover:border-primary/40 transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <feature.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">{feature.text}</h4>
+                      <p className="text-xs text-muted-foreground/60 mt-1">{feature.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>

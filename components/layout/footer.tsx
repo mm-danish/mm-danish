@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { Github, Linkedin, Mail, Twitter, Sparkles } from 'lucide-react';
+import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/lib/constants';
 import { siteConfig } from '@/config/site';
+import Image from 'next/image';
 
 const socialIcons = {
   github: Github,
@@ -23,8 +24,14 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-6 group">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
+              <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <Image
+                  src="/profile.png"
+                  alt="Profile"
+                  width={32}
+                  height={32}
+                  className="object-cover"
+                />
               </div>
               <span className="text-xl font-bold font-heading tracking-tight">
                 M M <span className="text-primary">Danish</span>
@@ -70,7 +77,7 @@ export function Footer() {
                 const Icon = socialIcons[key as keyof typeof socialIcons];
                 if (!Icon) return null;
                 return (
-                  <a
+                  <Link
                     key={key}
                     href={url}
                     target="_blank"
@@ -80,7 +87,7 @@ export function Footer() {
                   >
                     <Icon className="h-4 w-4" />
                     <span className="capitalize">{key}</span>
-                  </a>
+                  </Link>
                 );
               })}
             </div>
@@ -88,10 +95,10 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground font-medium">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} {siteConfig.name}. Designed with passion.
           </p>
-          <div className="flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
+          <div className="flex items-center gap-6 text-xs uppercase tracking-widest text-muted-foreground/60">
             <span>Next.js 16</span>
             <span>Tailwind CSS 4</span>
             <span>Framer Motion</span>

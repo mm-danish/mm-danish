@@ -1,172 +1,113 @@
-# M Murtaza Danish - Portfolio Website
+# <div align="center">🚀 M Murtaza Danish - PortFolio v2.0</div>
 
-A premium personal portfolio website built with Next.js 15, TypeScript, Tailwind CSS, and Framer Motion.
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js%2015-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+</div>
 
-## 🚀 Features
+---
 
-- **Modern Stack**: Next.js 15 App Router with TypeScript
-- **Dark/Light Mode**: Seamless theme switching with next-themes
-- **Smooth Animations**: Framer Motion for engaging interactions
-- **SEO Optimized**: Complete metadata and Open Graph tags
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Production Ready**: Scalable architecture following best practices
+## 🌟 Overview
 
-## 📋 Tech Stack
+Welcome to my **Precision-Engineered Portfolio**. This isn't just a website; it's a high-performance digital storefront architected to showcase senior-level software engineering expertise. Built with a "Performance-First" philosophy, it features cinematic user experiences, fluid motion, and a robust technical foundation.
 
+> **"Turning complex problems into elegant, performance-driven solutions."**
+
+---
+
+## ✨ Key Features
+
+- **⚡ High-Performance Architecture**: Built with **Next.js 15 (App Router)** for near-instant load times and optimal SEO.
+- **🎨 Cinematic UI/UX**: Sophisticated glassmorphism, 3D hover effects, and custom-layered backdrop filters.
+- **🌓 Adaptive Theme System**: Intelligent Light/Dark mode with programmatic icon inversion for maximum brand visibility.
+- **📱 Fluid Responsiveness**: A mobile-first approach ensuring a premium experience across all devices.
+- **🛠️ Integrated Tech Arsenal**: Showcase of a sophisticated toolkit including **Redis, PostgreSQL, Stripe, and GraphQL**.
+- **🚀 Seamless Interactions**: Hand-crafted micro-animations using **Framer Motion** that make the interface feel alive.
+
+---
+
+## 🛠️ Technical Arsenal
+
+### **Frontend & UI**
 - **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
+- **State & Theme**: next-themes
 - **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **Theme**: next-themes
-- **Deployment**: Vercel (recommended)
+- **Styling**: Tailwind CSS v4 (Modern CSS-based config)
+- **Icons**: Lucide React & Optimized Official SVGs
 
-## 🛠️ Getting Started
+### **Backend & Infrastructure**
+- **Modern Standards**: TypeScript + Node.js
+- **Integrations**: Stripe, Redis, PostgreSQL (Supabase/Neon)
+- **Deployment**: Vercel Edge Network
+- **Images**: Next/Image with Cloudinary Support
 
-### Prerequisites
-
-- Node.js 18+ 
-- npm, yarn, or pnpm
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <your-repo-url>
-cd mm-danish
-```
-
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-3. Run the development server:
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+---
 
 ## 📁 Project Structure
 
 ```
 mm-danish/
-├── app/                    # Next.js App Router
-│   ├── (routes)/           # Route group
-│   ├── projects/          # Dynamic project pages
-│   ├── blog/              # Dynamic blog pages
-│   └── layout.tsx         # Root layout
-├── components/            # React components
-│   ├── ui/               # Reusable UI components
-│   ├── layout/           # Layout components
-│   ├── sections/         # Page sections
-│   └── providers/        # Context providers
-├── data/                 # Static data
-│   ├── projects/         # Project data
-│   ├── skills/           # Skills data
-│   └── experience/       # Experience data
-├── lib/                  # Utilities
-│   ├── seo.ts           # SEO helpers
-│   ├── utils.ts         # General utilities
-│   └── cn.ts            # Class name merger
-├── config/              # Configuration
-│   ├── site.ts          # Site metadata
-│   └── seo.ts           # SEO defaults
-└── types/               # TypeScript types
+├── app/                    # Next.js App Router (Routing, Layouts, Metadata)
+├── components/            # Atomic Component Design
+│   ├── ui/               # Specialized UI primitives (Buttons, Cards, Modals)
+│   ├── layout/           # Shared structures (Header, Footer, Navigation)
+│   └── sections/         # High-impact page modules (Hero, About, Contact)
+├── data/                 # Unified Data Store (Skills, Projects, Experience)
+├── lib/                  # Engineering Utilities (SEO, Formatters, Core Logic)
+├── config/              # Site-wide configuration & SEO defaults
+└── public/               # Optimized Static Assets (WebP, SVGs)
 ```
-
-## 🎨 Customization
-
-### Update Personal Information
-
-1. **Site Config**: Edit `config/site.ts` with your details
-2. **Experience**: Update `data/experience/experience.ts`
-3. **Projects**: Modify `data/projects/projects.ts`
-4. **Skills**: Edit `data/skills/skills.ts`
-
-### Styling
-
-- Global styles: `app/globals.css`
-- Tailwind config: Uses CSS-based configuration in `globals.css`
-- Theme colors: Defined in CSS variables
-
-### SEO
-
-- Default metadata: `config/seo.ts`
-- Page-specific: Use `generateMetadata` from `lib/seo.ts`
-
-## 📦 Build & Deploy
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-### Start Production Server
-
-```bash
-npm start
-```
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Import project in Vercel
-3. Vercel will auto-detect Next.js and deploy
-
-## 📝 Content Management
-
-### Adding a New Project
-
-1. Add project data to `data/projects/projects.ts`
-2. Add project image to `public/images/projects/`
-3. Create dynamic page at `app/projects/[slug]/page.tsx` (optional)
-
-### Adding Experience
-
-Edit `data/experience/experience.ts` with your work history.
-
-### Updating Skills
-
-Modify `data/skills/skills.ts` with your technical skills.
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create `.env.local` for environment-specific variables:
-
-```env
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
-```
-
-### CV Download
-
-1. Place your CV PDF in `public/cv/`
-2. Update `CV_DOWNLOAD_URL` in `lib/constants.ts`
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 👤 Author
-
-**M Murtaza Danish**
-- Portfolio: [Your Portfolio URL]
-- GitHub: [@mm-danish](https://github.com/mm-danish)
-- LinkedIn: [Your LinkedIn]
-- Email: murtazadanish@gmail.com
 
 ---
 
-Built with ❤️ using Next.js 15
+## 🏗️ Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- yarn, npm, or pnpm
+
+### Installation & Development
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/mm-danish/mm-danish.git
+   cd mm-danish
+   ```
+2. **Install dependencies**
+   ```bash
+   yarn install
+   ```
+3. **Launch the development engine**
+   ```bash
+   yarn dev
+   ```
+4. **Access the interface**
+   Open [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🎨 Customization Engineer's Guide
+
+- **Identity**: Update `config/site.ts` with your brand identity.
+- **Content**: Modify files in the `data/` directory to update your professional history.
+- **Design Tokens**: Tweak `app/globals.css` to adjust the HSL-based color system.
+
+---
+
+## 👤 Author & Contact
+
+**M Murtaza Danish**  
+*Senior Software Engineer Specialized in High-Performance Systems.*
+
+- 🌐 **Portfolio**: [mm-danish.dev](https://mm-danish.dev)
+- 🐙 **GitHub**: [@mm-danish](https://github.com/mm-danish)
+- 💼 **LinkedIn**: [M Murtaza Danish](https://linkedin.com/in/mm-danish)
+- 📧 **Email**: [mmdanish.cs@gmail.com](mailto:mmdanish.cs@gmail.com)
+
+---
+
+<div align="center">
+  Built with ❤️ using <b>Next.js 16</b> and <b>Advanced Engineering</b>.
+</div>

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Twitter, Send, ArrowRight } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/lib/constants';
@@ -10,7 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 const contactMethods = [
   {
     name: 'Email',
-    value: 'murtazadanish@gmail.com',
+    value: 'mmdanish.cs@gmail.com',
     icon: Mail,
     href: SOCIAL_LINKS.email,
     color: 'from-rose-500 to-rose-600',
@@ -75,11 +76,11 @@ export function Contact() {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Available for hire</span>
                 </div>
 
-                <a href={SOCIAL_LINKS.email} className="w-fit">
+                <Link href={SOCIAL_LINKS.email} className="w-fit">
                   <Button size="lg" className="rounded-full h-14 px-8 text-sm shadow-xl hover:shadow-primary/20 transition-all font-bold group">
                     Work With Me <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
-                </a>
+                </Link>
               </div>
             </motion.div>
 
@@ -105,14 +106,14 @@ export function Contact() {
                           <p className="text-[11px] text-muted-foreground/60 truncate max-w-[140px] font-medium">{method.value}</p>
                         </div>
 
-                        <a
+                        <Link
                           href={method.href}
                           target="_blank"
                           rel="noopener"
                           className="mt-4 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 group/link"
                         >
                           Reach Out <Send className="h-3 w-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                        </a>
+                        </Link>
                       </CardContent>
                     </Card>
                   </motion.div>

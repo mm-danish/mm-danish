@@ -2,7 +2,7 @@ export const SOCIAL_LINKS = {
   github: 'https://github.com/mm-danish',
   linkedin: 'https://linkedin.com/in/mm-danish',
   twitter: 'https://twitter.com/mm-danish',
-  email: 'mailto:murtazadanish@gmail.com',
+  email: 'mailto:mmdanish.cs@gmail.com',
 } as const;
 
 export const NAV_LINKS = [
