@@ -20,7 +20,7 @@ Welcome to my **Precision-Engineered Portfolio**. This isn't just a website; it'
 
 ## ✨ Key Features
 
-- **⚡ High-Performance Architecture**: Built with **Next.js 15 (App Router)** for near-instant load times and optimal SEO.
+- **⚡ High-Performance Architecture**: Built with **Next.js 16 (App Router)** for near-instant load times and optimal SEO.
 - **🎨 Cinematic UI/UX**: Sophisticated glassmorphism, 3D hover effects, and custom-layered backdrop filters.
 - **🌓 Adaptive Theme System**: Intelligent Light/Dark mode with programmatic icon inversion for maximum brand visibility.
 - **📱 Fluid Responsiveness**: A mobile-first approach ensuring a premium experience across all devices.
@@ -84,7 +84,7 @@ mm-danish/
    yarn dev
    ```
 4. **Access the interface**
-   Open [http://localhost:3000](http://localhost:3000)
+   Open [https://mm-danish.vercel.app]
 
 ---
 
@@ -101,7 +101,7 @@ mm-danish/
 **M Murtaza Danish**  
 *Senior Software Engineer Specialized in High-Performance Systems.*
 
-- 🌐 **Portfolio**: [mm-danish.dev](https://mm-danish.dev)
+- 🌐 **Portfolio**: [mm-danish]([https://mm-danish.dev](https://mm-danish.vercel.app/))
 - 🐙 **GitHub**: [@mm-danish](https://github.com/mm-danish)
 - 💼 **LinkedIn**: [M Murtaza Danish](https://linkedin.com/in/mm-danish)
 - 📧 **Email**: [mmdanish.cs@gmail.com](mailto:mmdanish.cs@gmail.com)
