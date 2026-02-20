@@ -20,6 +20,11 @@ const techIcons = [
 
 export function TechStack() {
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-8 mt-8">
@@ -39,7 +44,7 @@ export function TechStack() {
             fill
             className={`
               object-contain transition-all duration-300
-              ${resolvedTheme === 'dark' && ['Next.js', 'Express', 'GitHub'].includes(tech.name) ? 'invert' : ''}
+              ${mounted && resolvedTheme === 'dark' && ['Next.js', 'Express', 'GitHub'].includes(tech.name) ? 'invert' : ''}
             `}
             title={tech.name}
           />

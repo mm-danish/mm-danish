@@ -5,7 +5,7 @@ export const experience: Experience[] = [
     id: '1',
     company: 'Pixako Technologies',
     position: 'Software Engineer',
-    location: 'Remote',
+    location: 'On-site',
     startDate: '2023-02-01',
     endDate: null,
     current: true,

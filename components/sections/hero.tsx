@@ -10,7 +10,7 @@ import { siteConfig } from '@/config/site';
 
 export function Hero() {
   return (
-    <section className="min-h-[90vh] flex items-center justify-center relative overflow-hidden pt-24 pb-16 bg-background">
+    <section id="home" className="min-h-[90vh] flex items-center justify-center relative overflow-hidden pt-24 pb-16 bg-background">
       {/* Refined Background Architecture */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow" />
