@@ -73,12 +73,12 @@ export function Contact() {
                     <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></div>
                     <div className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></div>
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Available for hire</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Open to collaboration</span>
                 </div>
 
                 <Link href={SOCIAL_LINKS.email} className="w-fit">
                   <Button size="lg" className="rounded-full h-14 px-8 text-sm shadow-xl hover:shadow-primary/20 transition-all font-bold group">
-                    Work With Me <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    Start a Conversation <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
               </div>

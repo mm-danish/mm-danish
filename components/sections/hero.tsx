@@ -31,7 +31,7 @@ export function Hero() {
                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-8"
               >
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span>Available for new projects</span>
+                <span>Open for collaborations</span>
               </motion.div>
 
               <motion.h1
@@ -57,7 +57,7 @@ export function Hero() {
                 <a href="#contact" className="w-full sm:w-fit">
                   <Button size="lg" className="rounded-full px-8 h-12 text-sm shadow-xl hover:shadow-primary/20 transition-all w-full font-bold group">
                     <Mail className="h-4 w-4 mr-2" />
-                    Get In Touch
+                    Let's Connect
                   </Button>
                 </a>
                 <a href={CV_DOWNLOAD_URL} download className="w-full sm:w-fit">
