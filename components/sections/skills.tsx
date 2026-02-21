@@ -85,7 +85,7 @@ export function Skills() {
             </div>
           </header>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             {Object.entries(categories).map(([category, categorySkills], idx) => {
               const config = categoryConfig[category as Skill['category']];
               const Icon = config.icon;
@@ -97,24 +97,19 @@ export function Skills() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.05, duration: 0.5 }}
+                  className="break-inside-avoid mb-6"
                 >
                   <Card className="h-full border-border/40 bg-card/40 backdrop-blur-xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative rounded-3xl border-[1px] group">
                     <CardContent className="p-6 h-full flex flex-col relative z-20">
-                      {/* Top Section */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className={`p-3 rounded-xl bg-gradient-to-br ${config.color} ${config.shadow} shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3`}>
-                          <Icon className="h-5 w-5 text-white" />
+                      {/* Category Header */}
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className={`p-2.5 rounded-xl bg-gradient-to-br ${config.color} ${config.shadow} shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3`}>
+                          <Icon className="h-4.5 w-4.5 text-white" />
                         </div>
-                        <span className="text-foreground/5 text-3xl font-black font-heading leading-none">
-                          0{idx + 1}
-                        </span>
+                        <h3 className="text-lg font-bold font-heading flex items-center gap-2 group-hover:text-primary transition-colors">
+                          {config.label}
+                        </h3>
                       </div>
-
-                      {/* Content */}
-                      <h3 className="text-xl font-bold font-heading mb-6 flex items-center gap-2 group-hover:text-primary transition-colors">
-                        {config.label}
-                        <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all" />
-                      </h3>
 
                       <div className="flex-1">
                         <div className="flex flex-wrap gap-2">
@@ -127,11 +122,6 @@ export function Skills() {
                             </div>
                           ))}
                         </div>
-                      </div>
-
-                      <div className="mt-6 pt-4 border-t border-border/10 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
-                        <span>Integrated</span>
-                        <span>{categorySkills.length} Units</span>
                       </div>
                     </CardContent>
                   </Card>
