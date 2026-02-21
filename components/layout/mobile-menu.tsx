@@ -2,30 +2,28 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, X, Download, Github, Linkedin, Twitter } from 'lucide-react';
+import { Menu, X, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NAV_LINKS, CV_DOWNLOAD_URL, SOCIAL_LINKS } from '@/lib/constants';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { NAV_LINKS, CV_DOWNLOAD_URL } from '@/lib/constants';
 import { cn } from '@/lib/cn';
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeSection, setActiveSection] = React.useState<string>('home');
+  const ref = React.useRef<HTMLDivElement>(null);
 
-  // Prevent scrolling when menu is open
+  // Close on outside click
   React.useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
     };
+    if (isOpen) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, [isOpen]);
 
-  // Scroll spy logic
+  // Scroll spy
   React.useEffect(() => {
     const observerOptions = {
       root: null,
@@ -53,117 +51,89 @@ export function MobileMenu() {
   }, []);
 
   return (
-    <>
-      {/* Hamburger button — hidden when menu is open to avoid bleeding through backdrop */}
-      {!isOpen && (
-        <button
-          className="md:hidden relative z-[70] flex items-center justify-center h-9 w-9 rounded-lg hover:bg-primary/10 transition-colors"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-      )}
+    <div ref={ref} className="relative md:hidden">
+      {/* Toggle button */}
+      <button
+        className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-primary/10 transition-colors"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-label={isOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={isOpen}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {isOpen ? (
+            <motion.span
+              key="x"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <X className="h-5 w-5" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="menu"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Menu className="h-5 w-5" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </button>
 
+      {/* Dropdown */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[60] md:hidden">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/60 backdrop-blur-sm"
-              onClick={() => setIsOpen(false)}
-            />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -6 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-xl overflow-hidden z-[70]"
+          >
+            {NAV_LINKS.map((link) => {
+              const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
+              const isActive = activeSection === sectionId;
 
-            {/* Slide-in panel */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-              className="absolute top-0 right-0 bottom-0 w-[75%] max-w-[300px] bg-card/95 backdrop-blur-2xl border-l border-border/50 shadow-xl flex flex-col"
-            >
-              {/* Panel header with close button */}
-              <div className="flex items-center justify-between px-4 h-14 border-b border-border/40 shrink-0">
-                <ThemeToggle />
-                <button
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
                   onClick={() => setIsOpen(false)}
-                  aria-label="Close menu"
-                  className="flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className={cn(
+                    'flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
                 >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  )}
+                  <span className={cn(!isActive && 'pl-4')}>{link.name}</span>
+                </Link>
+              );
+            })}
 
-              {/* Nav links */}
-              <nav className="flex-1 overflow-y-auto px-3 py-3">
-                {NAV_LINKS.map((link, index) => {
-                  const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
-                  const isActive = activeSection === sectionId;
-
-                  return (
-                    <motion.div
-                      key={link.href}
-                      initial={{ opacity: 0, x: 16 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.05 + index * 0.04 }}
-                    >
-                      <Link
-                        href={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={cn(
-                          "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-                          isActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        )}
-                      >
-                        {isActive && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                        )}
-                        {link.name}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </nav>
-
-              {/* Footer */}
-              <div className="px-4 py-4 border-t border-border/40 space-y-3 shrink-0">
-                {/* Social icons */}
-                <div className="flex items-center gap-2">
-                  {[
-                    { icon: Github, href: SOCIAL_LINKS.github, label: 'GitHub' },
-                    { icon: Linkedin, href: SOCIAL_LINKS.linkedin, label: 'LinkedIn' },
-                    { icon: Twitter, href: SOCIAL_LINKS.twitter, label: 'Twitter' },
-                  ].map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={social.label}
-                      className="flex items-center justify-center h-8 w-8 rounded-lg bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                    >
-                      <social.icon className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
-
-                {/* CV button */}
-                <a href={CV_DOWNLOAD_URL} download className="block">
-                  <Button size="sm" className="w-full gap-2 rounded-lg font-semibold">
-                    <Download className="h-4 w-4" />
-                    Download CV
-                  </Button>
-                </a>
-              </div>
-            </motion.div>
-          </div>
+            {/* Divider + Resume button */}
+            <div className="border-t border-border/40" />
+            <div className="p-2">
+              <a
+                href={CV_DOWNLOAD_URL}
+                download
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 active:scale-95 transition-all"
+              >
+                <Download className="h-3.5 w-3.5 shrink-0" />
+                Resume
+              </a>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }

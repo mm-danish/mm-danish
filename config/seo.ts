@@ -46,9 +46,9 @@ export const defaultMetadata: Metadata = {
     },
   },
   icons: {
-    icon: '/profile.png',
-    shortcut: '/profile.png',
-    apple: '/profile.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 

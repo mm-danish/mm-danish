@@ -68,7 +68,7 @@ export function Header() {
               </Button>
             </a>
             <div className="w-px h-6 bg-border hidden sm:block" />
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <ThemeToggle />
             </div>
             <MobileMenu />
