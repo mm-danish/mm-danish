@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, X, ArrowRight, Download, Github, Linkedin, Twitter } from 'lucide-react';
+import { Menu, X, Download, Github, Linkedin, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NAV_LINKS, CV_DOWNLOAD_URL, SOCIAL_LINKS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
@@ -54,147 +54,111 @@ export function MobileMenu() {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden relative z-[70] h-10 w-10 rounded-full hover:bg-primary/10 transition-colors"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle menu"
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-            >
-              <X className="h-6 w-6 text-primary" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="menu"
-              initial={{ opacity: 0, rotate: 90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: -90 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Menu className="h-6 w-6" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Button>
+      {/* Hamburger button — hidden when menu is open to avoid bleeding through backdrop */}
+      {!isOpen && (
+        <button
+          className="md:hidden relative z-[70] flex items-center justify-center h-9 w-9 rounded-lg hover:bg-primary/10 transition-colors"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      )}
 
       <AnimatePresence>
         {isOpen && (
           <div className="fixed inset-0 z-[60] md:hidden">
-            {/* Backdrop with elegant blur */}
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/60 backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Sidebar content */}
+            {/* Slide-in panel */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="absolute top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-card/95 backdrop-blur-3xl border-l border-primary/10 shadow-2xl flex flex-col"
+              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+              className="absolute top-0 right-0 bottom-0 w-[75%] max-w-[300px] bg-card/95 backdrop-blur-2xl border-l border-border/50 shadow-xl flex flex-col"
             >
-              {/* Top section with background pattern */}
-              <div className="absolute top-0 right-0 w-full h-40 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none -z-10" />
-
-              <div className="flex-1 overflow-y-auto px-8 pt-24 pb-12">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-12">Navigation</p>
-
-                <nav className="space-y-2">
-                  {NAV_LINKS.map((link, index) => {
-                    const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
-                    const isActive = activeSection === sectionId;
-
-                    return (
-                      <motion.div
-                        key={link.href}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + index * 0.05 }}
-                      >
-                        <Link
-                          href={link.href}
-                          onClick={() => setIsOpen(false)}
-                          className={cn(
-                            "group flex items-center justify-between py-4 transition-all duration-300 border-b border-primary/5",
-                            isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                          )}
-                        >
-                          <span className="text-xl font-bold font-heading tracking-tight">
-                            {link.name}
-                          </span>
-                          <motion.div
-                            animate={isActive ? { x: 0, opacity: 1 } : { x: -10, opacity: 0 }}
-                          >
-                            <ArrowRight className="h-4 w-4" />
-                          </motion.div>
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
-                </nav>
-
-                <div className="mt-16 space-y-8">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-6">Socials</p>
-                    <div className="flex items-center gap-6">
-                      {[
-                        { icon: Github, href: SOCIAL_LINKS.github },
-                        { icon: Linkedin, href: SOCIAL_LINKS.linkedin },
-                        { icon: Twitter, href: SOCIAL_LINKS.twitter }
-                      ].map((social, i) => (
-                        <motion.a
-                          key={i}
-                          href={social.href}
-                          target="_blank"
-                          rel="noopener"
-                          whileHover={{ y: -2 }}
-                          className="p-3 rounded-2xl bg-primary/5 text-muted-foreground hover:text-primary transition-colors hover:bg-primary/10"
-                        >
-                          <social.icon className="h-5 w-5" />
-                        </motion.a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+              {/* Panel header with close button */}
+              <div className="flex items-center justify-between px-4 h-14 border-b border-border/40 shrink-0">
+                <ThemeToggle />
+                <button
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close menu"
+                  className="flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
 
-              {/* Bottom footer for menu */}
-              <div className="p-8 border-t border-primary/5 bg-primary/[0.02]">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Theme</span>
-                    <span className="text-xs font-medium">Toggle Appearance</span>
-                  </div>
-                  <ThemeToggle />
+              {/* Nav links */}
+              <nav className="flex-1 overflow-y-auto px-3 py-3">
+                {NAV_LINKS.map((link, index) => {
+                  const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
+                  const isActive = activeSection === sectionId;
+
+                  return (
+                    <motion.div
+                      key={link.href}
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 + index * 0.04 }}
+                    >
+                      <Link
+                        href={link.href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                      >
+                        {isActive && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        )}
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
+
+              {/* Footer */}
+              <div className="px-4 py-4 border-t border-border/40 space-y-3 shrink-0">
+                {/* Social icons */}
+                <div className="flex items-center gap-2">
+                  {[
+                    { icon: Github, href: SOCIAL_LINKS.github, label: 'GitHub' },
+                    { icon: Linkedin, href: SOCIAL_LINKS.linkedin, label: 'LinkedIn' },
+                    { icon: Twitter, href: SOCIAL_LINKS.twitter, label: 'Twitter' },
+                  ].map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className="flex items-center justify-center h-8 w-8 rounded-lg bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      <social.icon className="h-4 w-4" />
+                    </a>
+                  ))}
                 </div>
 
-                <a
-                  href={CV_DOWNLOAD_URL}
-                  download
-                  className="w-full"
-                >
-                  <Button className="w-full rounded-2xl h-14 font-bold tracking-tight shadow-xl shadow-primary/10 group flex items-center justify-center gap-2">
-                    <Download className="h-4 w-4 group-hover:animate-bounce" />
-                    Download Resume
+                {/* CV button */}
+                <a href={CV_DOWNLOAD_URL} download className="block">
+                  <Button size="sm" className="w-full gap-2 rounded-lg font-semibold">
+                    <Download className="h-4 w-4" />
+                    Download CV
                   </Button>
                 </a>
-
-                <p className="text-center mt-6 text-[10px] text-muted-foreground/30 font-medium">
-                  © 2024 MM Danish • Built with precision
-                </p>
               </div>
             </motion.div>
           </div>
