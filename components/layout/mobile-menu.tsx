@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, X, ArrowRight, Download } from 'lucide-react';
+import { Menu, X, ArrowRight, Download, Github, Linkedin, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NAV_LINKS, CV_DOWNLOAD_URL } from '@/lib/constants';
+import { NAV_LINKS, CV_DOWNLOAD_URL, SOCIAL_LINKS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/cn';
@@ -25,6 +25,7 @@ export function MobileMenu() {
     };
   }, [isOpen]);
 
+  // Scroll spy logic
   React.useEffect(() => {
     const observerOptions = {
       root: null,
@@ -56,7 +57,7 @@ export function MobileMenu() {
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden relative z-[60] h-10 w-10 rounded-full hover:bg-primary/10 transition-colors"
+        className="md:hidden relative z-[70] h-10 w-10 rounded-full hover:bg-primary/10 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle menu"
       >
@@ -87,94 +88,116 @@ export function MobileMenu() {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 md:hidden"
-          >
-            {/* Backdrop with strong blur */}
+          <div className="fixed inset-0 z-[60] md:hidden">
+            {/* Backdrop with elegant blur */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/90 backdrop-blur-2xl"
+              className="absolute inset-0 bg-background/40 backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Decorative Background Elements */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[120px] rounded-full" />
-              <div className="absolute bottom-[20%] left-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[100px] rounded-full" />
-            </div>
+            {/* Sidebar content */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="absolute top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-card/95 backdrop-blur-3xl border-l border-primary/10 shadow-2xl flex flex-col"
+            >
+              {/* Top section with background pattern */}
+              <div className="absolute top-0 right-0 w-full h-40 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none -z-10" />
 
-            <div className="relative h-full flex flex-col items-center justify-center px-6">
-              <nav className="w-full max-w-sm space-y-8">
-                <div className="space-y-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/50 text-center mb-10">Navigation</p>
-                  <div className="flex flex-col space-y-2">
-                    {NAV_LINKS.map((link, index) => {
-                      const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
-                      const isActive = activeSection === sectionId;
+              <div className="flex-1 overflow-y-auto px-8 pt-24 pb-12">
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-12">Navigation</p>
 
-                      return (
-                        <motion.div
-                          key={link.href}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.1 + index * 0.05 }}
+                <nav className="space-y-2">
+                  {NAV_LINKS.map((link, index) => {
+                    const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
+                    const isActive = activeSection === sectionId;
+
+                    return (
+                      <motion.div
+                        key={link.href}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 + index * 0.05 }}
+                      >
+                        <Link
+                          href={link.href}
+                          onClick={() => setIsOpen(false)}
+                          className={cn(
+                            "group flex items-center justify-between py-4 transition-all duration-300 border-b border-primary/5",
+                            isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                          )}
                         >
-                          <Link
-                            href={link.href}
-                            onClick={() => setIsOpen(false)}
-                            className={cn(
-                              "group flex items-center justify-between p-4 rounded-2xl transition-all duration-300",
-                              isActive ? "bg-primary/10 text-primary" : "hover:bg-primary/5 text-foreground"
-                            )}
+                          <span className="text-xl font-bold font-heading tracking-tight">
+                            {link.name}
+                          </span>
+                          <motion.div
+                            animate={isActive ? { x: 0, opacity: 1 } : { x: -10, opacity: 0 }}
                           >
-                            <span className={cn(
-                              "text-3xl font-bold font-heading tracking-tight transition-all duration-300",
-                              isActive ? "translate-x-2" : "group-hover:translate-x-2"
-                            )}>
-                              {link.name}
-                            </span>
-                            <ArrowRight className={cn(
-                              "h-6 w-6 transition-all duration-300 text-primary",
-                              isActive ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0"
-                            )} />
-                          </Link>
-                        </motion.div>
-                      );
-                    })}
+                            <ArrowRight className="h-4 w-4" />
+                          </motion.div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </nav>
+
+                <div className="mt-16 space-y-8">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-6">Socials</p>
+                    <div className="flex items-center gap-6">
+                      {[
+                        { icon: Github, href: SOCIAL_LINKS.github },
+                        { icon: Linkedin, href: SOCIAL_LINKS.linkedin },
+                        { icon: Twitter, href: SOCIAL_LINKS.twitter }
+                      ].map((social, i) => (
+                        <motion.a
+                          key={i}
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener"
+                          whileHover={{ y: -2 }}
+                          className="p-3 rounded-2xl bg-primary/5 text-muted-foreground hover:text-primary transition-colors hover:bg-primary/10"
+                        >
+                          <social.icon className="h-5 w-5" />
+                        </motion.a>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + NAV_LINKS.length * 0.05 + 0.1 }}
-                  className="pt-10 border-t border-primary/10 flex flex-col items-center space-y-6"
-                >
-                  <div className="flex items-center gap-6">
-                    <ThemeToggle />
-                    <span className="text-muted-foreground/30">|</span>
-                    <a
-                      href={CV_DOWNLOAD_URL}
-                      download
-                      className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary/80 hover:text-primary transition-colors"
-                    >
-                      <Download className="h-4 w-4" />
-                      Get CV
-                    </a>
+              {/* Bottom footer for menu */}
+              <div className="p-8 border-t border-primary/5 bg-primary/[0.02]">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Theme</span>
+                    <span className="text-xs font-medium">Toggle Appearance</span>
                   </div>
+                  <ThemeToggle />
+                </div>
 
-                  <p className="text-[10px] text-muted-foreground/40 font-medium lowercase tracking-tighter">
-                    Ready to build something amazing together?
-                  </p>
-                </motion.div>
-              </nav>
-            </div>
-          </motion.div>
+                <a
+                  href={CV_DOWNLOAD_URL}
+                  download
+                  className="w-full"
+                >
+                  <Button className="w-full rounded-2xl h-14 font-bold tracking-tight shadow-xl shadow-primary/10 group flex items-center justify-center gap-2">
+                    <Download className="h-4 w-4 group-hover:animate-bounce" />
+                    Download Resume
+                  </Button>
+                </a>
+
+                <p className="text-center mt-6 text-[10px] text-muted-foreground/30 font-medium">
+                  © 2024 MM Danish • Built with precision
+                </p>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>

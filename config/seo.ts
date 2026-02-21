@@ -45,5 +45,10 @@ export const defaultMetadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  icons: {
+    icon: '/profile.png',
+    shortcut: '/profile.png',
+    apple: '/profile.png',
+  },
 };
 
