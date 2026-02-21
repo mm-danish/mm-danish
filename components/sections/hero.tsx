@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Download, Mail, MapPin, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Download, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CV_DOWNLOAD_URL } from '@/lib/constants';
 import { siteConfig } from '@/config/site';
@@ -111,11 +111,29 @@ export function Hero() {
 
                 {/* Micro-Badges */}
                 <motion.div
-                  animate={{ y: [0, -8, 0] }}
+                  animate={{ y: [0, -1, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-4 -right-4 p-3 rounded-2xl bg-card border border-border/50 shadow-xl z-20"
+                  className="absolute -top-4 -right-2 sm:-top-6 sm:-right-8 flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl bg-card/80 backdrop-blur-xl border border-primary/20 shadow-2xl z-20"
                 >
-                  <MapPin className="h-5 w-5 text-primary" />
+                  <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                  <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">Based in Islamabad</span>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 1, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute bottom-4 -left-4 sm:bottom-12 sm:-left-12 flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl bg-card/80 backdrop-blur-xl border border-blue-500/20 shadow-2xl z-20"
+                >
+                  <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-md overflow-hidden flex items-center justify-center bg-primary/10">
+                    <Image
+                      src="/profile.png"
+                      alt="Favicon"
+                      width={16}
+                      height={16}
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">Software Engineer</span>
                 </motion.div>
               </div>
             </motion.div>
