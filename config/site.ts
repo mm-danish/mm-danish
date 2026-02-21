@@ -2,12 +2,12 @@ export const siteConfig = {
   name: 'M Murtaza Danish',
   title: 'M Murtaza Danish - Software Engineer',
   description: 'Software Engineer with 3+ years of experience building scalable full-stack web applications using Next.js, TypeScript, Node.js, and modern technologies.',
-  url: 'https://mm-danish.dev',
+  url: 'https://mm-danish.vercel.app',
   ogImage: '/og-image.png',
   links: {
     github: 'https://github.com/mm-danish',
     linkedin: 'https://linkedin.com/in/mm-danish',
-    twitter: 'https://twitter.com/mm-danish',
+    twitter: 'https://twitter.com/mmdanishdev',
     email: 'mailto:mmdanish.cs@gmail.com',
   },
   keywords: [
@@ -21,7 +21,7 @@ export const siteConfig = {
     'Pakistan',
     'Islamabad',
   ],
-  twitterHandle: '@mm-danish',
+  twitterHandle: '@mmdanishdev',
   author: {
     name: 'M Murtaza Danish',
     location: 'Islamabad, Pakistan',
