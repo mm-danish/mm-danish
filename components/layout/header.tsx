@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { CV_DOWNLOAD_URL } from '@/lib/constants';
 
+import { Badge } from '@/components/ui/badge';
+
 export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
 
@@ -37,8 +39,8 @@ export function Header() {
           ${isScrolled ? 'glass shadow-lg border-primary/10' : 'bg-transparent'}
         `}>
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center group-hover:rotate-12 transition-transform duration-300 ring-1 ring-primary/20 bg-background/50">
               <Image
                 src="/profile.png"
                 alt="Profile"
@@ -47,9 +49,14 @@ export function Header() {
                 className="object-cover"
               />
             </div>
-            <span className="text-xl font-bold font-heading tracking-tight">
-              MM  <span className="text-primary">Danish</span>
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold font-heading tracking-tight">
+                MM <span className="text-primary">Danish</span>
+              </span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 uppercase tracking-wider font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 select-none">
+                Beta
+              </Badge>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

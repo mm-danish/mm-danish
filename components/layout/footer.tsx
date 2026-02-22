@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
-import { SOCIAL_LINKS } from '@/lib/constants';
+import { SOCIAL_LINKS, NAV_LINKS } from '@/lib/constants';
 import { siteConfig } from '@/config/site';
 import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
 
 const socialIcons = {
   github: Github,
@@ -23,8 +24,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-6 group">
-              <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+            <Link href="/" className="flex items-center gap-3 mb-6 group">
+              <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center group-hover:rotate-12 transition-transform duration-300 ring-1 ring-primary/20 bg-background/50">
                 <Image
                   src="/profile.png"
                   alt="Profile"
@@ -33,9 +34,14 @@ export function Footer() {
                   className="object-cover"
                 />
               </div>
-              <span className="text-xl font-bold font-heading tracking-tight">
-                M M <span className="text-primary">Danish</span>
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold font-heading tracking-tight">
+                  MM <span className="text-primary">Danish</span>
+                </span>
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 uppercase tracking-wider font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 select-none">
+                  Beta
+                </Badge>
+              </div>
             </Link>
             <p className="text-muted-foreground max-w-sm leading-relaxed">
               Crafting exceptional digital experiences through clean code and innovative engineering. Let's build the future together.
@@ -46,26 +52,17 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-6 font-heading">Sitemap</h3>
             <ul className="space-y-4 text-sm font-medium">
-              <li>
-                <Link href="/about" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
-                  <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> About
-                </Link>
-              </li>
-              <li>
-                <Link href="/projects" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
-                  <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> Projects
-                </Link>
-              </li>
-              <li>
-                <Link href="/#experience" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
-                  <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> Experience
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
-                  <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> Contact
-                </Link>
-              </li>
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group"
+                  >
+                    <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -98,9 +95,11 @@ export function Footer() {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} {siteConfig.name}. Designed with passion.
           </p>
-          <div className="flex items-center gap-6 text-xs uppercase tracking-widest text-muted-foreground/60">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 font-medium">
             <span>Next.js 16</span>
+            <span className="w-1 h-1 rounded-full bg-border/50" />
             <span>Tailwind CSS 4</span>
+            <span className="w-1 h-1 rounded-full bg-border/50" />
             <span>Framer Motion</span>
           </div>
         </div>
