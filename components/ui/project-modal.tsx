@@ -119,14 +119,13 @@ export function ProjectModal({ project }: Props) {
                                     <ExternalLink className="h-3.5 w-3.5" />
                                     Live Site
                                 </Link>
-                                <Link
+                                <a
                                     href={`/projects/${project.slug}`}
                                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-card/50 text-xs font-bold hover:border-primary/50 hover:text-primary transition-all"
-                                    onClick={() => router.back()}
                                 >
                                     <ArrowUpRight className="h-3.5 w-3.5" />
                                     Full Page
-                                </Link>
+                                </a>
                                 <button
                                     onClick={() => router.back()}
                                     className="flex items-center justify-center h-9 w-9 rounded-full border border-border/60 bg-card/50 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
