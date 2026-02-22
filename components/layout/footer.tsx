@@ -47,22 +47,22 @@ export function Footer() {
             <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-6 font-heading">Sitemap</h3>
             <ul className="space-y-4 text-sm font-medium">
               <li>
-                <Link href="#about" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
+                <Link href="/about" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
                   <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> About
                 </Link>
               </li>
               <li>
-                <Link href="#projects" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
+                <Link href="/projects" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
                   <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> Projects
                 </Link>
               </li>
               <li>
-                <Link href="#experience" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
+                <Link href="/#experience" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
                   <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> Experience
                 </Link>
               </li>
               <li>
-                <Link href="#contact" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
+                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-all flex items-center gap-2 group">
                   <span className="h-1 w-0 bg-primary group-hover:w-4 transition-all" /> Contact
                 </Link>
               </li>

@@ -7,11 +7,11 @@ export const SOCIAL_LINKS = {
 
 export const NAV_LINKS = [
   { name: 'Home', href: '/' },
-  { name: 'About', href: '#about' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Experience', href: '#experience' },
-  { name: 'Skills', href: '#skills' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'About', href: '/about' },
+  { name: 'Projects', href: '/projects' },
+  { name: 'Experience', href: '/#experience' },
+  { name: 'Skills', href: '/#skills' },
+  { name: 'Contact', href: '/contact' },
 ] as const;
 
 export const CV_DOWNLOAD_URL = '/cv/mmdanish-cv.pdf';

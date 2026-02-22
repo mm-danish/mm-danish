@@ -11,5 +11,9 @@ export interface Project {
   category: 'fullstack' | 'frontend' | 'backend' | 'other';
   year: number;
   slug: string;
+  // Detail page fields
+  role?: string;
+  highlights?: string[];
+  challenge?: string;
+  outcome?: string;
 }
-

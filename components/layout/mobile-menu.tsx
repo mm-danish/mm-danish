@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NAV_LINKS, CV_DOWNLOAD_URL } from '@/lib/constants';
@@ -9,7 +10,8 @@ import { cn } from '@/lib/cn';
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [activeSection, setActiveSection] = React.useState<string>('home');
+  const [activeSection, setActiveSection] = React.useState<string>('');
+  const pathname = usePathname();
   const ref = React.useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -23,8 +25,10 @@ export function MobileMenu() {
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen]);
 
-  // Scroll spy
+  // Scroll spy — only on homepage
   React.useEffect(() => {
+    if (pathname !== '/') return;
+
     const observerOptions = {
       root: null,
       rootMargin: '-20% 0px -70% 0px',
@@ -33,22 +37,28 @@ export function MobileMenu() {
 
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
+        if (entry.isIntersecting) setActiveSection(entry.target.id);
       });
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
 
     NAV_LINKS.forEach((link) => {
-      const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
-      const element = document.getElementById(sectionId);
-      if (element) observer.observe(element);
+      const id = link.href.startsWith('/#') ? link.href.substring(2) : null;
+      if (id) {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      }
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    if (href.startsWith('/#')) return activeSection === href.substring(2);
+    return pathname.startsWith(href);
+  };
 
   return (
     <div ref={ref} className="relative md:hidden">
@@ -92,11 +102,10 @@ export function MobileMenu() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -6 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-xl overflow-hidden z-[70]"
+            className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-xl overflow-hidden z-[70]"
           >
             {NAV_LINKS.map((link) => {
-              const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
-              const isActive = activeSection === sectionId;
+              const active = isActive(link.href);
 
               return (
                 <Link
@@ -105,15 +114,15 @@ export function MobileMenu() {
                   onClick={() => setIsOpen(false)}
                   className={cn(
                     'flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors',
-                    isActive
+                    active
                       ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
                 >
-                  {isActive && (
+                  {active && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                   )}
-                  <span className={cn(!isActive && 'pl-4')}>{link.name}</span>
+                  <span className={cn(!active && 'pl-4')}>{link.name}</span>
                 </Link>
               );
             })}

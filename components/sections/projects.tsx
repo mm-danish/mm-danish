@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Github, ExternalLink, ArrowUpRight, Code2 } from 'lucide-react';
+import { Github, ExternalLink, ArrowUpRight, Code2, ArrowRight } from 'lucide-react';
 import { projects } from '@/data/projects';
 
 export function Projects() {
@@ -116,8 +116,15 @@ export function Projects() {
           ))}
         </div>
 
-        {/* Tight Bottom Divider */}
-        <div className="mt-20 flex justify-center">
+        {/* Bottom CTA to full projects page */}
+        <div className="mt-16 flex flex-col items-center gap-4">
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-border/60 bg-card/40 hover:border-primary/50 hover:bg-primary/5 text-sm font-bold text-muted-foreground hover:text-primary transition-all duration-300 group"
+          >
+            View All Projects
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
           <div className="h-px w-24 bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
       </div>

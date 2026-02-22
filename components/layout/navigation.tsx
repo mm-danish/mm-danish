@@ -8,13 +8,15 @@ import { cn } from '@/lib/cn';
 
 export function Navigation() {
   const pathname = usePathname();
-  const [activeSection, setActiveSection] = React.useState<string>('home');
+  const [activeSection, setActiveSection] = React.useState<string>('');
 
+  // Scroll spy — only active on the home page for anchor sections
   React.useEffect(() => {
-    // Scroll Spy Logic
+    if (pathname !== '/') return;
+
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -70% 0px', // Detect when section is roughly in the middle/upper part of screen
+      rootMargin: '-20% 0px -70% 0px',
       threshold: 0,
     };
 
@@ -28,28 +30,32 @@ export function Navigation() {
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
 
-    // Observe all sections that have IDs matching our nav links
     NAV_LINKS.forEach((link) => {
-      if (link.href.startsWith('#')) {
-        const sectionId = link.href.substring(1);
-        const element = document.getElementById(sectionId);
-        if (element) observer.observe(element);
-      } else if (link.href === '/') {
-        // Handle home section manually or observe a top element
-        const heroSection = document.getElementById('hero') || document.querySelector('section');
-        if (heroSection) observer.observe(heroSection);
+      const id = link.href.startsWith('/#') ? link.href.substring(2) : null;
+      if (id) {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
       }
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    if (href.startsWith('/#')) {
+      // hash link — active based on scroll spy section
+      const id = href.substring(2);
+      return activeSection === id;
+    }
+    // page link — active if pathname starts with href
+    return pathname.startsWith(href);
+  };
 
   return (
     <nav className="hidden md:flex items-center space-x-6">
       {NAV_LINKS.map((link) => {
-        const sectionId = link.href.startsWith('#') ? link.href.substring(1) : 'home';
-        // Special case for Home link - it might be '/' in href but we track it as 'home' or first section
-        const isActive = activeSection === sectionId || (link.href === '/' && activeSection === 'hero');
+        const active = isActive(link.href);
 
         return (
           <Link
@@ -57,11 +63,11 @@ export function Navigation() {
             href={link.href}
             className={cn(
               'text-sm font-medium transition-all duration-300 relative py-1 px-1',
-              isActive ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+              active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
             )}
           >
             {link.name}
-            {isActive && (
+            {active && (
               <span className="absolute bottom-0 left-1 right-1 h-[2px] bg-primary rounded-full transition-all duration-300" />
             )}
           </Link>

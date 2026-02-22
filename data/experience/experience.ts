@@ -23,8 +23,8 @@ export const experience: Experience[] = [
     company: 'Fauzz Foundation',
     position: 'Software Engineer',
     location: 'Remote',
-    startDate: '2024-01-01',
-    endDate: '2024-06-01',
+    startDate: '2025-11-01',
+    endDate: '2026-02-01',
     current: false,
     website: 'https://fauzzfoundation.org',
     description: [
