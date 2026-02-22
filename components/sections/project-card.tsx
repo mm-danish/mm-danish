@@ -37,15 +37,15 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
 
           {/* Floating Actions */}
-          <div className="absolute top-6 right-6 flex flex-col gap-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
+          <div className="absolute top-6 right-6 flex flex-col gap-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500" onClick={(e) => e.stopPropagation()}>
             {project.githubUrl && (
-              <a href={project.githubUrl} target="_blank" rel="noopener" className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl">
+              <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl">
                 <Github className="h-5 w-5" />
-              </a>
+              </Link>
             )}
-            <a href={project.liveUrl} target="_blank" rel="noopener" className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl">
+            <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl">
               <ExternalLink className="h-5 w-5" />
-            </a>
+            </Link>
           </div>
 
           {/* Type Badge */}

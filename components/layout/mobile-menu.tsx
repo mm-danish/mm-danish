@@ -25,13 +25,21 @@ export function MobileMenu() {
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen]);
 
+  // Close on route change
+  React.useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
   // Scroll spy — only on homepage
   React.useEffect(() => {
-    if (pathname !== '/') return;
+    if (pathname !== '/') {
+      setActiveSection('');
+      return;
+    }
 
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -70% 0px',
+      rootMargin: '-15% 0px -75% 0px',
       threshold: 0,
     };
 
@@ -42,6 +50,9 @@ export function MobileMenu() {
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
+
+    const heroEl = document.getElementById('home') ?? document.getElementById('hero');
+    if (heroEl) observer.observe(heroEl);
 
     NAV_LINKS.forEach((link) => {
       const id = link.href.startsWith('/#') ? link.href.substring(2) : null;
@@ -54,10 +65,16 @@ export function MobileMenu() {
     return () => observer.disconnect();
   }, [pathname]);
 
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
+  const isActive = (href: string): boolean => {
+    if (pathname !== '/') {
+      if (href === '/' || href.startsWith('/#')) return false;
+      return pathname === href || pathname.startsWith(href + '/');
+    }
+    if (href === '/') {
+      return activeSection === '' || activeSection === 'home' || activeSection === 'hero';
+    }
     if (href.startsWith('/#')) return activeSection === href.substring(2);
-    return pathname.startsWith(href);
+    return false;
   };
 
   return (
@@ -127,10 +144,10 @@ export function MobileMenu() {
               );
             })}
 
-            {/* Divider + Resume button */}
+            {/* Divider + Resume */}
             <div className="border-t border-border/40" />
             <div className="p-2">
-              <a
+              <Link
                 href={CV_DOWNLOAD_URL}
                 download
                 onClick={() => setIsOpen(false)}
@@ -138,7 +155,7 @@ export function MobileMenu() {
               >
                 <Download className="h-3.5 w-3.5 shrink-0" />
                 Resume
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

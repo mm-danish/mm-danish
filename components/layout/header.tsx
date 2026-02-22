@@ -57,7 +57,7 @@ export function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
-            <a href={CV_DOWNLOAD_URL} download className="hidden sm:block">
+            <Link href={CV_DOWNLOAD_URL} download className="hidden sm:block">
               <Button
                 variant="default"
                 size="sm"
@@ -66,7 +66,7 @@ export function Header() {
                 <Download className="h-4 w-4 mr-2" />
                 Resume
               </Button>
-            </a>
+            </Link>
             <div className="w-px h-6 bg-border hidden sm:block" />
             <div className="flex items-center space-x-2">
               <ThemeToggle />

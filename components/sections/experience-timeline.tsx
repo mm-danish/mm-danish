@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { MapPin, ExternalLink, Briefcase, Milestone } from 'lucide-react';
 import { experience } from '@/data/experience';
 import { formatDateRange, calculateDuration } from '@/lib/utils';
@@ -87,14 +88,14 @@ export function ExperienceTimeline() {
                               <Briefcase className="h-4 w-4 opacity-40" />
                               <span className="font-semibold text-foreground/80">{exp.company}</span>
                               {exp.website && (
-                                <a
+                                <Link
                                   href={exp.website}
                                   target="_blank"
-                                  rel="noopener"
+                                  rel="noopener noreferrer"
                                   className="p-1 hover:text-primary transition-colors"
                                 >
                                   <ExternalLink className="h-3.5 w-3.5" />
-                                </a>
+                                </Link>
                               )}
                             </div>
                             <div className="flex items-center gap-1.5 opacity-60">

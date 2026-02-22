@@ -116,13 +116,13 @@ export default function AboutPage() {
                         </div>
 
                         <div className="flex items-center gap-3">
-                            <a
+                            <Link
                                 href={CV_DOWNLOAD_URL}
                                 download
                                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20"
                             >
                                 Download CV
-                            </a>
+                            </Link>
                             <Link
                                 href="/contact"
                                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-border bg-card/50 text-sm font-bold hover:border-primary/50 hover:text-primary transition-all"
@@ -343,9 +343,9 @@ export default function AboutPage() {
                                                     <Briefcase className="h-3.5 w-3.5 opacity-40" />
                                                     <span className="font-semibold text-foreground/80">{exp.company}</span>
                                                     {exp.website && (
-                                                        <a href={exp.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                                        <Link href={exp.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                                                             <ExternalLink className="h-3.5 w-3.5" />
-                                                        </a>
+                                                        </Link>
                                                     )}
                                                     <span className="opacity-40">·</span>
                                                     <MapPin className="h-3.5 w-3.5 opacity-40" />

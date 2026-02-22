@@ -116,7 +116,7 @@ export function ProjectDetailClient({ project }: Props) {
                         transition={{ delay: 0.22 }}
                         className="flex flex-wrap items-center gap-3"
                     >
-                        <a
+                        <Link
                             href={project.liveUrl}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -124,9 +124,9 @@ export function ProjectDetailClient({ project }: Props) {
                         >
                             <ExternalLink className="h-4 w-4" />
                             View Live Site
-                        </a>
+                        </Link>
                         {project.githubUrl && (
-                            <a
+                            <Link
                                 href={project.githubUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -134,7 +134,7 @@ export function ProjectDetailClient({ project }: Props) {
                             >
                                 <Github className="h-4 w-4" />
                                 View Source
-                            </a>
+                            </Link>
                         )}
                     </motion.div>
                 </div>

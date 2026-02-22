@@ -24,8 +24,12 @@ export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  // @modal parallel slot — renders project detail modals
+  // when navigating client-side to /projects/[slug]
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${plusJakarta.variable}`}>
@@ -41,6 +45,10 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
+
+          {/* Parallel route slot — mounts modal on top of current page */}
+          {modal}
+
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>

@@ -91,8 +91,8 @@ export default function ProjectsPage() {
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
                             className={`px-4 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all duration-200 border ${activeCategory === cat.id
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
-                                    : 'bg-card/40 text-muted-foreground border-border/40 hover:border-primary/40 hover:text-primary'
+                                ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
+                                : 'bg-card/40 text-muted-foreground border-border/40 hover:border-primary/40 hover:text-primary'
                                 }`}
                         >
                             {cat.label}
@@ -131,8 +131,22 @@ export default function ProjectsPage() {
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
 
+                                    {/* Link Overlay */}
+                                    <Link
+                                        href={`/projects/${project.slug}`}
+                                        className="absolute inset-0 z-10"
+                                        aria-label={`View details for ${project.title}`}
+                                    />
+
+                                    {/* Overlay to show "View Project" on hover */}
+                                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px] z-20 pointer-events-none">
+                                        <div className="px-4 py-2 rounded-xl bg-background/90 backdrop-blur-md border border-white/10 text-primary font-black uppercase tracking-widest text-[10px] transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                            Open Details
+                                        </div>
+                                    </div>
+
                                     {/* HUD badge */}
-                                    <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
                                         <div className="px-2 py-1 rounded-lg bg-background/80 backdrop-blur-md border border-white/10 text-[8px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
                                             <Code2 className="h-2.5 w-2.5" />
                                             <span>0{index + 1} _ Node</span>
@@ -140,41 +154,43 @@ export default function ProjectsPage() {
                                     </div>
 
                                     {/* Category badge */}
-                                    <div className="absolute bottom-3 left-3">
+                                    <div className="absolute bottom-3 left-3 z-20 pointer-events-none">
                                         <span className="px-2 py-1 rounded-md bg-background/80 backdrop-blur-md border border-white/10 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
                                             {project.category}
                                         </span>
                                     </div>
 
                                     {/* Floating action icons */}
-                                    <div className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                    <div className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-30" onClick={(e) => e.stopPropagation()}>
                                         {project.githubUrl && (
-                                            <a
+                                            <Link
                                                 href={project.githubUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg"
                                             >
                                                 <Github className="h-4 w-4" />
-                                            </a>
+                                            </Link>
                                         )}
-                                        <a
+                                        <Link
                                             href={project.liveUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg"
                                         >
                                             <ExternalLink className="h-4 w-4" />
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <div className="px-1 space-y-3 flex-1 flex flex-col">
                                     <div className="flex items-start justify-between gap-4">
-                                        <h2 className="text-lg font-bold font-heading tracking-tight leading-snug group-hover:text-primary transition-colors">
-                                            {project.title}
-                                        </h2>
+                                        <Link href={`/projects/${project.slug}`}>
+                                            <h2 className="text-lg font-bold font-heading tracking-tight leading-snug group-hover:text-primary transition-colors cursor-pointer">
+                                                {project.title}
+                                            </h2>
+                                        </Link>
                                         <span className="text-[10px] text-muted-foreground/40 font-mono shrink-0 mt-1">{project.year}</span>
                                     </div>
 
@@ -194,7 +210,7 @@ export default function ProjectsPage() {
                                     </div>
 
                                     <div className="pt-3 flex items-center gap-4">
-                                        <a
+                                        <Link
                                             href={project.liveUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
@@ -202,11 +218,11 @@ export default function ProjectsPage() {
                                         >
                                             Live Site
                                             <ExternalLink className="h-3 w-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                                        </a>
+                                        </Link>
                                         {project.githubUrl && (
                                             <>
                                                 <span className="h-3 w-px bg-border/50" />
-                                                <a
+                                                <Link
                                                     href={project.githubUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
@@ -214,7 +230,7 @@ export default function ProjectsPage() {
                                                 >
                                                     Source
                                                     <Github className="h-3 w-3" />
-                                                </a>
+                                                </Link>
                                             </>
                                         )}
                                     </div>

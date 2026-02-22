@@ -65,8 +65,15 @@ export function Projects() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
+                {/* Full card link overlay */}
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="absolute inset-0 z-10"
+                  aria-label={`View details for ${project.title}`}
+                />
+
                 {/* Minimalist Tech HUD */}
-                <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
                   <div className="px-2 py-1 rounded-lg bg-background/80 backdrop-blur-md border border-white/10 text-[8px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
                     <Code2 className="h-2.5 w-2.5" />
                     <span>0{index + 1} _ Node</span>
@@ -74,24 +81,26 @@ export function Projects() {
                 </div>
 
                 {/* Floating Actions */}
-                <div className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-30" onClick={(e) => e.stopPropagation()}>
                   {project.githubUrl && (
-                    <a href={project.githubUrl} target="_blank" rel="noopener" className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg">
+                    <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg">
                       <Github className="h-4 w-4" />
-                    </a>
+                    </Link>
                   )}
-                  <a href={project.liveUrl} target="_blank" rel="noopener" className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg">
+                  <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg">
                     <ExternalLink className="h-4 w-4" />
-                  </a>
+                  </Link>
                 </div>
               </div>
 
               {/* Tighter Content Alignment */}
               <div className="px-1 space-y-3 flex-1 flex flex-col">
                 <div className="flex items-start justify-between gap-4">
-                  <h3 className="text-lg font-bold font-heading tracking-tight leading-snug group-hover:text-primary transition-colors">
-                    {project.title}
-                  </h3>
+                  <Link href={`/projects/${project.slug}`}>
+                    <h3 className="text-lg font-bold font-heading tracking-tight leading-snug group-hover:text-primary transition-colors cursor-pointer">
+                      {project.title}
+                    </h3>
+                  </Link>
                   <Link href={`/projects/${project.slug}`} className="text-muted-foreground/30 hover:text-primary transition-colors">
                     <ArrowUpRight className="h-4 w-4" />
                   </Link>
