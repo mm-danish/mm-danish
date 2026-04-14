@@ -1,4 +1,4 @@
-export type LearningCategory = 
+export type LearningCategory =
   | 'Node.js'
   | 'React.js'
   | 'Next.js'
@@ -7,332 +7,324 @@ export type LearningCategory =
   | 'Prisma'
   | 'Express.js'
   | 'TailwindCSS'
-  | 'Engineering Architecture'
-  | 'All';
+  | 'Engineering';
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export interface LearningItem {
   id: string;
-  title: string;
   category: LearningCategory;
+  title: string;
   content: string;
-  codeSnippet?: string;
-  tags: string[];
+  code?: string;
   difficulty: Difficulty;
-  dateAdded: string;
-  isFavorite?: boolean;
+  date: string;
 }
 
-export const learningCategories: { name: LearningCategory; color: string; darkColor: string; icon: string; description: string }[] = [
-  { name: 'All', color: 'from-slate-500 to-slate-600', darkColor: 'bg-white/10 text-white', icon: 'Library', description: 'Everything in your brain' },
-  { name: 'Node.js', color: 'from-green-500 to-emerald-600', darkColor: 'bg-green-500/10 text-green-400', icon: 'Server', description: 'Server-side JavaScript runtime' },
-  { name: 'React.js', color: 'from-cyan-400 to-blue-500', darkColor: 'bg-cyan-500/10 text-cyan-400', icon: 'Atom', description: 'UI component library' },
-  { name: 'Next.js', color: 'from-gray-600 to-gray-800', darkColor: 'bg-gray-100/10 text-gray-200', icon: 'Triangle', description: 'Full-stack React framework' },
-  { name: 'TypeScript', color: 'from-blue-500 to-blue-700', darkColor: 'bg-blue-500/10 text-blue-400', icon: 'FileCode2', description: 'Typed JavaScript superset' },
-  { name: 'MongoDB', color: 'from-green-500 to-green-700', darkColor: 'bg-green-600/10 text-green-500', icon: 'Database', description: 'NoSQL document database' },
-  { name: 'Prisma', color: 'from-indigo-500 to-violet-600', darkColor: 'bg-indigo-500/10 text-indigo-400', icon: 'DatabaseZap', description: 'Type-safe ORM' },
-  { name: 'Express.js', color: 'from-gray-500 to-gray-700', darkColor: 'bg-gray-400/10 text-gray-400', icon: 'Cpu', description: 'Minimal Node.js framework' },
-  { name: 'TailwindCSS', color: 'from-cyan-400 to-teal-500', darkColor: 'bg-cyan-500/10 text-cyan-400', icon: 'Palette', description: 'Utility-first CSS framework' },
-  { name: 'Engineering Architecture', color: 'from-purple-500 to-fuchsia-600', darkColor: 'bg-purple-500/10 text-purple-400', icon: 'Building2', description: 'System design & patterns' },
+export interface CategoryMeta {
+  name: LearningCategory;
+  icon: string;
+  accent: string;        // tailwind text color
+  bg: string;            // tailwind bg color for pill
+  gradient: string;      // for the side bar highlight
+}
+
+export const CATEGORIES: CategoryMeta[] = [
+  { name: 'Node.js',         icon: '⬡',  accent: 'text-emerald-400', bg: 'bg-emerald-500/10',  gradient: 'from-emerald-500 to-green-400' },
+  { name: 'React.js',        icon: '⚛',  accent: 'text-cyan-400',    bg: 'bg-cyan-500/10',     gradient: 'from-cyan-400 to-blue-500' },
+  { name: 'Next.js',         icon: '▲',  accent: 'text-white',       bg: 'bg-white/10',        gradient: 'from-gray-300 to-white' },
+  { name: 'TypeScript',      icon: 'TS', accent: 'text-blue-400',    bg: 'bg-blue-500/10',     gradient: 'from-blue-500 to-blue-400' },
+  { name: 'MongoDB',         icon: '🍃', accent: 'text-green-400',   bg: 'bg-green-500/10',    gradient: 'from-green-500 to-emerald-400' },
+  { name: 'Prisma',          icon: '◆',  accent: 'text-indigo-400',  bg: 'bg-indigo-500/10',   gradient: 'from-indigo-500 to-violet-400' },
+  { name: 'Express.js',      icon: '⚡', accent: 'text-gray-300',   bg: 'bg-gray-400/10',     gradient: 'from-gray-400 to-gray-300' },
+  { name: 'TailwindCSS',     icon: '🎨', accent: 'text-teal-400',   bg: 'bg-teal-500/10',     gradient: 'from-teal-400 to-cyan-400' },
+  { name: 'Engineering',     icon: '🏗', accent: 'text-purple-400', bg: 'bg-purple-500/10',   gradient: 'from-purple-500 to-fuchsia-500' },
 ];
 
-export const learningData: LearningItem[] = [
-  // ── Node.js ──────────────────────────────────────────────
+export const NOTES: LearningItem[] = [
+  // ── Node.js ─────────────────────────────────────────────────────────────
   {
     id: 'node-1',
-    title: 'What is the Event Loop in Node.js?',
     category: 'Node.js',
-    content: 'The event loop is what allows Node.js to perform non-blocking I/O operations despite the fact that JavaScript is single-threaded, by offloading operations to the system kernel whenever possible. It has 6 phases: timers, pending callbacks, idle/prepare, poll, check, and close callbacks.',
-    tags: ['Event Loop', 'Asynchronous', 'Core'],
+    title: 'The Event Loop',
+    content: 'Node.js is single-threaded but non-blocking because of the event loop. It has 6 phases — timers, pending callbacks, idle/prepare, poll, check, close callbacks. I/O is offloaded to the OS; the loop processes callbacks when they\'re ready.',
     difficulty: 'intermediate',
-    dateAdded: '2026-04-11',
+    date: '2026-04-11',
   },
   {
     id: 'node-2',
-    title: 'Streams in Node.js — when & why?',
     category: 'Node.js',
-    content: 'Streams let you process data piece-by-piece instead of loading everything into memory. There are 4 types: Readable, Writable, Duplex, and Transform. Use them for large files, HTTP responses, or any I/O-bound task.',
-    codeSnippet: `const fs = require('fs');
-const readStream = fs.createReadStream('bigfile.txt');
-readStream.on('data', (chunk) => {
-  console.log('Received', chunk.length, 'bytes');
-});
-readStream.on('end', () => console.log('Done'));`,
-    tags: ['Streams', 'Performance', 'I/O'],
+    title: 'Streams vs Buffers',
+    content: 'Buffer loads the whole thing into memory. Streams process data chunk-by-chunk — essential for large files or HTTP bodies. There are 4 stream types: Readable, Writable, Duplex, Transform. Always prefer streams for I/O-heavy work.',
+    code: `const fs = require('fs');
+fs.createReadStream('big.csv')
+  .pipe(processLine())
+  .pipe(fs.createWriteStream('out.csv'));`,
     difficulty: 'intermediate',
-    dateAdded: '2026-04-12',
+    date: '2026-04-12',
   },
   {
     id: 'node-3',
-    title: 'Worker Threads vs Child Process',
     category: 'Node.js',
-    content: 'Worker Threads share memory and are lighter — best for CPU-heavy JS tasks. Child Processes spawn a new V8 instance — better for running external programs or full isolation. Use worker_threads for parallel computation within the same process.',
-    tags: ['Concurrency', 'Performance', 'Multi-threading'],
+    title: 'Worker Threads vs Child Process',
+    content: 'Worker Threads share memory, great for CPU-heavy JS. Child Process spawns a fresh V8 instance — better for isolation or running binaries. Rule of thumb: computation → Worker Threads, external programs → Child Process.',
     difficulty: 'advanced',
-    dateAdded: '2026-04-13',
+    date: '2026-04-13',
+  },
+  {
+    id: 'node-4',
+    category: 'Node.js',
+    title: 'process.nextTick vs setImmediate',
+    content: 'process.nextTick fires before the next event loop iteration — before any I/O. setImmediate fires in the check phase, after I/O. Overusing nextTick can starve the event loop. Use it for errors and cleanup, not heavy logic.',
+    difficulty: 'advanced',
+    date: '2026-04-14',
   },
 
-  // ── React.js ─────────────────────────────────────────────
+  // ── React.js ─────────────────────────────────────────────────────────────
   {
     id: 'react-1',
-    title: 'Intersection Observer for Scroll Animations',
     category: 'React.js',
-    content: 'You can use the Intersection Observer API in a custom React hook (e.g., `useInView`) to trigger Framer Motion animations only when an element scrolls into the viewport. This vastly improves performance over listening to raw scroll events.',
-    codeSnippet: `function useInView(ref, options) {
-  const [isInView, setIsInView] = useState(false);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
-      options
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [ref, options]);
-  return isInView;
-}`,
-    tags: ['Hooks', 'Animation', 'Performance'],
+    title: 'React.memo vs useMemo vs useCallback',
+    content: 'React.memo skips re-rendering a component if its props are the same. useMemo memoizes an expensive computed value. useCallback memoizes a function reference so memoized children don\'t re-render unnecessarily. Don\'t sprinkle these everywhere — profile first.',
     difficulty: 'intermediate',
-    dateAdded: '2026-04-14',
+    date: '2026-04-10',
   },
   {
     id: 'react-2',
-    title: 'React.memo vs useMemo vs useCallback',
     category: 'React.js',
-    content: 'React.memo wraps a component to skip re-renders if props haven\'t changed. useMemo memoizes a computed value. useCallback memoizes a function reference. Use React.memo on pure components, useMemo for expensive calculations, and useCallback for stable function refs passed to memoized children.',
-    tags: ['Optimization', 'Memoization', 'Core'],
+    title: 'Intersection Observer for lazy animations',
+    content: 'Rather than listening to raw scroll events (expensive), use IntersectionObserver to fire callbacks when elements enter the viewport. Wrap it in a useInView hook and combine with Framer Motion for buttery animations.',
+    code: `function useInView(ref) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) =>
+      setVisible(e.isIntersecting)
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [ref]);
+  return visible;
+}`,
     difficulty: 'intermediate',
-    dateAdded: '2026-04-10',
+    date: '2026-04-12',
   },
   {
     id: 'react-3',
-    title: 'Why keys matter in lists',
     category: 'React.js',
-    content: 'Keys help React identify which items have changed, added, or removed. Using index as key is fine for static lists, but causes bugs with dynamic lists (reordering, deleting). Always use unique stable IDs as keys when the list can change.',
-    tags: ['Lists', 'Reconciliation', 'Core'],
+    title: 'Why index as key is dangerous',
+    content: 'When you reorder or delete list items, React uses keys to reconcile. Index-as-key means the same index now maps to a different item, so React reuses wrong DOM nodes. Always use stable, unique IDs as keys for dynamic lists.',
     difficulty: 'beginner',
-    dateAdded: '2026-04-09',
+    date: '2026-04-09',
+  },
+  {
+    id: 'react-4',
+    category: 'React.js',
+    title: 'Controlled vs Uncontrolled components',
+    content: 'Controlled: React owns the value, you drive it via state + onChange. Uncontrolled: the DOM owns the value, you read via ref. Prefer controlled for validation/derived logic. Use uncontrolled (useRef) for file inputs or perf-critical forms.',
+    difficulty: 'beginner',
+    date: '2026-04-08',
   },
 
-  // ── Next.js ──────────────────────────────────────────────
+  // ── Next.js ──────────────────────────────────────────────────────────────
   {
     id: 'next-1',
-    title: 'How does Next.js App Router handle SSG?',
     category: 'Next.js',
-    content: 'Next.js automatically statically generates your pages if they do not feature dynamic functions (like cookies, headers) or uncached data requests. You can explicitly cache data requests using the `fetch` API options `cache: "force-cache"`.',
-    tags: ['SSG', 'App Router', 'Rendering'],
+    title: 'App Router rendering modes at a glance',
+    content: 'No dynamic functions + no uncached fetches = static (SSG). Add cookies()/headers() = dynamic (SSR). fetch with { next: { revalidate: N } } = ISR. Server Components are the default — mark a component "use client" only when you need browser APIs or state.',
     difficulty: 'intermediate',
-    dateAdded: '2026-04-10',
+    date: '2026-04-10',
   },
   {
     id: 'next-2',
-    title: 'Server Actions — Mutate data without API routes',
     category: 'Next.js',
-    content: 'Server Actions let you define async server functions that can be called directly from client components using form actions or `startTransition`. They run only on the server, auto-revalidate, and eliminate the need for separate API route handlers for mutations.',
-    codeSnippet: `// app/actions.ts
-'use server'
-
-export async function createPost(formData: FormData) {
-  const title = formData.get('title');
-  await db.post.create({ data: { title } });
+    title: 'Server Actions replace most API routes',
+    content: 'Server Actions are async server functions called from Client Components. They run only on the server, auto-invalidate the Next.js cache, and need no separate API route. Use them for mutations: form submissions, DB writes, auth actions.',
+    code: `'use server'
+export async function createPost(fd: FormData) {
+  await db.post.create({ data: { title: fd.get('title') } });
   revalidatePath('/posts');
 }`,
-    tags: ['Server Actions', 'Mutations', 'App Router'],
     difficulty: 'intermediate',
-    dateAdded: '2026-04-11',
+    date: '2026-04-11',
   },
   {
     id: 'next-3',
-    title: 'Parallel Routes & Intercepting Routes',
     category: 'Next.js',
-    content: 'Parallel routes (@folder) let you render multiple pages simultaneously in the same layout — great for modals, dashboards, split views. Intercepting routes ((..) convention) let you show a route in context (e.g., photo modal) while keeping the URL updated.',
-    tags: ['Routing', 'Advanced', 'App Router'],
+    title: 'Parallel Routes and Intercepting Routes',
+    content: 'Parallel routes (@folder) render multiple pages in the same layout simultaneously — modal pattern, split dashboards. Intercepting routes (..(folder)) let you show /photo/1 as a modal while URL updates, and visit it directly as a full page.',
     difficulty: 'advanced',
-    dateAdded: '2026-04-12',
+    date: '2026-04-12',
   },
 
-  // ── TypeScript ───────────────────────────────────────────
+  // ── TypeScript ────────────────────────────────────────────────────────────
   {
     id: 'ts-1',
-    title: 'Utility Types: Pick, Omit, Partial, Required',
     category: 'TypeScript',
-    content: 'Pick<T, K> creates a type with only selected keys. Omit<T, K> excludes keys. Partial<T> makes all props optional. Required<T> makes them all required. These compose beautifully for API response typing.',
-    codeSnippet: `type User = { id: string; name: string; email: string; role: string };
-
-type UserPreview = Pick<User, 'id' | 'name'>;
-type UserUpdate = Partial<Omit<User, 'id'>>;
-// UserUpdate = { name?: string; email?: string; role?: string }`,
-    tags: ['Utility Types', 'Generics', 'Core'],
+    title: 'Utility types I actually use',
+    content: 'Pick<T,K> / Omit<T,K> for sub-shapes. Partial<T> makes everything optional — great for PATCH payloads. Required<T> inverse. ReturnType<typeof fn> extracts a function\'s return type without re-declaring it. These compose beautifully.',
+    code: `type User = { id: string; name: string; email: string };
+type UserPatch = Partial<Omit<User, 'id'>>;
+// { name?: string; email?: string }`,
     difficulty: 'intermediate',
-    dateAdded: '2026-04-09',
+    date: '2026-04-09',
   },
   {
     id: 'ts-2',
-    title: 'Discriminated Unions for type-safe state',
     category: 'TypeScript',
-    content: 'A discriminated union uses a common literal property (the discriminant) so TypeScript can narrow the type in conditionals. Perfect for modeling API states (loading, success, error) or finite state machines.',
-    codeSnippet: `type AsyncState<T> =
+    title: 'Discriminated unions for state machines',
+    content: 'A shared literal discriminant lets TypeScript narrow types in switch statements. Ideal for async state: idle → loading → success | error. Beats boolean flags like isLoading + isError which can be true simultaneously.',
+    code: `type State<T> =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
-
-function render(state: AsyncState<User[]>) {
-  switch (state.status) {
-    case 'loading': return <Spinner />;
-    case 'success': return <List data={state.data} />;
-    case 'error':   return <Error msg={state.error.message} />;
-  }
-}`,
-    tags: ['Unions', 'Type Safety', 'Patterns'],
+  | { status: 'error'; error: Error };`,
     difficulty: 'advanced',
-    dateAdded: '2026-04-10',
+    date: '2026-04-10',
+  },
+  {
+    id: 'ts-3',
+    category: 'TypeScript',
+    title: 'satisfies operator',
+    content: 'satisfies validates a value matches a type without widening it. Unlike a type annotation the inferred type stays narrow, so you keep autocomplete on specific values. Perfect for config objects and lookup maps.',
+    code: `const routes = {
+  home: '/',
+  about: '/about',
+} satisfies Record<string, string>;
+// routes.home is still type '/', not string`,
+    difficulty: 'intermediate',
+    date: '2026-04-11',
   },
 
-  // ── MongoDB ──────────────────────────────────────────────
+  // ── MongoDB ───────────────────────────────────────────────────────────────
   {
     id: 'mongo-1',
-    title: 'Indexing strategies for MongoDB',
     category: 'MongoDB',
-    content: 'Indexes speed up queries but slow down writes. Use compound indexes for multi-field queries (field order matters!). Use `explain()` to profile queries. Partial indexes save space by indexing only matching documents.',
-    tags: ['Indexes', 'Performance', 'Query'],
+    title: 'Indexing strategy basics',
+    content: 'Every index speeds reads but slows writes. Compound index field order matters — equality fields first, then range, then sort. Run explain("executionStats") to see if your query does a COLLSCAN (bad) or IXSCAN (good). Drop unused indexes.',
     difficulty: 'intermediate',
-    dateAdded: '2026-04-10',
+    date: '2026-04-10',
   },
   {
     id: 'mongo-2',
-    title: 'Aggregation Pipeline essentials',
     category: 'MongoDB',
-    content: 'The aggregation pipeline processes documents in stages: $match (filter), $group (aggregate), $project (reshape), $sort, $lookup (join), $unwind (flatten arrays). Each stage passes results to the next. Put $match early to reduce data flowing through.',
-    codeSnippet: `db.orders.aggregate([
-  { $match: { status: 'completed' } },
-  { $group: { _id: '$customerId', total: { $sum: '$amount' } } },
+    title: 'Aggregation pipeline mental model',
+    content: '$match early to reduce documents flowing through. $group to aggregate. $project to reshape (rename, compute). $lookup for joins. $unwind to flatten arrays. Think of it as a Unix pipe — small, composable stages.',
+    code: `db.orders.aggregate([
+  { $match: { status: 'paid' } },
+  { $group: { _id: '$userId', total: { $sum: '$amount' } } },
   { $sort: { total: -1 } },
-  { $limit: 10 }
+  { $limit: 10 },
 ]);`,
-    tags: ['Aggregation', 'Pipeline', 'Query'],
     difficulty: 'advanced',
-    dateAdded: '2026-04-11',
+    date: '2026-04-11',
   },
 
-  // ── Prisma ───────────────────────────────────────────────
+  // ── Prisma ────────────────────────────────────────────────────────────────
   {
     id: 'prisma-1',
-    title: 'Why use Prisma over Mongoose?',
     category: 'Prisma',
-    content: 'Prisma is a type-safe ORM that generates a fully typed Prisma Client based on your database schema. Mongoose relies on manual schema definitions in JavaScript, making it more prone to runtime type errors, whereas Prisma catches them at compile time.',
-    tags: ['ORM', 'Database', 'TypeScript'],
+    title: 'Why Prisma over Mongoose',
+    content: 'Prisma generates a fully-typed client from your schema — no manual interface duplication. Mongoose is schema-in-JS, so type errors surface at runtime. With Prisma, the database schema is the source of truth and TypeScript keeps you honest.',
     difficulty: 'beginner',
-    dateAdded: '2026-04-12',
+    date: '2026-04-12',
   },
   {
     id: 'prisma-2',
-    title: 'Prisma Transactions — interactive vs sequential',
     category: 'Prisma',
-    content: 'Sequential transactions ($transaction([...])) run an array of operations. Interactive transactions ($transaction(async (tx) => {...})) give you a transaction client for complex logic with conditional queries. Interactive is more flexible but holds a DB connection longer.',
-    codeSnippet: `// Interactive transaction
-await prisma.$transaction(async (tx) => {
-  const user = await tx.user.findUnique({ where: { id } });
-  if (user.balance < amount) throw new Error('Insufficient');
-  await tx.user.update({
-    where: { id },
-    data: { balance: { decrement: amount } },
-  });
+    title: 'Interactive transactions',
+    content: 'Sequential $transaction([ops]) is simple but inflexible. Interactive $transaction(async tx => {}) gives you a transaction-scoped client for conditional logic — validate, then write. It holds the connection longer so keep it short.',
+    code: `await prisma.$transaction(async (tx) => {
+  const wallet = await tx.wallet.findUniqueOrThrow({ where: { id } });
+  if (wallet.balance < amount) throw new Error('insufficient');
+  await tx.wallet.update({ where: { id }, data: { balance: { decrement: amount } } });
 });`,
-    tags: ['Transactions', 'Database', 'Advanced'],
     difficulty: 'advanced',
-    dateAdded: '2026-04-13',
+    date: '2026-04-13',
   },
 
-  // ── Express.js ───────────────────────────────────────────
+  // ── Express.js ────────────────────────────────────────────────────────────
   {
     id: 'express-1',
-    title: 'Middleware execution order matters',
     category: 'Express.js',
-    content: 'Express middleware runs top-to-bottom. Error-handling middleware must have 4 parameters (err, req, res, next) and be registered AFTER routes. Use `express.json()` before route handlers. Order: cors → helmet → bodyParser → auth → routes → errorHandler.',
-    tags: ['Middleware', 'Architecture', 'Core'],
+    title: 'Middleware order is everything',
+    content: 'Express runs top-to-bottom. Order: cors → helmet → express.json() → auth middleware → route handlers → 404 handler → error handler. Error middleware must have 4 params (err, req, res, next) and must be last.',
     difficulty: 'beginner',
-    dateAdded: '2026-04-09',
+    date: '2026-04-09',
   },
   {
     id: 'express-2',
-    title: 'Global error handler pattern',
     category: 'Express.js',
-    content: 'Wrap async route handlers in a function that catches errors and passes them to `next()`. Then use a single global error-handling middleware to format and send error responses consistently.',
-    codeSnippet: `const asyncHandler = (fn) => (req, res, next) =>
+    title: 'asyncHandler to avoid try/catch in every route',
+    content: 'Wrap async route handlers in a small utility that catches rejected promises and forwards them to next(). Then one global error handler formats all errors consistently. Clean, DRY, impossible to forget error handling.',
+    code: `const wrap = fn => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
-// Usage
-app.get('/users', asyncHandler(async (req, res) => {
-  const users = await User.find();
-  res.json(users);
+app.get('/users', wrap(async (req, res) => {
+  res.json(await db.user.findMany());
 }));
 
-// Global error handler (must be last)
 app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
-  });
+  res.status(err.status ?? 500).json({ error: err.message });
 });`,
-    tags: ['Error Handling', 'Patterns', 'Middleware'],
     difficulty: 'intermediate',
-    dateAdded: '2026-04-10',
+    date: '2026-04-10',
   },
 
-  // ── TailwindCSS ──────────────────────────────────────────
+  // ── TailwindCSS ───────────────────────────────────────────────────────────
   {
     id: 'tw-1',
-    title: 'Dark mode with class strategy',
     category: 'TailwindCSS',
-    content: 'Set `darkMode: "class"` in tailwind.config. Then use `dark:` prefix variants. Pair with next-themes for SSR-safe toggling. The class strategy gives you full control vs the media strategy which follows system preference.',
-    tags: ['Dark Mode', 'Theming', 'Config'],
+    title: 'Dark mode with class strategy',
+    content: 'Set darkMode: "class" in config. Use dark: variants. Pair with next-themes for SSR-safe toggling — it adds the class on <html> before the page paints, avoiding flash. The class strategy beats media because you control when to switch.',
     difficulty: 'beginner',
-    dateAdded: '2026-04-09',
+    date: '2026-04-09',
   },
   {
     id: 'tw-2',
-    title: 'Creating reusable component classes with @apply',
     category: 'TailwindCSS',
-    content: 'Use @apply in a CSS file to compose utility classes into reusable component styles. Great for buttons, cards, inputs. But don\'t overuse it — the point of Tailwind is utility-first. Reserve @apply for truly repeated patterns.',
-    codeSnippet: `/* globals.css */
-@layer components {
-  .btn-primary {
-    @apply px-6 py-2 rounded-lg bg-blue-600 text-white
-           font-semibold hover:bg-blue-700 transition-colors
-           focus:outline-none focus:ring-2 focus:ring-blue-500;
+    title: 'When to use @apply',
+    content: 'Reserve @apply for patterns you repeat across many files — buttons, inputs, badges. Don\'t use it just to shorten a one-off element. Overusing @apply defeats the point of utility-first and makes the CSS bundle harder to purge.',
+    code: `@layer components {
+  .btn {
+    @apply inline-flex items-center gap-2 px-5 py-2
+           rounded-xl font-semibold transition-all;
   }
 }`,
-    tags: ['Components', 'CSS', 'Patterns'],
     difficulty: 'beginner',
-    dateAdded: '2026-04-10',
+    date: '2026-04-10',
   },
 
-  // ── Engineering Architecture ─────────────────────────────
+  // ── Engineering ───────────────────────────────────────────────────────────
   {
-    id: 'arch-1',
-    title: 'Microservices vs Monolith Architecture',
-    category: 'Engineering Architecture',
-    content: 'Monoliths bundle all functionality into a single application, which makes them easier to deploy initially but harder to scale. Microservices break the app down into independent services, improving scalability and enabling polyglot persistence, but adding operational complexity.',
-    tags: ['Architecture', 'Scale', 'System Design'],
+    id: 'eng-1',
+    category: 'Engineering',
+    title: 'Monolith first, microservices when it hurts',
+    content: 'Microservices make sense at scale but add massive operational overhead early on. Start with a well-structured monolith. Extract services only when you hit real pain: a module that needs independent deployments, different scaling needs, or a different tech stack.',
     difficulty: 'intermediate',
-    dateAdded: '2026-04-13',
+    date: '2026-04-13',
   },
   {
-    id: 'arch-2',
-    title: 'CQRS — Command Query Responsibility Segregation',
-    category: 'Engineering Architecture',
-    content: 'CQRS splits your data model into a write model (commands) and a read model (queries). Write side handles business logic and validation. Read side is optimized for fast queries with denormalized views. Pairs well with Event Sourcing.',
-    tags: ['CQRS', 'Patterns', 'Scale'],
+    id: 'eng-2',
+    category: 'Engineering',
+    title: 'CQRS in plain English',
+    content: 'Command Query Responsibility Segregation splits reads and writes into separate models. Write side enforces business rules and emits events. Read side builds denormalized views optimized for queries. Result: each side scales and evolves independently.',
     difficulty: 'advanced',
-    dateAdded: '2026-04-14',
+    date: '2026-04-14',
   },
   {
-    id: 'arch-3',
-    title: 'The 12-Factor App methodology',
-    category: 'Engineering Architecture',
-    content: 'A set of 12 best practices for building SaaS apps: codebase in version control, explicit dependencies, config in env vars, backing services as attached resources, strict build/run separation, stateless processes, port binding, concurrency via process model, disposability, dev/prod parity, logs as event streams, admin processes.',
-    tags: ['Best Practices', 'DevOps', 'Cloud'],
+    id: 'eng-3',
+    category: 'Engineering',
+    title: 'The 12-Factor App',
+    content: 'Core rules: one codebase, explicit dependency declaration, config in env vars, stateless processes, port binding, disposable processes (fast start/stop), dev/prod parity, logs as stdout streams. These principles make apps portable, scalable, cloud-native.',
     difficulty: 'intermediate',
-    dateAdded: '2026-04-11',
+    date: '2026-04-11',
+  },
+  {
+    id: 'eng-4',
+    category: 'Engineering',
+    title: 'CAP Theorem',
+    content: 'A distributed system can only guarantee two of three: Consistency (every read sees the latest write), Availability (every request gets a response), Partition tolerance (system works despite network splits). Since partitions happen, you choose CA vs CP.',
+    difficulty: 'advanced',
+    date: '2026-04-12',
   },
 ];
