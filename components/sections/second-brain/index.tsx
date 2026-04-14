@@ -4,13 +4,14 @@ import * as React from 'react';
 import { Brain } from 'lucide-react';
 import { CATEGORIES, NOTES } from '@/data/learning';
 import { ThreadFeed } from './thread-feed';
+import { AddNoteForm } from './add-note-form';
 
 export function SecondBrain() {
   return (
     <section className="min-h-screen pt-24 pb-32 bg-background text-foreground font-sans">
       <div className="max-w-xl mx-auto px-4">
-        {/* Header with Brain Icon restored */}
-        <div className="flex items-center gap-3 mb-8 ">
+        {/* Header with Brain Icon */}
+        <div className="flex items-center gap-3 mb-8">
           <div className="p-2.5 rounded-xl bg-muted/50 border border-border/20">
             <Brain className="h-6 w-6 text-foreground/80" />
           </div>
@@ -37,9 +38,9 @@ export function SecondBrain() {
 
                 {/* Feed for this category */}
                 <div className="pl-1">
-                  <ThreadFeed
-                    notes={categoryNotes}
-                    category={category}
+                  <ThreadFeed 
+                    notes={categoryNotes} 
+                    category={category} 
                   />
                 </div>
               </div>
@@ -47,6 +48,9 @@ export function SecondBrain() {
           })}
         </div>
       </div>
+
+      {/* Floating Add Form */}
+      <AddNoteForm />
     </section>
   );
 }

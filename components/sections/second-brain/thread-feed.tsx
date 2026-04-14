@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, ChevronDown } from 'lucide-react';
+import { Copy, Check, ChevronDown, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { LearningItem, CategoryMeta } from '@/data/learning';
 import { MiniHighlighter } from './mini-highlighter';
@@ -20,22 +20,23 @@ export function ThreadFeed({ notes, category }: ThreadFeedProps) {
   return (
     <div className="flex flex-col gap-4">
       {notes.map((note) => (
-        <ThreadItem
-          key={note.id}
-          note={note}
-          category={category}
+        <ThreadItem 
+          key={note.id} 
+          note={note} 
+          category={category} 
         />
       ))}
     </div>
   );
 }
 
-function ThreadItem({ note, category }: {
-  note: LearningItem;
-  category: CategoryMeta;
+function ThreadItem({ note, category }: { 
+  note: LearningItem; 
+  category: CategoryMeta; 
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -43,26 +44,47 @@ function ThreadItem({ note, category }: {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this note?')) return;
+    
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/notes?id=${note.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (isDeleting) {
+    return (
+      <div className="py-4 animate-pulse opacity-50 flex items-center gap-2">
+        <Trash2 className="h-4 w-4" />
+        <span className="text-[12px] font-medium italic">Removing note...</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex gap-5">
-      {/* 
-         1. FIXED DOT ALIGNMENT: 
-         Changed pt-2.5 to pt-[12px] to perfectly center the dot with the 14px text 
-      */}
+    <div className="flex gap-5 group/item">
+      {/* Mono Thread Axis */}
       <div className="flex flex-col items-center w-5 shrink-0 pt-[12px]">
-        {/* Mono Dot */}
         <div className={cn(
           "w-1.5 h-1.5 rounded-full border-[1.5px] transition-all duration-500 z-10",
-          isOpen
-            ? "bg-foreground border-foreground scale-110"
+          isOpen 
+            ? "bg-foreground border-foreground scale-110" 
             : "bg-transparent border-border"
         )} />
-
-        {/* Mono Thread connection path */}
+        
         <div className="w-full grow relative">
           <AnimatePresence>
             {isOpen && (
-              <motion.div
+              <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -86,14 +108,14 @@ function ThreadItem({ note, category }: {
             )}
           </AnimatePresence>
           {!isOpen && (
-            <div className="w-[1px] h-full bg-border/10 mx-auto" />
+             <div className="w-[1px] h-full bg-border/10 mx-auto" />
           )}
         </div>
       </div>
 
-      {/* Item-level Content Area */}
+      {/* Content Area */}
       <div className="flex-1 min-w-0">
-        <button
+        <button 
           onClick={() => setIsOpen(!isOpen)}
           className="w-full text-left group flex items-start justify-between gap-4 py-1.5"
         >
@@ -105,16 +127,20 @@ function ThreadItem({ note, category }: {
               )}>
                 {note.title}
               </h3>
-              <span className="text-[9px] font-mono uppercase tracking-widest opacity-30 shrink-0">
-                {new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
+              <div className="flex items-center gap-3 shrink-0">
+                {/* Delete Trigger - Only visible on hover */}
+                <span 
+                  onClick={handleDelete}
+                  className="opacity-0 group-hover/item:opacity-40 hover:!opacity-100 text-red-500 transition-opacity p-0.5"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </span>
+                <span className="text-[9px] font-mono uppercase tracking-widest opacity-30">
+                  {new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+              </div>
             </div>
           </div>
-
-          {/* 
-             2. SOFTENED TOGGLE: 
-             Removed the heavy black circle, using a simple icon with hover state 
-          */}
           <div className={cn(
             "mt-1 p-1 transition-all duration-300 flex items-center justify-center opacity-30 group-hover:opacity-100",
             isOpen ? "rotate-180 opacity-100 text-foreground" : "text-muted-foreground"
@@ -132,21 +158,17 @@ function ThreadItem({ note, category }: {
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              {/* 
-                 3. HORIZONTAL RHYTHM: 
-                 Increased pl-1 to pl-3 to give content more breathing room from the line 
-              */}
-              <div className="pt-3 pb-8 pl-3 space-y-5">
-                <p className="text-[14px] text-foreground/70 leading-[1.7] max-w-[98%]">
+              <div className="pt-2 pb-8 pl-3 space-y-5">
+                <p className="text-[13px] text-foreground/70 leading-[1.7] max-w-[98%]">
                   {note.content}
                 </p>
 
                 {note.code && (
-                  <div className="rounded-lg overflow-hidden border border-border/10 bg-muted/20">
-                    <div className="flex items-center justify-between px-3 py-1.5 bg-muted/30">
+                  <div className="rounded-lg overflow-hidden border border-border/10">
+                    <div className="flex items-center justify-between px-3 py-1.5 bg-white dark:bg-[#161b22] border-b border-border/10">
                       <span className="text-[8px] font-mono text-muted-foreground/40 uppercase tracking-widest">code</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); copyCode(note.code!); }}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); copyCode(note.code!); }} 
                         className="text-muted-foreground/30 hover:text-foreground transition-colors p-1"
                       >
                         {copied ? <Check className="h-2.5 w-2.5" /> : <Copy className="h-2.5 w-2.5" />}
