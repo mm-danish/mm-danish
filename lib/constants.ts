@@ -12,6 +12,7 @@ export const NAV_LINKS = [
   { name: 'Experience', href: '/#experience' },
   { name: 'Skills', href: '/#skills' },
   { name: 'Blog', href: '/blog' },
+  // { name: 'Second Brain', href: '/second-brain' },
   { name: 'Contact', href: '/contact' },
 ] as const;
 
