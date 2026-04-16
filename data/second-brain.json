@@ -28,5 +28,13 @@
     "content": "Server Actions are async server functions called from client components. They run only on the server, auto-invalidate cache, and eliminate the need for separate API route handlers.",
     "code": "'use server';\nexport async function update(data) {\n  await db.save(data);\n  revalidatePath('/');\n}",
     "date": "2026-04-11"
+  },
+  {
+    "category": "Node.js",
+    "title": "noting till now",
+    "content": "will learn more and more",
+    "code": "",
+    "id": "node.js-1776363531091",
+    "date": "2026-04-16"
   }
 ]

@@ -44,7 +44,7 @@ export function AddNoteForm() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50"
+        className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-foreground text-background flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all z-50 border border-border/20"
       >
         <Plus className="h-6 w-6" />
       </button>
@@ -67,10 +67,13 @@ export function AddNoteForm() {
               className="relative w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-border flex items-center justify-between">
-                <h2 className="text-lg font-bold">New Thought</h2>
-                <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-muted rounded-full transition-colors">
-                  <X className="h-5 w-5" />
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <h2 className="text-lg font-bold">New Note</h2>
+                <button 
+                  onClick={() => setIsOpen(false)} 
+                  className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                >
+                  <X className="h-4 w-4" />
                 </button>
               </div>
 
@@ -124,9 +127,9 @@ export function AddNoteForm() {
 
                 <button
                   disabled={isSubmitting}
-                  className="w-full bg-foreground text-background font-bold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                  className="w-full bg-foreground text-background font-bold py-3 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Post to Second Brain'}
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Note'}
                 </button>
               </form>
             </motion.div>
