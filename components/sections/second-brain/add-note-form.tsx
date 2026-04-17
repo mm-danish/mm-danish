@@ -7,10 +7,11 @@ import { CATEGORIES, CATEGORY_COLORS, LearningItem, type LearningCategory } from
 
 interface AddNoteFormProps {
   noteToEdit?: LearningItem | null;
+  forceOpen?: boolean;
   onClose?: () => void;
 }
 
-export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
+export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [formData, setFormData] = React.useState({
@@ -34,6 +35,13 @@ export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
       setIsOpen(true);
     }
   }, [noteToEdit]);
+
+  // Sync with forceOpen prop
+  React.useEffect(() => {
+    if (forceOpen) {
+      setIsOpen(true);
+    }
+  }, [forceOpen]);
 
   // Reset form when closed
   const handleOpenChange = (open: boolean) => {
@@ -69,10 +77,12 @@ export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
     }
   };
 
+
+
   // Handle Escape key to close modal
   React.useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
+      if (e.key === 'Escape') handleOpenChange(false);
     };
     if (isOpen) window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
@@ -80,43 +90,6 @@ export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
 
   return (
     <>
-      {/* Floating Action Button */}
-      <motion.button
-        id="add-note-trigger"
-        aria-label="Create new note"
-        aria-expanded={isOpen}
-        aria-controls="add-note-dialog"
-        onClick={() => handleOpenChange(!isOpen)}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
-        className={`fixed bottom-8 right-8 z-50 flex items-center gap-2.5 rounded-full px-4 py-3 shadow-2xl transition-colors duration-300 border ${isOpen
-          ? 'bg-muted text-foreground border-border/60'
-          : 'bg-foreground text-background border-transparent hover:shadow-foreground/20'
-          }`}
-        style={{ boxShadow: isOpen ? undefined : '0 8px 32px rgba(0,0,0,0.35)' }}
-      >
-        <motion.div
-          animate={{ rotate: isOpen ? 45 : 0 }}
-          transition={{ duration: 0.2, ease: 'easeInOut' }}
-        >
-          <Plus className="h-4 w-4 shrink-0" />
-        </motion.div>
-        <AnimatePresence mode="wait" initial={false}>
-          {!isOpen && (
-            <motion.span
-              key="label"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 'auto' }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ duration: 0.18 }}
-              className="overflow-hidden text-[12px] font-bold tracking-wide whitespace-nowrap"
-            >
-              New Note
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </motion.button>
-
       <AnimatePresence>
         {isOpen && (
           <div

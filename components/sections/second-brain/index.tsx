@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Brain, Search, X } from 'lucide-react';
+import { Brain, Search, X, Plus } from 'lucide-react';
 import { CATEGORIES, CATEGORY_COLORS, type LearningItem } from '@/data/learning';
 import { ThreadFeed } from './thread-feed';
 import { AddNoteForm } from './add-note-form';
@@ -15,6 +15,7 @@ export function SecondBrain() {
   );
   const [searchQuery, setSearchQuery] = React.useState('');
   const [editingNote, setEditingNote] = React.useState<LearningItem | null>(null);
+  const [isAdding, setIsAdding] = React.useState(false);
   const mainContentRef = React.useRef<HTMLDivElement>(null);
 
   // Fetch notes from API
@@ -87,16 +88,26 @@ export function SecondBrain() {
         <section className="min-h-screen bg-background pt-32 pb-28 font-sans md:pt-40 md:pb-32">
           <div className="mx-auto w-full max-w-3xl px-5 sm:px-8">
             {/* Header with Brain Icon */}
-            <div className="mb-10 flex items-center gap-4">
-              <div className="p-2.5 rounded-lg bg-muted/50 border border-border/50">
-                <Brain className="h-6 w-6 text-foreground/70" />
+            <div className="mb-10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-2.5 rounded-lg bg-muted/50 border border-border/50">
+                  <Brain className="h-6 w-6 text-foreground/70" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight font-heading">
+                    Second Brain
+                  </h1>
+                  <p className="text-muted-foreground text-xs font-medium">Technical notes and learning recall.</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight font-heading">
-                  Second Brain
-                </h1>
-                <p className="text-muted-foreground text-xs font-medium">Technical notes and learning recall.</p>
-              </div>
+
+              <button
+                onClick={() => setIsAdding(true)}
+                className="group flex items-center gap-2 rounded-full bg-muted/40 hover:bg-foreground hover:text-background border border-border/50 p-2 md:px-4 md:py-2 text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-500 hover:shadow-xl hover:shadow-foreground/10"
+              >
+                <Plus className="h-4 w-4 md:h-3.5 md:w-3.5 transition-transform duration-500 group-hover:rotate-90" />
+                <span className="hidden md:inline">New Note</span>
+              </button>
             </div>
 
             {/* Search Bar */}
@@ -136,9 +147,9 @@ export function SecondBrain() {
               ) : (() => {
                 const filteredNotes = notes.filter(n => {
                   const query = searchQuery.toLowerCase();
-                  return n.title.toLowerCase().includes(query) || 
-                         n.content.toLowerCase().includes(query) ||
-                         n.category.toLowerCase().includes(query);
+                  return n.title.toLowerCase().includes(query) ||
+                    n.content.toLowerCase().includes(query) ||
+                    n.category.toLowerCase().includes(query);
                 });
 
                 if (filteredNotes.length === 0 && searchQuery) {
@@ -201,9 +212,13 @@ export function SecondBrain() {
           </div>
 
           {/* Floating Add Form */}
-          <AddNoteForm 
-            noteToEdit={editingNote} 
-            onClose={() => setEditingNote(null)} 
+          <AddNoteForm
+            noteToEdit={editingNote}
+            forceOpen={isAdding}
+            onClose={() => {
+              setEditingNote(null);
+              setIsAdding(false);
+            }}
           />
         </section>
       </main>

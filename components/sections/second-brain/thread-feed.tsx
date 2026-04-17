@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, ChevronDown, Trash2, Edit2 } from 'lucide-react';
+import { Copy, Check, ChevronDown, Trash2, Edit2, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { LearningItem, CategoryMeta } from '@/data/learning';
 import { CATEGORY_COLORS } from '@/data/learning';
@@ -39,6 +39,7 @@ function ThreadItem({ note, category, onEdit }: {
   onEdit: (note: LearningItem) => void;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [showMenu, setShowMenu] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -122,35 +123,59 @@ function ThreadItem({ note, category, onEdit }: {
             {note.title}
           </p>
  
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            {/* Desktop Meta */}
-            <div className="hidden sm:flex items-center gap-4">
-              <span className="text-[10px] font-bold font-mono text-muted-foreground uppercase tracking-wider">
-                {new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
-              <div className="flex items-center gap-2 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => { e.stopPropagation(); onEdit(note); }}
-                  className="p-1 text-foreground/20 hover:text-blue-500 transition-colors"
-                  title="Edit note"
-                >
-                  <Edit2 className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleDelete(e); }}
-                  className="p-1 text-foreground/20 hover:text-red-500 transition-colors"
-                  title="Delete note"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Desktop Date */}
+            <span className="hidden sm:inline text-[10px] font-bold font-mono text-muted-foreground/40 uppercase tracking-wider mr-2">
+              {new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
 
             <div className={cn(
               "flex items-center justify-center p-1 opacity-20 transition-all group-hover:opacity-100",
               isOpen ? "rotate-180 opacity-100" : ""
             )}>
               <ChevronDown className="h-3.5 w-3.5" />
+            </div>
+
+            {/* Actions Menu Trigger */}
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className={cn(
+                  "p-1 rounded-md transition-all",
+                  showMenu ? "bg-muted text-foreground" : "text-muted-foreground/30 hover:text-foreground hover:bg-muted/50"
+                )}
+              >
+                <MoreVertical className="h-3.5 w-3.5" />
+              </button>
+
+              <AnimatePresence>
+                {showMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: 10, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 z-50 min-w-[100px] bg-card border border-border/50 rounded-lg shadow-xl py-1 overflow-hidden glass-morphism"
+                  >
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onEdit(note); setShowMenu(false); }}
+                      className="flex w-full items-center gap-2 px-3 py-1.5 text-[11px] font-bold text-muted-foreground hover:text-blue-500 hover:bg-blue-500/5 transition-all uppercase tracking-wider"
+                    >
+                      <Edit2 className="h-3 w-3" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(e); setShowMenu(false); }}
+                      className="flex w-full items-center gap-2 px-3 py-1.5 text-[11px] font-bold text-muted-foreground hover:text-red-500 hover:bg-red-500/5 transition-all uppercase tracking-wider border-t border-border/10"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      <span>Delete</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -165,29 +190,6 @@ function ThreadItem({ note, category, onEdit }: {
               className="overflow-hidden"
             >
               <div className="space-y-4 pb-1 pt-1">
-                {/* Mobile Meta Row */}
-                <div className="flex sm:hidden items-center justify-between text-muted-foreground/50 pb-2">
-                  <span className="text-[10px] font-bold font-mono uppercase tracking-wider">
-                    {new Date(note.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onEdit(note); }}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/5 text-blue-500/50 hover:bg-blue-500/10 transition-colors"
-                    >
-                      <Edit2 className="h-3 w-3" />
-                      <span className="text-[10px] font-bold uppercase">Edit</span>
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-500/5 text-red-500/50 hover:bg-red-500/10 transition-colors"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      <span className="text-[10px] font-bold uppercase">Delete</span>
-                    </button>
-                  </div>
-                </div>
-
                 <p className="max-w-[95%] text-sm md:text-base leading-relaxed text-foreground/80">
                   {note.content}
                 </p>
