@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Loader2 } from 'lucide-react';
-import { CATEGORIES, CATEGORY_COLORS, type LearningCategory } from '@/data/learning';
+import { CATEGORIES, CATEGORY_COLORS, LearningItem, type LearningCategory } from '@/data/learning';
 
 interface AddNoteFormProps {
   noteToEdit?: LearningItem | null;
@@ -89,11 +89,10 @@ export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
         onClick={() => handleOpenChange(!isOpen)}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
-        className={`fixed bottom-8 right-8 z-50 flex items-center gap-2.5 rounded-full px-4 py-3 shadow-2xl transition-colors duration-300 border ${
-          isOpen
-            ? 'bg-muted text-foreground border-border/60'
-            : 'bg-foreground text-background border-transparent hover:shadow-foreground/20'
-        }`}
+        className={`fixed bottom-8 right-8 z-50 flex items-center gap-2.5 rounded-full px-4 py-3 shadow-2xl transition-colors duration-300 border ${isOpen
+          ? 'bg-muted text-foreground border-border/60'
+          : 'bg-foreground text-background border-transparent hover:shadow-foreground/20'
+          }`}
         style={{ boxShadow: isOpen ? undefined : '0 8px 32px rgba(0,0,0,0.35)' }}
       >
         <motion.div
@@ -120,7 +119,7 @@ export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
 
       <AnimatePresence>
         {isOpen && (
-          <div 
+          <div
             className="fixed inset-0 z-[100] flex items-center justify-center p-6"
             role="none"
           >
@@ -221,8 +220,8 @@ export function AddNoteForm({ noteToEdit, onClose }: AddNoteFormProps) {
                   <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
                     Select Category
                   </label>
-                  <div 
-                    role="radiogroup" 
+                  <div
+                    role="radiogroup"
                     aria-label="Category selection"
                     className="flex flex-wrap gap-2"
                   >
