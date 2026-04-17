@@ -52,3 +52,19 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const updatedNote = await request.json();
+    if (!updatedNote.id) return NextResponse.json({ success: false }, { status: 400 });
+
+    const notes = await redis.get<LearningItem[]>(NOTES_KEY) || [];
+    const newNotes = notes.map((n) => (n.id === updatedNote.id ? { ...n, ...updatedNote } : n));
+
+    await redis.set(NOTES_KEY, newNotes);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Redis Error:', error);
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}

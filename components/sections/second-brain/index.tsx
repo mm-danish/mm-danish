@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Brain } from 'lucide-react';
-import { CATEGORIES, type LearningItem } from '@/data/learning';
+import { Brain, Search, X } from 'lucide-react';
+import { CATEGORIES, CATEGORY_COLORS, type LearningItem } from '@/data/learning';
 import { ThreadFeed } from './thread-feed';
 import { AddNoteForm } from './add-note-form';
 import { SidebarNav } from './sidebar-nav';
@@ -13,6 +13,8 @@ export function SecondBrain() {
   const [activeCategory, setActiveCategory] = React.useState<string | undefined>(
     CATEGORIES[0]?.name
   );
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [editingNote, setEditingNote] = React.useState<LearningItem | null>(null);
   const mainContentRef = React.useRef<HTMLDivElement>(null);
 
   // Fetch notes from API
@@ -97,6 +99,28 @@ export function SecondBrain() {
               </div>
             </div>
 
+            {/* Search Bar */}
+            <div className="mb-12 relative group">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search technical notes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-muted/30 border border-border/50 rounded-2xl pl-11 pr-11 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/5 focus:border-foreground/10 transition-all placeholder:text-muted-foreground/40"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-4 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
             {/* Dedicated Sections */}
             <div className="space-y-14">
               {loading ? (
@@ -107,11 +131,26 @@ export function SecondBrain() {
                 </div>
               ) : notes.length === 0 ? (
                 <div className="py-20 text-center">
-                  <p className="text-muted-foreground">No notes found. Create your first one!</p>
+                  <p className="text-muted-foreground text-sm">No notes found. Create your first one!</p>
                 </div>
-              ) : (
-                CATEGORIES.map((category) => {
-                  const categoryNotes = notes.filter(n => n.category === category.name);
+              ) : (() => {
+                const filteredNotes = notes.filter(n => {
+                  const query = searchQuery.toLowerCase();
+                  return n.title.toLowerCase().includes(query) || 
+                         n.content.toLowerCase().includes(query) ||
+                         n.category.toLowerCase().includes(query);
+                });
+
+                if (filteredNotes.length === 0 && searchQuery) {
+                  return (
+                    <div className="py-20 text-center">
+                      <p className="text-muted-foreground text-sm">No matches found for "{searchQuery}"</p>
+                    </div>
+                  );
+                }
+
+                return CATEGORIES.map((category) => {
+                  const categoryNotes = filteredNotes.filter(n => n.category === category.name);
                   if (categoryNotes.length === 0) return null;
 
                   return (
@@ -121,11 +160,22 @@ export function SecondBrain() {
                       className="flex scroll-mt-24 flex-col"
                     >
                       {/* Master Section Header */}
-                      <div className="mb-6 flex items-center">
-                        <h2 className="text-lg font-bold tracking-tight text-foreground/90">
-                          {category.name}
-                        </h2>
-                      </div>
+                      {(() => {
+                        const accent = CATEGORY_COLORS[category.name];
+                        return (
+                          <div
+                            className="mb-6 flex items-center gap-3 pl-3"
+                            style={{ borderColor: accent.hex }}
+                          >
+                            <h2
+                              className="text-lg font-bold tracking-tight"
+                              style={{ color: accent.hex }}
+                            >
+                              {category.name}
+                            </h2>
+                          </div>
+                        );
+                      })()}
 
                       {/* Feed for this category */}
                       <div className="space-y-4 ml-1">
@@ -138,19 +188,23 @@ export function SecondBrain() {
                             <ThreadFeed
                               notes={[note]}
                               category={category}
+                              onEdit={(n) => setEditingNote(n)}
                             />
                           </div>
                         ))}
                       </div>
                     </div>
                   );
-                })
-              )}
+                });
+              })()}
             </div>
           </div>
 
           {/* Floating Add Form */}
-          <AddNoteForm />
+          <AddNoteForm 
+            noteToEdit={editingNote} 
+            onClose={() => setEditingNote(null)} 
+          />
         </section>
       </main>
     </div>

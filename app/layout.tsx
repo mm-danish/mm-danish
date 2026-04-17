@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { ConditionalNavigation } from '@/components/layout/conditional-navigation';
 import { defaultMetadata } from '@/config/seo';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -41,9 +42,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <ConditionalNavigation
+              header={<Header />}
+              footer={<Footer />}
+            >
+              <main className="flex-1">{children}</main>
+            </ConditionalNavigation>
           </div>
 
           {/* Parallel route slot — mounts modal on top of current page */}

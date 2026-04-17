@@ -59,7 +59,12 @@ export function SidebarNav({
                       : "text-foreground/50 font-medium hover:text-foreground hover:bg-muted/30"
                   )}
                 >
-                  <span className="truncate tracking-tight">{category.name}</span>
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="truncate tracking-tight">{category.name}</span>
+                    <span className="flex h-3.5 min-w-[1rem] items-center justify-center rounded-full bg-muted/50 px-1 text-[9px] font-bold text-muted-foreground/40">
+                      {categoryNotes.length}
+                    </span>
+                  </div>
                   <motion.div
                     animate={{ rotate: isExpanded ? 180 : 0 }}
                     className="ml-2 shrink-0 opacity-20"
