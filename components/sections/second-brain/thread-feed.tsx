@@ -99,11 +99,13 @@ function ThreadItem({ note, category, onEdit }: {
 
       {/* Content Area */}
       <div className="min-w-0 flex-1">
-        <button
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => setIsOpen(!isOpen)}
-          className="group flex w-full items-center justify-between gap-4 px-3 -mx-3 py-2 text-left rounded-xl transition-all duration-300 hover:bg-muted/40"
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsOpen(!isOpen); } }}
+          className="group flex w-full cursor-pointer items-center justify-between gap-4 px-3 -mx-3 py-2 text-left rounded-xl transition-all duration-300 hover:bg-muted/40"
           style={{ 
-            // Use accent color for a subtle hover glow
             backgroundColor: 'transparent'
           }}
           onMouseEnter={(e) => {
@@ -119,7 +121,7 @@ function ThreadItem({ note, category, onEdit }: {
           )}>
             {note.title}
           </p>
-
+ 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             {/* Desktop Meta */}
             <div className="hidden sm:flex items-center gap-4">
@@ -135,7 +137,7 @@ function ThreadItem({ note, category, onEdit }: {
                   <Edit2 className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={handleDelete}
+                  onClick={(e) => { e.stopPropagation(); handleDelete(e); }}
                   className="p-1 text-foreground/20 hover:text-red-500 transition-colors"
                   title="Delete note"
                 >
@@ -151,7 +153,7 @@ function ThreadItem({ note, category, onEdit }: {
               <ChevronDown className="h-3.5 w-3.5" />
             </div>
           </div>
-        </button>
+        </div>
 
         <AnimatePresence>
           {isOpen && (
