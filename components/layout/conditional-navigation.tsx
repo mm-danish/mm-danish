@@ -17,7 +17,7 @@ export function ConditionalNavigation({
 
   return (
     <>
-      {header}
+      {!isSecondBrain && header}
       {children}
       {!isSecondBrain && footer}
     </>

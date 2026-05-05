@@ -1,3 +1,15 @@
+import { 
+  Server, 
+  Atom, 
+  Layers, 
+  Code2, 
+  Database, 
+  Zap, 
+  Terminal, 
+  Wind, 
+  Settings,
+  FolderOpen
+} from 'lucide-react';
 import notesData from './second-brain.json';
 
 export type LearningCategory = string;
@@ -55,6 +67,20 @@ const fallbackColors = [
   { hex: '#f97316', text: 'text-[#f97316]', bg: 'bg-[#f97316]/10', border: 'border-[#f97316]/30' }, // Orange
   { hex: '#ef4444', text: 'text-[#ef4444]', bg: 'bg-[#ef4444]/10', border: 'border-[#ef4444]/30' }, // Red
 ];
+
+export function getCategoryIcon(category: string) {
+  const c = category.toLowerCase();
+  if (c.includes('node')) return Server;
+  if (c.includes('react')) return Atom;
+  if (c.includes('next')) return Layers;
+  if (c.includes('typescript') || c.includes('ts')) return Code2;
+  if (c.includes('mongo')) return Database;
+  if (c.includes('prisma')) return Zap;
+  if (c.includes('express')) return Terminal;
+  if (c.includes('tailwind')) return Wind;
+  if (c.includes('engineering') || c.includes('arch')) return Settings;
+  return FolderOpen;
+}
 
 export function getCategoryColor(category: string) {
   if (CATEGORY_COLORS[category]) {

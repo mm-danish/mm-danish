@@ -93,7 +93,7 @@ export function SecondBrain() {
   }, [allCategories]);
 
   return (
-    <div className="flex bg-background min-h-screen">
+    <div className="flex bg-background h-screen overflow-hidden">
       {/* Sidebar Navigation */}
       <SidebarNav
         categories={allCategories}
@@ -103,8 +103,8 @@ export function SecondBrain() {
       />
 
       {/* Main Content */}
-      <main ref={mainContentRef} className="flex-1 min-w-0">
-        <section className="min-h-screen bg-background pt-32 pb-28 font-sans md:pt-40 md:pb-32">
+      <main ref={mainContentRef} className="flex-1 min-w-0 h-full overflow-y-auto custom-scrollbar">
+        <section className="min-h-full bg-background pt-12 pb-28 font-sans md:pt-16 md:pb-32">
           <div className="mx-auto w-full max-w-3xl px-5 sm:px-8">
             {/* Header with Brain Icon */}
             <div className="mb-10 flex items-center justify-between">
@@ -129,26 +129,33 @@ export function SecondBrain() {
               </button>
             </div>
 
-            {/* Search Bar */}
-            <div className="mb-12 relative group">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+            {/* Floating Search Bar */}
+            <div className="sticky top-6 z-40 mb-10 flex justify-end pointer-events-none">
+              <div className="relative group w-full max-w-[200px] pointer-events-auto">
+                <input
+                  type="text"
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-background/80 backdrop-blur-md border border-border/50 rounded-full pl-4 pr-9 py-2 text-xs focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all placeholder:text-muted-foreground/30 shadow-sm"
+                />
+                
+                {/* Search Icon on Right */}
+                {!searchQuery && (
+                  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none group-focus-within:hidden text-muted-foreground/30">
+                    <Search className="h-3.5 w-3.5" />
+                  </div>
+                )}
+
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground/30 hover:text-foreground transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
-              <input
-                type="text"
-                placeholder="Search technical notes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-muted/30 border border-border/50 rounded-2xl pl-11 pr-11 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/5 focus:border-foreground/10 transition-all placeholder:text-muted-foreground/40"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-4 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
             </div>
 
             {/* Dedicated Sections */}
@@ -232,15 +239,13 @@ function CategorySection({
         onClick={() => setIsOpen(!isOpen)}
         className="mb-6 flex items-center justify-between pl-3 pr-2 w-full group text-left transition-opacity hover:opacity-80"
       >
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold tracking-tight transition-colors" style={{ color: accent.hex }}>
-            {category.name}
-          </h2>
-          <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[10px] font-bold" style={{ backgroundColor: `${accent.hex}20`, color: accent.hex }}>
-             {categoryNotes.length}
+        <div className="flex items-center gap-2 truncate">
+          <span className="truncate tracking-tight font-bold text-muted-foreground">{category.name}</span>
+          <span className="flex h-3.5 min-w-[1rem] items-center justify-center rounded-full bg-muted/50 px-1 text-[9px] font-bold text-muted-foreground/40">
+            {categoryNotes.length}
           </span>
         </div>
-        <div className={`opacity-40 transition-all duration-300 group-hover:opacity-100 ${isOpen ? 'rotate-180' : ''}`} style={{ color: accent.hex }}>
+        <div className={`opacity-40 transition-all duration-300 group-hover:opacity-100 ${isOpen ? 'rotate-180' : ''}`}>
           <ChevronDown className="h-4 w-4" />
         </div>
       </button>

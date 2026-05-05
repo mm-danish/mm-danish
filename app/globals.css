@@ -125,3 +125,33 @@ html {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
+
+/* Modern Minimalist Scrollbar */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted) / 0.8) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted) / 0.8);
+    border-radius: 20px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+}
+
+.custom-scrollbar {
+  scrollbar-gutter: stable;
+}
