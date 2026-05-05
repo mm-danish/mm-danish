@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Loader2 } from 'lucide-react';
-import { CATEGORIES, CATEGORY_COLORS, LearningItem, type LearningCategory } from '@/data/learning';
+import { CATEGORIES, getCategoryColor, LearningItem, type LearningCategory } from '@/data/learning';
 
 interface AddNoteFormProps {
   noteToEdit?: LearningItem | null;
@@ -21,6 +21,8 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
     content: '',
     code: ''
   });
+  const [isCustomCategory, setIsCustomCategory] = React.useState(false);
+  const [customCategoryName, setCustomCategoryName] = React.useState('');
 
   // Sync with noteToEdit prop
   React.useEffect(() => {
@@ -32,6 +34,16 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
         content: noteToEdit.content,
         code: noteToEdit.code || ''
       });
+      
+      const isCustom = !CATEGORIES.some(cat => cat.name === noteToEdit.category);
+      if (isCustom) {
+        setIsCustomCategory(true);
+        setCustomCategoryName(noteToEdit.category);
+      } else {
+        setIsCustomCategory(false);
+        setCustomCategoryName('');
+      }
+      
       setIsOpen(true);
     }
   }, [noteToEdit]);
@@ -48,6 +60,8 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
     setIsOpen(open);
     if (!open) {
       setFormData({ id: undefined, category: 'Node.js', title: '', content: '', code: '' });
+      setIsCustomCategory(false);
+      setCustomCategoryName('');
       onClose?.();
     }
   };
@@ -58,11 +72,16 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
 
     const isEditing = !!formData.id;
 
+    const submissionData = {
+      ...formData,
+      category: isCustomCategory && customCategoryName.trim() ? customCategoryName.trim() : formData.category
+    };
+
     try {
       const res = await fetch('/api/notes', {
         method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submissionData)
       });
 
       if (res.ok) {
@@ -190,36 +209,56 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
                 </div>
 
                 <div className="space-y-3 pt-2">
-                  <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
-                    Select Category
-                  </label>
-                  <div
-                    role="radiogroup"
-                    aria-label="Category selection"
-                    className="flex flex-wrap gap-2"
-                  >
-                    {CATEGORIES.map((cat) => {
-                      const accent = CATEGORY_COLORS[cat.name];
-                      const isSelected = formData.category === cat.name;
-                      return (
-                        <button
-                          key={cat.name}
-                          type="button"
-                          role="radio"
-                          aria-checked={isSelected}
-                          onClick={() => setFormData({ ...formData, category: cat.name })}
-                          className="rounded-lg px-3 py-1.5 text-[11px] font-bold tracking-wide border transition-all duration-200 hover:brightness-110 active:scale-95"
-                          style={{
-                            borderColor: isSelected ? accent.hex : 'rgba(255,255,255,0.05)',
-                            backgroundColor: isSelected ? `${accent.hex}25` : 'rgba(255,255,255,0.03)',
-                            color: isSelected ? accent.hex : 'rgba(255,255,255,0.4)',
-                          }}
-                        >
-                          {cat.name}
-                        </button>
-                      );
-                    })}
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
+                      Select Category
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomCategory(!isCustomCategory)}
+                      className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {isCustomCategory ? 'Choose Existing' : '+ Custom'}
+                    </button>
                   </div>
+                  
+                  {isCustomCategory ? (
+                    <input
+                      type="text"
+                      placeholder="Enter custom category..."
+                      value={customCategoryName}
+                      onChange={(e) => setCustomCategoryName(e.target.value)}
+                      className="w-full bg-muted/40 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all placeholder:text-muted-foreground/40"
+                    />
+                  ) : (
+                    <div
+                      role="radiogroup"
+                      aria-label="Category selection"
+                      className="flex flex-wrap gap-2"
+                    >
+                      {CATEGORIES.map((cat) => {
+                        const accent = getCategoryColor(cat.name);
+                        const isSelected = formData.category === cat.name;
+                        return (
+                          <button
+                            key={cat.name}
+                            type="button"
+                            role="radio"
+                            aria-checked={isSelected}
+                            onClick={() => setFormData({ ...formData, category: cat.name })}
+                            className="rounded-lg px-3 py-1.5 text-[11px] font-bold tracking-wide border transition-all duration-200 hover:brightness-110 active:scale-95"
+                            style={{
+                              borderColor: isSelected ? accent.hex : 'rgba(255,255,255,0.05)',
+                              backgroundColor: isSelected ? `${accent.hex}25` : 'rgba(255,255,255,0.03)',
+                              color: isSelected ? accent.hex : 'rgba(255,255,255,0.4)',
+                            }}
+                          >
+                            {cat.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4 pb-2">

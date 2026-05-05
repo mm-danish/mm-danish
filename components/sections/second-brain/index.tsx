@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Brain, Search, X, Plus } from 'lucide-react';
-import { CATEGORIES, CATEGORY_COLORS, type LearningItem } from '@/data/learning';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Search, X, Plus, ChevronDown } from 'lucide-react';
+import { CATEGORIES, getCategoryColor, type LearningItem, type CategoryMeta } from '@/data/learning';
 import { ThreadFeed } from './thread-feed';
 import { AddNoteForm } from './add-note-form';
 import { SidebarNav } from './sidebar-nav';
@@ -10,9 +11,7 @@ import { SidebarNav } from './sidebar-nav';
 export function SecondBrain() {
   const [notes, setNotes] = React.useState<LearningItem[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [activeCategory, setActiveCategory] = React.useState<string | undefined>(
-    CATEGORIES[0]?.name
-  );
+  const [activeCategory, setActiveCategory] = React.useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [editingNote, setEditingNote] = React.useState<LearningItem | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
@@ -25,6 +24,12 @@ export function SecondBrain() {
         const res = await fetch('/api/notes');
         const data = await res.json();
         setNotes(data);
+        if (data.length > 0 && !activeCategory) {
+          const firstCat = data[0]?.category || CATEGORIES[0]?.name;
+          setActiveCategory(firstCat);
+        } else if (!activeCategory) {
+          setActiveCategory(CATEGORIES[0]?.name);
+        }
       } catch (err) {
         console.error('Failed to fetch notes:', err);
       } finally {
@@ -32,7 +37,21 @@ export function SecondBrain() {
       }
     };
     fetchNotes();
-  }, []);
+  }, [activeCategory]);
+
+  const allCategories: CategoryMeta[] = React.useMemo(() => {
+    const customCategories = new Set(notes.map(n => n.category));
+    const predefinedNames = new Set(CATEGORIES.map(c => c.name));
+    
+    const combined = [...CATEGORIES];
+    
+    for (const custom of customCategories) {
+      if (!predefinedNames.has(custom)) {
+        combined.push({ name: custom });
+      }
+    }
+    return combined;
+  }, [notes]);
 
   const handleNavigate = React.useCallback(
     (categoryName: string, noteId?: string) => {
@@ -55,7 +74,7 @@ export function SecondBrain() {
   // Track active category on scroll
   React.useEffect(() => {
     const handleScroll = () => {
-      const categories = CATEGORIES.map(c => c.name);
+      const categories = allCategories.map(c => c.name);
 
       for (const category of categories) {
         const element = document.getElementById(`category-${category}`);
@@ -71,13 +90,13 @@ export function SecondBrain() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [allCategories]);
 
   return (
     <div className="flex bg-background min-h-screen">
       {/* Sidebar Navigation */}
       <SidebarNav
-        categories={CATEGORIES}
+        categories={allCategories}
         notes={notes}
         activeCategory={activeCategory}
         onNavigate={handleNavigate}
@@ -160,51 +179,17 @@ export function SecondBrain() {
                   );
                 }
 
-                return CATEGORIES.map((category) => {
+                return allCategories.map((category) => {
                   const categoryNotes = filteredNotes.filter(n => n.category === category.name);
                   if (categoryNotes.length === 0) return null;
 
                   return (
-                    <div
+                    <CategorySection
                       key={category.name}
-                      id={`category-${category.name}`}
-                      className="flex scroll-mt-24 flex-col"
-                    >
-                      {/* Master Section Header */}
-                      {(() => {
-                        const accent = CATEGORY_COLORS[category.name];
-                        return (
-                          <div
-                            className="mb-6 flex items-center gap-3 pl-3"
-                            style={{ borderColor: accent.hex }}
-                          >
-                            <h2
-                              className="text-lg font-bold tracking-tight"
-                              style={{ color: accent.hex }}
-                            >
-                              {category.name}
-                            </h2>
-                          </div>
-                        );
-                      })()}
-
-                      {/* Feed for this category */}
-                      <div className="space-y-4 ml-1">
-                        {categoryNotes.map((note) => (
-                          <div
-                            key={note.id}
-                            id={`note-${note.id}`}
-                            className="scroll-mt-24"
-                          >
-                            <ThreadFeed
-                              notes={[note]}
-                              category={category}
-                              onEdit={(n) => setEditingNote(n)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                      category={category}
+                      categoryNotes={categoryNotes}
+                      setEditingNote={setEditingNote}
+                    />
                   );
                 });
               })()}
@@ -222,6 +207,63 @@ export function SecondBrain() {
           />
         </section>
       </main>
+    </div>
+  );
+}
+
+function CategorySection({ 
+  category, 
+  categoryNotes, 
+  setEditingNote 
+}: { 
+  category: CategoryMeta; 
+  categoryNotes: LearningItem[];
+  setEditingNote: (n: LearningItem) => void;
+}) {
+  const [isOpen, setIsOpen] = React.useState(true);
+  const accent = getCategoryColor(category.name);
+
+  return (
+    <div
+      id={`category-${category.name}`}
+      className="flex scroll-mt-24 flex-col"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="mb-6 flex items-center justify-between pl-3 pr-2 w-full group text-left transition-opacity hover:opacity-80"
+      >
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-bold tracking-tight transition-colors" style={{ color: accent.hex }}>
+            {category.name}
+          </h2>
+          <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[10px] font-bold" style={{ backgroundColor: `${accent.hex}20`, color: accent.hex }}>
+             {categoryNotes.length}
+          </span>
+        </div>
+        <div className={`opacity-40 transition-all duration-300 group-hover:opacity-100 ${isOpen ? 'rotate-180' : ''}`} style={{ color: accent.hex }}>
+          <ChevronDown className="h-4 w-4" />
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-4 ml-1 pb-6">
+              {categoryNotes.map((note) => (
+                <div key={note.id} id={`note-${note.id}`} className="scroll-mt-24">
+                  <ThreadFeed notes={[note]} category={category} onEdit={setEditingNote} />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

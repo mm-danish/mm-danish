@@ -1,15 +1,6 @@
 import notesData from './second-brain.json';
 
-export type LearningCategory =
-  | 'Node.js'
-  | 'React.js'
-  | 'Next.js'
-  | 'TypeScript'
-  | 'MongoDB'
-  | 'Prisma'
-  | 'Express.js'
-  | 'TailwindCSS'
-  | 'Engineering';
+export type LearningCategory = string;
 
 export interface LearningItem {
   id: string;
@@ -31,7 +22,7 @@ export interface CategoryMeta {
  * - `border`: Tailwind border utility class
  */
 export const CATEGORY_COLORS: Record<
-  LearningCategory,
+  string,
   { hex: string; text: string; bg: string; border: string }
 > = {
   'Node.js':     { hex: '#68a063', text: 'text-[#68a063]', bg: 'bg-[#68a063]/10', border: 'border-[#68a063]/30' },
@@ -56,5 +47,28 @@ export const CATEGORIES: CategoryMeta[] = [
   { name: 'TailwindCSS' },
   { name: 'Engineering' },
 ];
+
+const fallbackColors = [
+  { hex: '#ec4899', text: 'text-[#ec4899]', bg: 'bg-[#ec4899]/10', border: 'border-[#ec4899]/30' }, // Pink
+  { hex: '#a855f7', text: 'text-[#a855f7]', bg: 'bg-[#a855f7]/10', border: 'border-[#a855f7]/30' }, // Purple
+  { hex: '#14b8a6', text: 'text-[#14b8a6]', bg: 'bg-[#14b8a6]/10', border: 'border-[#14b8a6]/30' }, // Teal
+  { hex: '#f97316', text: 'text-[#f97316]', bg: 'bg-[#f97316]/10', border: 'border-[#f97316]/30' }, // Orange
+  { hex: '#ef4444', text: 'text-[#ef4444]', bg: 'bg-[#ef4444]/10', border: 'border-[#ef4444]/30' }, // Red
+];
+
+export function getCategoryColor(category: string) {
+  if (CATEGORY_COLORS[category]) {
+    return CATEGORY_COLORS[category];
+  }
+  
+  // Deterministic fallback color based on category string
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  const index = Math.abs(hash) % fallbackColors.length;
+  return fallbackColors[index];
+}
 
 export const NOTES = notesData as LearningItem[];
