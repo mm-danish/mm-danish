@@ -1,45 +1,183 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Search, X, Plus, ChevronDown, Menu } from 'lucide-react';
-import { CATEGORIES, getCategoryColor, type LearningItem, type CategoryMeta } from '@/data/learning';
-import { ThreadFeed } from './thread-feed';
-import { AddNoteForm } from './add-note-form';
-import { SidebarNav } from './sidebar-nav';
-import { AuthModal } from './auth-modal';
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Brain, Search, X, Plus, ChevronDown, Menu } from "lucide-react";
+import {
+  CATEGORIES,
+  getCategoryColor,
+  type LearningItem,
+  type CategoryMeta,
+} from "@/data/learning";
+import { ThreadFeed } from "./thread-feed";
+import { AddNoteForm } from "./add-note-form";
+import { SidebarNav } from "./sidebar-nav";
+import { AuthModal } from "./auth-modal";
 
 export function SecondBrain() {
   const [notes, setNotes] = React.useState<LearningItem[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [activeCategory, setActiveCategory] = React.useState<string | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [editingNote, setEditingNote] = React.useState<LearningItem | null>(null);
+  const [activeCategory, setActiveCategory] = React.useState<
+    string | undefined
+  >(undefined);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [editingNote, setEditingNote] = React.useState<LearningItem | null>(
+    null,
+  );
   const [isAdding, setIsAdding] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  
+
   // Auth state
   const [isAuthorized, setIsAuthorized] = React.useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
-  const [pendingAction, setPendingAction] = React.useState<'add' | 'edit' | 'delete' | null>(null);
-  const [pendingNote, setPendingNote] = React.useState<LearningItem | null>(null);
+  const [pendingAction, setPendingAction] = React.useState<
+    "add" | "edit" | "delete" | null
+  >(null);
+  const [pendingNote, setPendingNote] = React.useState<LearningItem | null>(
+    null,
+  );
+
+  // Gamification state
+  const [globalStats, setGlobalStats] = React.useState<{
+    reveals: Record<string, number>;
+    masters: Record<string, number>;
+  }>({ reveals: {}, masters: {} });
+  const [myMasteredNotes, setMyMasteredNotes] = React.useState<Set<string>>(
+    new Set(),
+  );
+  const [myRevealedNotes, setMyRevealedNotes] = React.useState<Set<string>>(
+    new Set(),
+  );
 
   const mainContentRef = React.useRef<HTMLDivElement>(null);
 
+  const readSetFromStorage = React.useCallback(
+    (key: string, fallbackKey?: string) => {
+      if (typeof window === "undefined") return new Set<string>();
+      const raw =
+        localStorage.getItem(key) ||
+        (fallbackKey ? localStorage.getItem(fallbackKey) : null);
+      if (!raw) return new Set<string>();
+
+      try {
+        return new Set<string>(JSON.parse(raw));
+      } catch {
+        return new Set<string>();
+      }
+    },
+    [],
+  );
+
+  const writeSetToStorage = React.useCallback(
+    (key: string, set: Set<string>) => {
+      if (typeof window === "undefined") return;
+      localStorage.setItem(key, JSON.stringify(Array.from(set)));
+    },
+    [],
+  );
+
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsAuthorized(!!localStorage.getItem('brain_key'));
-    }
+    if (typeof window === "undefined") return;
+    setIsAuthorized(!!localStorage.getItem("brain_key"));
+    setMyMasteredNotes(readSetFromStorage("myMasteredNotes", "mastered_notes"));
+    setMyRevealedNotes(readSetFromStorage("myRevealedNotes", "revealed_notes"));
+  }, [readSetFromStorage]);
+
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        setGlobalStats(data);
+      } catch (err) {
+        console.error("Failed to fetch stats:", err);
+      }
+    };
+
+    fetchStats();
   }, []);
+
+  const totalReveals = React.useMemo(
+    () =>
+      Object.values(globalStats.reveals).reduce(
+        (total, value) => total + value,
+        0,
+      ),
+    [globalStats.reveals],
+  );
+  const totalMasters = React.useMemo(
+    () =>
+      Object.values(globalStats.masters).reduce(
+        (total, value) => total + value,
+        0,
+      ),
+    [globalStats.masters],
+  );
+
+  const handleMarkMastered = React.useCallback(
+    (noteId: string) => {
+      setMyMasteredNotes((prev) => {
+        if (prev.has(noteId)) return prev;
+        const next = new Set(prev);
+        next.add(noteId);
+        writeSetToStorage("myMasteredNotes", next);
+        return next;
+      });
+
+      setMyRevealedNotes((prev) => {
+        if (prev.has(noteId)) return prev;
+        const next = new Set(prev);
+        next.add(noteId);
+        writeSetToStorage("myRevealedNotes", next);
+        return next;
+      });
+
+      setGlobalStats((prev) => ({
+        ...prev,
+        masters: { ...prev.masters, [noteId]: (prev.masters[noteId] || 0) + 1 },
+      }));
+
+      fetch("/api/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ noteId, action: "master" }),
+      }).catch(console.error);
+    },
+    [writeSetToStorage],
+  );
+
+  const handleReveal = React.useCallback(
+    (noteId: string) => {
+      setMyRevealedNotes((prev) => {
+        if (prev.has(noteId)) return prev;
+        const next = new Set(prev);
+        next.add(noteId);
+        writeSetToStorage("myRevealedNotes", next);
+        return next;
+      });
+
+      setGlobalStats((prev) => ({
+        ...prev,
+        reveals: { ...prev.reveals, [noteId]: (prev.reveals[noteId] || 0) + 1 },
+      }));
+
+      fetch("/api/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ noteId, action: "reveal" }),
+      }).catch(console.error);
+    },
+    [writeSetToStorage],
+  );
 
   const handleAuthSuccess = () => {
     setIsAuthorized(true);
     setIsAuthModalOpen(false);
-    if (pendingAction === 'add') {
+    if (pendingAction === "add") {
       setIsAdding(true);
-    } else if (pendingAction === 'edit' && pendingNote) {
+    } else if (pendingAction === "edit" && pendingNote) {
       setEditingNote(pendingNote);
-    } else if (pendingAction === 'delete' && pendingNote) {
+    } else if (pendingAction === "delete" && pendingNote) {
       handleDeleteNote(pendingNote, true);
     }
     setPendingAction(null);
@@ -51,32 +189,35 @@ export function SecondBrain() {
       setEditingNote(note);
     } else {
       setPendingNote(note);
-      setPendingAction('edit');
+      setPendingAction("edit");
       setIsAuthModalOpen(true);
     }
   };
 
-  const handleDeleteNote = async (note: LearningItem, forceAuthorized = false) => {
+  const handleDeleteNote = async (
+    note: LearningItem,
+    forceAuthorized = false,
+  ) => {
     if (!isAuthorized && !forceAuthorized) {
       setPendingNote(note);
-      setPendingAction('delete');
+      setPendingAction("delete");
       setIsAuthModalOpen(true);
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this note?')) return;
-    
+    if (!confirm("Are you sure you want to delete this note?")) return;
+
     try {
-      const passkey = localStorage.getItem('brain_key') || '';
-      const res = await fetch(`/api/notes?id=${note.id}`, { 
-        method: 'DELETE',
-        headers: { 'x-admin-passkey': passkey }
+      const passkey = localStorage.getItem("brain_key") || "";
+      const res = await fetch(`/api/notes?id=${note.id}`, {
+        method: "DELETE",
+        headers: { "x-admin-passkey": passkey },
       });
       if (res.ok) {
-        setNotes(prev => prev.filter(n => n.id !== note.id));
+        setNotes((prev) => prev.filter((n) => n.id !== note.id));
       } else {
         setIsAuthorized(false);
-        localStorage.removeItem('brain_key');
+        localStorage.removeItem("brain_key");
         alert("Unauthorized! Your passkey may have expired.");
       }
     } catch (err) {
@@ -88,30 +229,28 @@ export function SecondBrain() {
   React.useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const res = await fetch('/api/notes');
+        const res = await fetch("/api/notes");
         const data = await res.json();
         setNotes(data);
-        if (data.length > 0 && !activeCategory) {
-          const firstCat = data[0]?.category || CATEGORIES[0]?.name;
-          setActiveCategory(firstCat);
-        } else if (!activeCategory) {
-          setActiveCategory(CATEGORIES[0]?.name);
-        }
+        setActiveCategory(
+          (current) => current || data[0]?.category || CATEGORIES[0]?.name,
+        );
       } catch (err) {
-        console.error('Failed to fetch notes:', err);
+        console.error("Failed to fetch notes:", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchNotes();
-  }, [activeCategory]);
+  }, []);
 
   const allCategories: CategoryMeta[] = React.useMemo(() => {
-    const customCategories = new Set(notes.map(n => n.category));
-    const predefinedNames = new Set(CATEGORIES.map(c => c.name));
-    
+    const customCategories = new Set(notes.map((n) => n.category));
+    const predefinedNames = new Set(CATEGORIES.map((c) => c.name));
+
     const combined = [...CATEGORIES];
-    
+
     for (const custom of customCategories) {
       if (!predefinedNames.has(custom)) {
         combined.push({ name: custom });
@@ -119,6 +258,17 @@ export function SecondBrain() {
     }
     return combined;
   }, [notes]);
+
+  const filteredNotes = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return notes;
+
+    return notes.filter((note) =>
+      [note.title, note.content, note.category].some((text) =>
+        text.toLowerCase().includes(query),
+      ),
+    );
+  }, [notes, searchQuery]);
 
   const handleNavigate = React.useCallback(
     (categoryName: string, noteId?: string) => {
@@ -128,20 +278,25 @@ export function SecondBrain() {
       setTimeout(() => {
         if (noteId) {
           const noteElement = document.getElementById(`note-${noteId}`);
-          noteElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          noteElement?.scrollIntoView({ behavior: "smooth", block: "start" });
         } else {
-          const categoryElement = document.getElementById(`category-${categoryName}`);
-          categoryElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const categoryElement = document.getElementById(
+            `category-${categoryName}`,
+          );
+          categoryElement?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         }
       }, 0);
     },
-    []
+    [],
   );
 
   // Track active category on scroll
   React.useEffect(() => {
     const handleScroll = () => {
-      const categories = allCategories.map(c => c.name);
+      const categories = allCategories.map((c) => c.name);
 
       for (const category of categories) {
         const element = document.getElementById(`category-${category}`);
@@ -155,8 +310,8 @@ export function SecondBrain() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [allCategories]);
 
   return (
@@ -172,7 +327,10 @@ export function SecondBrain() {
       />
 
       {/* Main Content */}
-      <main ref={mainContentRef} className="flex-1 min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <main
+        ref={mainContentRef}
+        className="flex-1 min-w-0 h-full overflow-y-auto custom-scrollbar"
+      >
         <section className="min-h-full bg-background pt-12 pb-28 font-sans md:pt-16 md:pb-32">
           <div className="mx-auto w-full max-w-3xl px-5 sm:px-8">
             {/* Sticky Spatial Header */}
@@ -191,7 +349,26 @@ export function SecondBrain() {
                     <h1 className="text-base sm:text-lg font-bold tracking-tight font-heading leading-none mb-0.5 sm:mb-1">
                       Second Brain
                     </h1>
-                    <p className="text-muted-foreground text-[9px] sm:text-[10px] font-medium leading-none">Technical notes & recall.</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-muted-foreground text-[9px] sm:text-[10px] font-medium leading-none">
+                        Technical notes & recall.
+                      </p>
+                      {/* Gamification Stats */}
+                      <div className="hidden sm:flex items-center gap-2 border-l border-border/50 pl-2">
+                        <span
+                          className="flex items-center gap-1 text-[10px] font-bold text-green-500/80 bg-green-500/10 px-1.5 py-0.5 rounded-full"
+                          title="Mastered Notes"
+                        >
+                          🧠 {myMasteredNotes.size}/{notes.length}
+                        </span>
+                        <span
+                          className="flex items-center gap-1 text-[10px] font-bold text-blue-500/80 bg-blue-500/10 px-1.5 py-0.5 rounded-full"
+                          title="Global Reveals"
+                        >
+                          👁️ {totalReveals} total
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -200,9 +377,12 @@ export function SecondBrain() {
                   <button
                     onClick={() => {
                       if (isAuthorized) setIsAdding(true);
-                      else { setPendingAction('add'); setIsAuthModalOpen(true); }
+                      else {
+                        setPendingAction("add");
+                        setIsAuthModalOpen(true);
+                      }
                     }}
-                    className="group flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                    className="group flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-widest transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
                   >
                     <Plus className="h-3 w-3 transition-transform duration-300 group-hover:rotate-90" />
                     <span>New Note</span>
@@ -219,7 +399,7 @@ export function SecondBrain() {
               {/* Right: Search + Desktop Add Note */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {/* Search Bar */}
-                <div className="relative group flex-1 sm:w-[220px]">
+                <div className="relative group flex-1 sm:w-55">
                   <input
                     type="text"
                     placeholder="Search notes..."
@@ -233,7 +413,7 @@ export function SecondBrain() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => setSearchQuery('')}
+                      onClick={() => setSearchQuery("")}
                       className="absolute inset-y-0 right-3 flex items-center text-muted-foreground/40 hover:text-foreground transition-colors"
                     >
                       <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -245,9 +425,12 @@ export function SecondBrain() {
                 <button
                   onClick={() => {
                     if (isAuthorized) setIsAdding(true);
-                    else { setPendingAction('add'); setIsAuthModalOpen(true); }
+                    else {
+                      setPendingAction("add");
+                      setIsAuthModalOpen(true);
+                    }
                   }}
-                  className="hidden sm:flex shrink-0 group items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.1em] transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                  className="hidden sm:flex shrink-0 group items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
                 >
                   <Plus className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-90" />
                   <span className="hidden sm:inline">New Note</span>
@@ -259,32 +442,27 @@ export function SecondBrain() {
             <div className="space-y-14">
               {loading ? (
                 <div className="space-y-4 animate-pulse">
-                  {[1, 2, 3].map(i => (
+                  {[1, 2, 3].map((i) => (
                     <div key={i} className="h-20 bg-muted/30 rounded-xl" />
                   ))}
                 </div>
               ) : notes.length === 0 ? (
                 <div className="py-20 text-center">
-                  <p className="text-muted-foreground text-sm">No notes found. Create your first one!</p>
+                  <p className="text-muted-foreground text-sm">
+                    No notes found. Create your first one!
+                  </p>
                 </div>
-              ) : (() => {
-                const filteredNotes = notes.filter(n => {
-                  const query = searchQuery.toLowerCase();
-                  return n.title.toLowerCase().includes(query) ||
-                    n.content.toLowerCase().includes(query) ||
-                    n.category.toLowerCase().includes(query);
-                });
-
-                if (filteredNotes.length === 0 && searchQuery) {
-                  return (
-                    <div className="py-20 text-center">
-                      <p className="text-muted-foreground text-sm">No matches found for "{searchQuery}"</p>
-                    </div>
+              ) : filteredNotes.length === 0 && searchQuery ? (
+                <div className="py-20 text-center">
+                  <p className="text-muted-foreground text-sm">
+                    No matches found for "{searchQuery}"
+                  </p>
+                </div>
+              ) : (
+                allCategories.map((category) => {
+                  const categoryNotes = filteredNotes.filter(
+                    (n) => n.category === category.name,
                   );
-                }
-
-                return allCategories.map((category) => {
-                  const categoryNotes = filteredNotes.filter(n => n.category === category.name);
                   if (categoryNotes.length === 0) return null;
 
                   return (
@@ -294,10 +472,15 @@ export function SecondBrain() {
                       categoryNotes={categoryNotes}
                       onEdit={handleEditNote}
                       onDelete={handleDeleteNote}
+                      myMasteredNotes={myMasteredNotes}
+                      myRevealedNotes={myRevealedNotes}
+                      globalStats={globalStats}
+                      onMarkMastered={handleMarkMastered}
+                      onReveal={handleReveal}
                     />
                   );
-                });
-              })()}
+                })
+              )}
             </div>
           </div>
 
@@ -311,14 +494,14 @@ export function SecondBrain() {
             }}
           />
 
-          <AuthModal 
-            isOpen={isAuthModalOpen} 
+          <AuthModal
+            isOpen={isAuthModalOpen}
             onClose={() => {
               setIsAuthModalOpen(false);
               setPendingAction(null);
               setPendingNote(null);
-            }} 
-            onSuccess={handleAuthSuccess} 
+            }}
+            onSuccess={handleAuthSuccess}
           />
         </section>
       </main>
@@ -326,16 +509,29 @@ export function SecondBrain() {
   );
 }
 
-function CategorySection({ 
-  category, 
-  categoryNotes, 
+function CategorySection({
+  category,
+  categoryNotes,
   onEdit,
-  onDelete
-}: { 
-  category: CategoryMeta; 
+  onDelete,
+  myMasteredNotes,
+  myRevealedNotes,
+  globalStats,
+  onMarkMastered,
+  onReveal,
+}: {
+  category: CategoryMeta;
   categoryNotes: LearningItem[];
   onEdit: (n: LearningItem) => void;
   onDelete: (n: LearningItem) => void;
+  myMasteredNotes: Set<string>;
+  myRevealedNotes: Set<string>;
+  globalStats: {
+    reveals: Record<string, number>;
+    masters: Record<string, number>;
+  };
+  onMarkMastered: (id: string) => void;
+  onReveal: (id: string) => void;
 }) {
   const [isOpen, setIsOpen] = React.useState(true);
   const accent = getCategoryColor(category.name);
@@ -350,12 +546,16 @@ function CategorySection({
         className="mb-6 flex items-center justify-between pl-3 pr-2 w-full group text-left transition-opacity hover:opacity-80"
       >
         <div className="flex items-center gap-2 truncate">
-          <span className="truncate tracking-tight font-bold text-muted-foreground">{category.name}</span>
-          <span className="flex h-3.5 min-w-[1rem] items-center justify-center rounded-full bg-muted/50 px-1 text-[9px] font-bold text-muted-foreground/40">
+          <span className="truncate tracking-tight font-bold text-muted-foreground">
+            {category.name}
+          </span>
+          <span className="flex h-3.5 min-w-4 items-center justify-center rounded-full bg-muted/50 px-1 text-[9px] font-bold text-muted-foreground/40">
             {categoryNotes.length}
           </span>
         </div>
-        <div className={`opacity-40 transition-all duration-300 group-hover:opacity-100 ${isOpen ? 'rotate-180' : ''}`}>
+        <div
+          className={`opacity-40 transition-all duration-300 group-hover:opacity-100 ${isOpen ? "rotate-180" : ""}`}
+        >
           <ChevronDown className="h-4 w-4" />
         </div>
       </button>
@@ -371,8 +571,22 @@ function CategorySection({
           >
             <div className="space-y-4 ml-1 pb-6">
               {categoryNotes.map((note) => (
-                <div key={note.id} id={`note-${note.id}`} className="scroll-mt-24">
-                  <ThreadFeed notes={[note]} category={category} onEdit={onEdit} onDelete={onDelete} />
+                <div
+                  key={note.id}
+                  id={`note-${note.id}`}
+                  className="scroll-mt-24"
+                >
+                  <ThreadFeed
+                    notes={[note]}
+                    category={category}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    myMasteredNotes={myMasteredNotes}
+                    myRevealedNotes={myRevealedNotes}
+                    globalStats={globalStats}
+                    onMarkMastered={onMarkMastered}
+                    onReveal={onReveal}
+                  />
                 </div>
               ))}
             </div>
