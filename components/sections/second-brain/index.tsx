@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Search, X, Plus, ChevronDown } from 'lucide-react';
+import { Brain, Search, X, Plus, ChevronDown, Menu } from 'lucide-react';
 import { CATEGORIES, getCategoryColor, type LearningItem, type CategoryMeta } from '@/data/learning';
 import { ThreadFeed } from './thread-feed';
 import { AddNoteForm } from './add-note-form';
@@ -15,6 +15,7 @@ export function SecondBrain() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [editingNote, setEditingNote] = React.useState<LearningItem | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const mainContentRef = React.useRef<HTMLDivElement>(null);
 
   // Fetch notes from API
@@ -100,61 +101,85 @@ export function SecondBrain() {
         notes={notes}
         activeCategory={activeCategory}
         onNavigate={handleNavigate}
+        isOpenMobile={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content */}
       <main ref={mainContentRef} className="flex-1 min-w-0 h-full overflow-y-auto custom-scrollbar">
         <section className="min-h-full bg-background pt-12 pb-28 font-sans md:pt-16 md:pb-32">
           <div className="mx-auto w-full max-w-3xl px-5 sm:px-8">
-            {/* Header with Brain Icon */}
-            <div className="mb-10 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 rounded-lg bg-muted/50 border border-border/50">
-                  <Brain className="h-6 w-6 text-foreground/70" />
+            {/* Sticky Spatial Header */}
+            <div className="sticky top-3 sm:top-6 z-40 mb-6 sm:mb-10 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-[1.25rem] bg-background/60 backdrop-blur-xl border border-border/50 px-3 py-2.5 sm:p-3 shadow-xl shadow-foreground/5 transition-all">
+              {/* Left: Brain Icon + Title + Mobile Add Note */}
+              <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                <div className="flex items-center gap-2.5 sm:gap-3 pl-1 sm:pl-2">
+                  <div className="relative shrink-0">
+                    {/* Spatial glow */}
+                    <div className="absolute inset-0 rounded-lg bg-primary/20 blur-md" />
+                    <div className="relative p-1.5 sm:p-2 rounded-lg bg-card/80 border border-border/50 shadow-sm backdrop-blur-md">
+                      <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-foreground/80" />
+                    </div>
+                  </div>
+                  <div>
+                    <h1 className="text-base sm:text-lg font-bold tracking-tight font-heading leading-none mb-0.5 sm:mb-1">
+                      Second Brain
+                    </h1>
+                    <p className="text-muted-foreground text-[9px] sm:text-[10px] font-medium leading-none">Technical notes & recall.</p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight font-heading">
-                    Second Brain
-                  </h1>
-                  <p className="text-muted-foreground text-xs font-medium">Technical notes and learning recall.</p>
+
+                {/* Mobile Actions: Add Note + Hamburger */}
+                <div className="flex items-center gap-1.5 sm:hidden shrink-0">
+                  <button
+                    onClick={() => setIsAdding(true)}
+                    className="group flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                  >
+                    <Plus className="h-3 w-3 transition-transform duration-300 group-hover:rotate-90" />
+                    <span>New Note</span>
+                  </button>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(true)}
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-muted/40 border border-border/50 text-foreground/70 hover:bg-muted transition-colors"
+                  >
+                    <Menu className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
 
-              <button
-                onClick={() => setIsAdding(true)}
-                className="group flex items-center gap-2 rounded-full bg-muted/40 hover:bg-foreground hover:text-background border border-border/50 p-2 md:px-4 md:py-2 text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-500 hover:shadow-xl hover:shadow-foreground/10"
-              >
-                <Plus className="h-4 w-4 md:h-3.5 md:w-3.5 transition-transform duration-500 group-hover:rotate-90" />
-                <span className="hidden md:inline">New Note</span>
-              </button>
-            </div>
+              {/* Right: Search + Desktop Add Note */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                {/* Search Bar */}
+                <div className="relative group flex-1 sm:w-[220px]">
+                  <input
+                    type="text"
+                    placeholder="Search notes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-background/50 backdrop-blur-md border border-border/50 rounded-full pl-3.5 pr-8 py-1.5 sm:py-2 text-[11px] sm:text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all placeholder:text-muted-foreground/40 shadow-inner"
+                  />
+                  {!searchQuery ? (
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-muted-foreground/40">
+                      <Search className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute inset-y-0 right-3 flex items-center text-muted-foreground/40 hover:text-foreground transition-colors"
+                    >
+                      <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    </button>
+                  )}
+                </div>
 
-            {/* Floating Search Bar */}
-            <div className="sticky top-6 z-40 mb-10 flex justify-end pointer-events-none">
-              <div className="relative group w-full max-w-[200px] pointer-events-auto">
-                <input
-                  type="text"
-                  placeholder="Search notes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-background/80 backdrop-blur-md border border-border/50 rounded-full pl-4 pr-9 py-2 text-xs focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all placeholder:text-muted-foreground/30 shadow-sm"
-                />
-                
-                {/* Search Icon on Right */}
-                {!searchQuery && (
-                  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none group-focus-within:hidden text-muted-foreground/30">
-                    <Search className="h-3.5 w-3.5" />
-                  </div>
-                )}
-
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground/30 hover:text-foreground transition-colors"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
+                {/* Add Note Button (Desktop) */}
+                <button
+                  onClick={() => setIsAdding(true)}
+                  className="hidden sm:flex shrink-0 group items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.1em] transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                >
+                  <Plus className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-90" />
+                  <span className="hidden sm:inline">New Note</span>
+                </button>
               </div>
             </div>
 

@@ -5,19 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { LearningItem, CategoryMeta } from '@/data/learning';
+import { getCategoryColor } from '@/data/learning';
 
 interface SidebarNavProps {
   categories: CategoryMeta[];
   notes: LearningItem[];
   activeCategory?: string;
   onNavigate: (categoryName: string, noteId?: string) => void;
+  isOpenMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export function SidebarNav({
   categories,
   notes,
   activeCategory,
-  onNavigate
+  onNavigate,
+  isOpenMobile,
+  onCloseMobile
 }: SidebarNavProps) {
   const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(
     new Set(categories.map(c => c.name))
@@ -35,10 +40,29 @@ export function SidebarNav({
   };
 
   return (
-    <aside className={cn(
-      "sticky top-0 hidden h-screen flex-col border-r border-border/40 bg-muted/5 backdrop-blur-sm md:flex transition-all duration-300 relative group/sidebar",
-      isCollapsed ? "w-4" : "w-64"
-    )}>
+    <>
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isOpenMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onCloseMobile}
+            className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <aside className={cn(
+        "h-screen flex-col border-r border-border/40 bg-background/95 md:bg-muted/5 backdrop-blur-sm transition-all duration-300",
+        // Desktop styles
+        "md:sticky md:top-0 md:flex md:relative md:group/sidebar",
+        isCollapsed ? "md:w-4" : "md:w-64",
+        // Mobile styles (fixed drawer)
+        "fixed inset-y-0 left-0 z-50 w-64 shadow-2xl md:shadow-none transform",
+        isOpenMobile ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}>
       <AnimatePresence mode="wait">
         {!isCollapsed && (
           <motion.div
@@ -57,6 +81,7 @@ export function SidebarNav({
 
                 const isExpanded = expandedCategories.has(category.name);
                 const isActive = activeCategory === category.name;
+                const accent = getCategoryColor(category.name);
 
                 return (
                   <div key={category.name} className="space-y-1.5">
@@ -65,6 +90,7 @@ export function SidebarNav({
                       onClick={() => {
                         toggleCategory(category.name);
                         onNavigate(category.name);
+                        onCloseMobile?.();
                       }}
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg px-4 py-2 text-sm transition-all duration-200",
@@ -74,6 +100,16 @@ export function SidebarNav({
                       )}
                     >
                       <div className="flex items-center gap-2 truncate">
+                        {/* Spatial: glowing category-color dot on active */}
+                        {isActive && (
+                          <span
+                            className="shrink-0 h-1.5 w-1.5 rounded-full"
+                            style={{
+                              backgroundColor: accent.hex,
+                              boxShadow: `0 0 6px 2px ${accent.hex}70`,
+                            }}
+                          />
+                        )}
                         <span className="truncate tracking-tight">{category.name}</span>
                         <span className="flex h-3.5 min-w-[1rem] items-center justify-center rounded-full bg-muted/50 px-1 text-[9px] font-bold text-muted-foreground/40">
                           {categoryNotes.length}
@@ -109,7 +145,10 @@ export function SidebarNav({
                         {categoryNotes.map((note) => (
                           <button
                             key={note.id}
-                            onClick={() => onNavigate(category.name, note.id)}
+                            onClick={() => {
+                              onNavigate(category.name, note.id);
+                              onCloseMobile?.();
+                            }}
                             className="flex w-full rounded-md px-3 py-1.5 text-left text-xs transition-all duration-150"
                           >
                             <span className="line-clamp-1 text-foreground/40 hover:text-foreground/80 font-medium">
@@ -139,5 +178,6 @@ export function SidebarNav({
         {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
       </button>
     </aside>
+    </>
   );
 }

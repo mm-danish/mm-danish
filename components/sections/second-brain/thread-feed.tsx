@@ -8,6 +8,33 @@ import type { LearningItem, CategoryMeta } from '@/data/learning';
 import { getCategoryColor } from '@/data/learning';
 import { MiniHighlighter } from './mini-highlighter';
 
+/* ── Spatial 3D tilt on hover ─────────────────────────────────── */
+function useTilt() {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [tiltStyle, setTiltStyle] = React.useState<React.CSSProperties>({});
+
+  const onMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTiltStyle({
+      transform: `perspective(800px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 4).toFixed(2)}deg) translateZ(4px)`,
+      transition: 'transform 0.1s ease-out',
+    });
+  }, []);
+
+  const onMouseLeave = React.useCallback(() => {
+    setTiltStyle({
+      transform: 'perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)',
+      transition: 'transform 0.45s ease-out',
+    });
+  }, []);
+
+  return { ref, tiltStyle, onMouseMove, onMouseLeave };
+}
+
 interface ThreadFeedProps {
   notes: LearningItem[];
   category: CategoryMeta;
@@ -76,8 +103,18 @@ function ThreadItem({ note, category, onEdit }: {
 
   const accent = getCategoryColor(note.category);
 
+  const { ref, tiltStyle, onMouseMove, onMouseLeave } = useTilt();
+
   return (
-    <div className="group/item flex gap-4 md:gap-5">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+      ref={ref}
+      style={{ ...tiltStyle, willChange: 'transform' }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      className="group/item flex gap-4 md:gap-5">
       {/* Simple Thread Line */}
       <div className="flex w-6 shrink-0 flex-col items-center pt-2">
         <div
@@ -173,6 +210,6 @@ function ThreadItem({ note, category, onEdit }: {
 
 
       </div>
-    </div>
+    </motion.div>
   );
 }
