@@ -78,11 +78,21 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
     };
 
     try {
+      const passkey = localStorage.getItem('brain_key') || '';
       const res = await fetch('/api/notes', {
         method: isEditing ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-passkey': passkey
+        },
         body: JSON.stringify(submissionData)
       });
+
+      if (res.status === 401) {
+        alert("Unauthorized! Your passkey might have expired.");
+        localStorage.removeItem('brain_key');
+        return;
+      }
 
       if (res.ok) {
         handleOpenChange(false);

@@ -39,9 +39,10 @@ interface ThreadFeedProps {
   notes: LearningItem[];
   category: CategoryMeta;
   onEdit: (note: LearningItem) => void;
+  onDelete: (note: LearningItem) => void;
 }
 
-export function ThreadFeed({ notes, category, onEdit }: ThreadFeedProps) {
+export function ThreadFeed({ notes, category, onEdit, onDelete }: ThreadFeedProps) {
   if (notes.length === 0) {
     return <p className="text-muted-foreground text-sm py-10">No notes here yet.</p>;
   }
@@ -54,16 +55,18 @@ export function ThreadFeed({ notes, category, onEdit }: ThreadFeedProps) {
           note={note}
           category={category}
           onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
     </div>
   );
 }
 
-function ThreadItem({ note, category, onEdit }: {
+function ThreadItem({ note, category, onEdit, onDelete }: {
   note: LearningItem;
   category: CategoryMeta;
   onEdit: (note: LearningItem) => void;
+  onDelete: (note: LearningItem) => void;
 }) {
   const [showMenu, setShowMenu] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
@@ -75,21 +78,10 @@ function ThreadItem({ note, category, onEdit }: {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this note?')) return;
-
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/notes?id=${note.id}`, { method: 'DELETE' });
-      if (res.ok) {
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsDeleting(false);
-    }
+    onDelete(note);
+    setShowMenu(false);
   };
 
   if (isDeleting) {

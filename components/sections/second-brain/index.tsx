@@ -7,6 +7,7 @@ import { CATEGORIES, getCategoryColor, type LearningItem, type CategoryMeta } fr
 import { ThreadFeed } from './thread-feed';
 import { AddNoteForm } from './add-note-form';
 import { SidebarNav } from './sidebar-nav';
+import { AuthModal } from './auth-modal';
 
 export function SecondBrain() {
   const [notes, setNotes] = React.useState<LearningItem[]>([]);
@@ -16,7 +17,72 @@ export function SecondBrain() {
   const [editingNote, setEditingNote] = React.useState<LearningItem | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  
+  // Auth state
+  const [isAuthorized, setIsAuthorized] = React.useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+  const [pendingAction, setPendingAction] = React.useState<'add' | 'edit' | 'delete' | null>(null);
+  const [pendingNote, setPendingNote] = React.useState<LearningItem | null>(null);
+
   const mainContentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsAuthorized(!!localStorage.getItem('brain_key'));
+    }
+  }, []);
+
+  const handleAuthSuccess = () => {
+    setIsAuthorized(true);
+    setIsAuthModalOpen(false);
+    if (pendingAction === 'add') {
+      setIsAdding(true);
+    } else if (pendingAction === 'edit' && pendingNote) {
+      setEditingNote(pendingNote);
+    } else if (pendingAction === 'delete' && pendingNote) {
+      handleDeleteNote(pendingNote, true);
+    }
+    setPendingAction(null);
+    setPendingNote(null);
+  };
+
+  const handleEditNote = (note: LearningItem) => {
+    if (isAuthorized) {
+      setEditingNote(note);
+    } else {
+      setPendingNote(note);
+      setPendingAction('edit');
+      setIsAuthModalOpen(true);
+    }
+  };
+
+  const handleDeleteNote = async (note: LearningItem, forceAuthorized = false) => {
+    if (!isAuthorized && !forceAuthorized) {
+      setPendingNote(note);
+      setPendingAction('delete');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this note?')) return;
+    
+    try {
+      const passkey = localStorage.getItem('brain_key') || '';
+      const res = await fetch(`/api/notes?id=${note.id}`, { 
+        method: 'DELETE',
+        headers: { 'x-admin-passkey': passkey }
+      });
+      if (res.ok) {
+        setNotes(prev => prev.filter(n => n.id !== note.id));
+      } else {
+        setIsAuthorized(false);
+        localStorage.removeItem('brain_key');
+        alert("Unauthorized! Your passkey may have expired.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Fetch notes from API
   React.useEffect(() => {
@@ -132,7 +198,10 @@ export function SecondBrain() {
                 {/* Mobile Actions: Add Note + Hamburger */}
                 <div className="flex items-center gap-1.5 sm:hidden shrink-0">
                   <button
-                    onClick={() => setIsAdding(true)}
+                    onClick={() => {
+                      if (isAuthorized) setIsAdding(true);
+                      else { setPendingAction('add'); setIsAuthModalOpen(true); }
+                    }}
                     className="group flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
                   >
                     <Plus className="h-3 w-3 transition-transform duration-300 group-hover:rotate-90" />
@@ -174,7 +243,10 @@ export function SecondBrain() {
 
                 {/* Add Note Button (Desktop) */}
                 <button
-                  onClick={() => setIsAdding(true)}
+                  onClick={() => {
+                    if (isAuthorized) setIsAdding(true);
+                    else { setPendingAction('add'); setIsAuthModalOpen(true); }
+                  }}
                   className="hidden sm:flex shrink-0 group items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground border border-primary/20 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.1em] transition-all duration-300 hover:shadow-[0_0_15px_rgba(var(--primary),0.3)]"
                 >
                   <Plus className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-90" />
@@ -220,7 +292,8 @@ export function SecondBrain() {
                       key={category.name}
                       category={category}
                       categoryNotes={categoryNotes}
-                      setEditingNote={setEditingNote}
+                      onEdit={handleEditNote}
+                      onDelete={handleDeleteNote}
                     />
                   );
                 });
@@ -237,6 +310,16 @@ export function SecondBrain() {
               setIsAdding(false);
             }}
           />
+
+          <AuthModal 
+            isOpen={isAuthModalOpen} 
+            onClose={() => {
+              setIsAuthModalOpen(false);
+              setPendingAction(null);
+              setPendingNote(null);
+            }} 
+            onSuccess={handleAuthSuccess} 
+          />
         </section>
       </main>
     </div>
@@ -246,11 +329,13 @@ export function SecondBrain() {
 function CategorySection({ 
   category, 
   categoryNotes, 
-  setEditingNote 
+  onEdit,
+  onDelete
 }: { 
   category: CategoryMeta; 
   categoryNotes: LearningItem[];
-  setEditingNote: (n: LearningItem) => void;
+  onEdit: (n: LearningItem) => void;
+  onDelete: (n: LearningItem) => void;
 }) {
   const [isOpen, setIsOpen] = React.useState(true);
   const accent = getCategoryColor(category.name);
@@ -287,7 +372,7 @@ function CategorySection({
             <div className="space-y-4 ml-1 pb-6">
               {categoryNotes.map((note) => (
                 <div key={note.id} id={`note-${note.id}`} className="scroll-mt-24">
-                  <ThreadFeed notes={[note]} category={category} onEdit={setEditingNote} />
+                  <ThreadFeed notes={[note]} category={category} onEdit={onEdit} onDelete={onDelete} />
                 </div>
               ))}
             </div>
