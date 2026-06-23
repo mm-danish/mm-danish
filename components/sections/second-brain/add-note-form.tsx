@@ -122,51 +122,57 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
       <AnimatePresence>
         {isOpen && (
           <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
             role="none"
           >
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => handleOpenChange(false)}
-              className="absolute inset-0 bg-background/60 backdrop-blur-md"
+              className="absolute inset-0 bg-background/70 backdrop-blur-md"
               aria-hidden="true"
             />
 
+            {/* Modal */}
             <motion.div
               id="add-note-dialog"
               role="dialog"
               aria-modal="true"
               aria-labelledby="dialog-title"
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="relative w-full max-w-md bg-card border border-border/50 rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden max-h-[85vh] flex flex-col glass-morphism"
+              exit={{ opacity: 0, scale: 0.96, y: 20 }}
+              transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="relative w-full max-w-md rounded-3xl border border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-5 border-b border-border/50 flex items-center justify-between bg-muted/30">
-                <div className="flex flex-col">
-                  <h2 id="dialog-title" className="text-base font-bold tracking-tight">
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border/40 bg-muted/20">
+                <div>
+                  <h2 id="dialog-title" className="text-sm font-bold tracking-tight text-foreground">
                     {formData.id ? 'Edit Note' : 'New Note'}
                   </h2>
-                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                  <p className="text-[10px] text-muted-foreground/60 font-medium mt-0.5 uppercase tracking-wider">
                     {formData.id ? 'Update technical insight' : 'Technical recall entry'}
                   </p>
                 </div>
                 <button
                   aria-label="Close dialog"
                   onClick={() => handleOpenChange(false)}
-                  className="p-2 hover:bg-muted/80 rounded-full transition-colors group"
+                  className="p-1.5 rounded-xl text-muted-foreground/50 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
                 >
-                  <X className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
-                <div className="space-y-2">
-                  <label htmlFor="note-title" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1 custom-scrollbar">
+
+                {/* Title */}
+                <div className="space-y-1.5">
+                  <label htmlFor="note-title" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-0.5">
                     Question / Title
                   </label>
                   <input
@@ -176,12 +182,13 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
                     placeholder="What did you learn today?"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full bg-muted/40 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all placeholder:text-muted-foreground/40"
+                    className="w-full bg-muted/30 border border-border/50 rounded-2xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/15 focus:border-foreground/25 transition-all duration-200"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="note-content" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
+                {/* Content */}
+                <div className="space-y-1.5">
+                  <label htmlFor="note-content" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-0.5">
                     Context / Answer
                   </label>
                   <textarea
@@ -191,61 +198,58 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
                     placeholder="Summarize the key concept in your own words..."
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    className="w-full bg-muted/40 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all resize-none placeholder:text-muted-foreground/40"
+                    className="w-full bg-muted/30 border border-border/50 rounded-2xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/15 focus:border-foreground/25 transition-all duration-200 resize-none"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="note-code" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
-                    Snippet (Optional)
+                {/* Code snippet */}
+                <div className="space-y-1.5">
+                  <label htmlFor="note-code" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-0.5">
+                    Code Snippet <span className="normal-case tracking-normal font-normal opacity-60">(optional)</span>
                   </label>
-                  <div className="relative group">
+                  <div className="overflow-hidden rounded-2xl border border-border/40 shadow-sm">
+                    {/* Mini terminal bar */}
+                    <div className="flex items-center gap-1.5 px-3 py-2 bg-zinc-900 border-b border-white/5">
+                      <span className="h-2 w-2 rounded-full bg-[#ff5f57]" />
+                      <span className="h-2 w-2 rounded-full bg-[#febc2e]" />
+                      <span className="h-2 w-2 rounded-full bg-[#28c840]" />
+                    </div>
                     <textarea
                       id="note-code"
-                      rows={3}
-                      placeholder="Paste implementation details..."
+                      rows={4}
+                      placeholder="// Paste your code here..."
                       value={formData.code}
                       onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                      className="w-full bg-[#0d1117] border border-white/5 rounded-xl px-4 py-3 text-[12px] font-mono focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all resize-none placeholder:text-white/10 text-neutral-300"
+                      className="w-full bg-zinc-950 px-4 py-3 text-[12px] font-mono text-neutral-300 placeholder:text-white/20 focus:outline-none resize-none block"
                     />
-                    <div className="absolute right-3 top-3 opacity-20 pointer-events-none">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 rounded-full bg-red-500/50" />
-                        <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-                        <div className="w-2 h-2 rounded-full bg-green-500/50" />
-                      </div>
-                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-2">
+                {/* Category */}
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
-                      Select Category
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-0.5">
+                      Category
                     </label>
                     <button
                       type="button"
                       onClick={() => setIsCustomCategory(!isCustomCategory)}
-                      className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 hover:text-foreground transition-colors"
                     >
-                      {isCustomCategory ? 'Choose Existing' : '+ Custom'}
+                      {isCustomCategory ? '← Existing' : '+ Custom'}
                     </button>
                   </div>
-                  
+
                   {isCustomCategory ? (
                     <input
                       type="text"
-                      placeholder="Enter custom category..."
+                      placeholder="Enter category name..."
                       value={customCategoryName}
                       onChange={(e) => setCustomCategoryName(e.target.value)}
-                      className="w-full bg-muted/40 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all placeholder:text-muted-foreground/40"
+                      className="w-full bg-muted/30 border border-border/50 rounded-2xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/15 focus:border-foreground/25 transition-all duration-200"
                     />
                   ) : (
-                    <div
-                      role="radiogroup"
-                      aria-label="Category selection"
-                      className="flex flex-wrap gap-2"
-                    >
+                    <div role="radiogroup" aria-label="Category selection" className="flex flex-wrap gap-1.5">
                       {CATEGORIES.map((cat) => {
                         const accent = getCategoryColor(cat.name);
                         const isSelected = formData.category === cat.name;
@@ -256,11 +260,15 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
                             role="radio"
                             aria-checked={isSelected}
                             onClick={() => setFormData({ ...formData, category: cat.name })}
-                            className="rounded-lg px-3 py-1.5 text-[11px] font-bold tracking-wide border transition-all duration-200 hover:brightness-110 active:scale-95"
+                            className={`rounded-full px-3 py-1 text-[11px] font-semibold border transition-all duration-200 active:scale-95 ${
+                              isSelected
+                                ? ''
+                                : 'border-border/40 bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                            }`}
                             style={{
-                              borderColor: isSelected ? accent.hex : 'rgba(255,255,255,0.05)',
-                              backgroundColor: isSelected ? `${accent.hex}25` : 'rgba(255,255,255,0.03)',
-                              color: isSelected ? accent.hex : 'rgba(255,255,255,0.4)',
+                              borderColor: isSelected ? accent.hex : undefined,
+                              backgroundColor: isSelected ? `${accent.hex}18` : undefined,
+                              color: isSelected ? accent.hex : undefined,
                             }}
                           >
                             {cat.name}
@@ -271,22 +279,27 @@ export function AddNoteForm({ noteToEdit, forceOpen, onClose }: AddNoteFormProps
                   )}
                 </div>
 
-                <div className="pt-4 pb-2">
+                {/* Submit */}
+                <div className="pt-2 pb-1">
                   <button
+                    type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-foreground text-background font-bold h-12 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-foreground text-background font-bold h-11 rounded-2xl hover:opacity-90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Saving Recall...</span>
+                        <span>Saving...</span>
                       </>
                     ) : (
-                      'Save to Brain'
+                      formData.id ? 'Save Changes' : 'Save to Brain'
                     )}
                   </button>
-                  <p className="text-[9px] text-center mt-3 text-muted-foreground/40 font-medium uppercase tracking-[0.2em]">Press Esc to cancel</p>
+                  <p className="text-[9px] text-center mt-3 text-muted-foreground/30 uppercase tracking-[0.2em]">
+                    Press Esc to cancel
+                  </p>
                 </div>
+
               </form>
             </motion.div>
           </div>

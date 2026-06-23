@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Edit2, MoreVertical } from "lucide-react";
+import { motion } from "framer-motion";
+import { Trash2, Edit2, Eye, EyeOff, Trophy } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { LearningItem, CategoryMeta } from "@/data/learning";
 import { getCategoryColor } from "@/data/learning";
@@ -110,7 +110,6 @@ function ThreadItem({
   onReveal: (id: string) => void;
   onMarkMastered: (id: string) => void;
 }) {
-  const [showMenu, setShowMenu] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
 
   const copyCode = (code: string) => {
@@ -122,7 +121,6 @@ function ThreadItem({
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     onDelete(note);
-    setShowMenu(false);
   };
 
   const accent = getCategoryColor(note.category);
@@ -170,71 +168,71 @@ function ThreadItem({
             })}
           </span>
 
-          <div className="relative">
+          <div className="flex items-center gap-0.5">
+            {/* Reveal icon + count */}
             <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1 hover:bg-muted rounded-md transition-colors text-muted-foreground/30 hover:text-foreground"
+              onClick={() => !isRevealed && onReveal(note.id)}
+              title={isRevealed ? "Answer revealed" : "Reveal answer"}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-lg px-1.5 py-1 transition-all duration-200",
+                isRevealed
+                  ? "text-sky-400 bg-sky-500/10 cursor-default"
+                  : "text-muted-foreground/40 hover:text-sky-400 hover:bg-sky-500/10",
+              )}
             >
-              <MoreVertical className="h-4 w-4" />
+              {isRevealed ? (
+                <Eye className="h-3.5 w-3.5" />
+              ) : (
+                <EyeOff className="h-3.5 w-3.5" />
+              )}
+              {revealCount > 0 && (
+                <span className="text-[10px] font-semibold leading-none">{revealCount}</span>
+              )}
+            </button>
+            {/* Master icon + count */}
+            <button
+              onClick={() => !isMastered && onMarkMastered(note.id)}
+              title={isMastered ? "Marked as mastered" : "Mark as mastered"}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-lg px-1.5 py-1 transition-all duration-200",
+                isMastered
+                  ? "text-emerald-400 bg-emerald-500/10 cursor-default"
+                  : "text-muted-foreground/40 hover:text-emerald-400 hover:bg-emerald-500/10",
+              )}
+            >
+              <Trophy className="h-3.5 w-3.5" />
+              {masterCount > 0 && (
+                <span className="text-[10px] font-semibold leading-none">{masterCount}</span>
+              )}
             </button>
 
-            <AnimatePresence>
-              {showMenu && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setShowMenu(false)}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    className="absolute right-0 top-full mt-2 z-50 min-w-25 rounded-2xl border border-border/40 bg-background/95 p-2 shadow-xl shadow-black/10 backdrop-blur-xl"
-                  >
-                    <button
-                      onClick={() => {
-                        onEdit(note);
-                        setShowMenu(false);
-                      }}
-                      className="flex w-full items-center gap-2 rounded-1xl px-3 py-2 text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-muted/20 hover:text-foreground"
-                    >
-                      <Edit2 className="h-3.5 w-3.5" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        handleDelete(e);
-                        setShowMenu(false);
-                      }}
-                      className="flex w-full items-center gap-2 rounded-1xl px-3 py-2 text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-muted/20 hover:text-foreground border-t border-border/20"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span>Delete</span>
-                    </button>
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
+            {/* Divider */}
+            <span className="mx-1 h-3.5 w-px bg-border/40" />
+
+            {/* Edit */}
+            <button
+              onClick={() => onEdit(note)}
+              title="Edit"
+              className="p-1.5 rounded-lg text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
+            >
+              <Edit2 className="h-3.5 w-3.5" />
+            </button>
+            {/* Delete */}
+            <button
+              onClick={handleDelete}
+              title="Delete"
+              className="p-1.5 rounded-lg text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
 
         <div className="space-y-3 mt-2">
-          <div className="flex flex-wrap items-center gap-2">
+          <div>
             <h3 className="font-bold text-[15px] leading-snug text-foreground/90">
               {note.title}
             </h3>
-            <span
-              className={cn(
-                "inline-flex rounded-full px-2 py-1 text-[11px] font-semibold",
-                isMastered
-                  ? "bg-emerald-500/10 text-emerald-300"
-                  : isRevealed
-                    ? "bg-sky-500/10 text-sky-300"
-                    : "bg-muted/10 text-muted-foreground",
-              )}
-            >
-              {isMastered ? "Mastered" : isRevealed ? "Revealed" : "Locked"}
-            </span>
           </div>
 
           <div
@@ -249,61 +247,58 @@ function ThreadItem({
 
             {note.code && (
               <div
-                className="mt-3 overflow-hidden rounded-xl border bg-zinc-950 shadow-sm"
-                style={{ borderColor: `${accent.hex}30` }}
+                className="mt-4 overflow-hidden rounded-2xl shadow-lg"
+                style={{
+                  border: `1px solid ${accent.hex}25`,
+                  boxShadow: `0 0 0 1px ${accent.hex}10, 0 8px 32px -8px ${accent.hex}20, inset 0 1px 0 ${accent.hex}15`,
+                }}
               >
+                {/* Title bar */}
                 <div
-                  className="flex items-center justify-between border-b px-4 py-2"
-                  style={{ borderColor: `${accent.hex}15` }}
+                  className="flex items-center justify-between px-4 py-2.5"
+                  style={{
+                    background: `linear-gradient(135deg, ${accent.hex}12 0%, transparent 100%)`,
+                    borderBottom: `1px solid ${accent.hex}15`,
+                  }}
                 >
                   <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] shadow-[0_0_4px_#ff5f5780]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e] shadow-[0_0_4px_#febc2e80]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#28c840] shadow-[0_0_4px_#28c84080]" />
                   </div>
                   <button
                     onClick={() => copyCode(note.code!)}
-                    className="text-[10px] font-bold text-white/30 hover:text-white transition-colors"
+                    className={cn(
+                      "rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-widest transition-all duration-200 border",
+                      copied
+                        ? "border-transparent"
+                        : "text-muted-foreground/60 hover:text-muted-foreground bg-muted/40 border-border/30",
+                    )}
+                    style={
+                      copied
+                        ? {
+                            color: accent.hex,
+                            background: `${accent.hex}18`,
+                            border: `1px solid ${accent.hex}40`,
+                          }
+                        : undefined
+                    }
                   >
-                    {copied ? "COPIED" : "COPY"}
+                    {copied ? "✓ COPIED" : "COPY"}
                   </button>
                 </div>
-                <MiniHighlighter code={note.code} />
+                {/* Code body */}
+                <div className="bg-zinc-950/90 backdrop-blur-sm">
+                  <MiniHighlighter code={note.code} />
+                </div>
               </div>
             )}
           </div>
 
-          {!isRevealed && (
-            <div className="flex flex-col gap-3 rounded-3xl border border-border/50 bg-muted/10 p-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-[12px] leading-tight">
-                Reveal the answer or mark it as mastered to keep it unlocked.
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => onReveal(note.id)}
-                  className="rounded-full bg-slate-950/95 px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition hover:bg-slate-800"
-                >
-                  Reveal
-                </button>
-                <button
-                  onClick={() => onMarkMastered(note.id)}
-                  className="rounded-full bg-emerald-500 px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition hover:bg-emerald-600"
-                >
-                  Mastered
-                </button>
-              </div>
-            </div>
-          )}
+
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted/70 px-2 py-1">
-            <span>👁️</span> {revealCount} reveals
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-muted/70 px-2 py-1">
-            <span>🧠</span> {masterCount} mastered
-          </span>
-        </div>
+
       </div>
     </motion.div>
   );

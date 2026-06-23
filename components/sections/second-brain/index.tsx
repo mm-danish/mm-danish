@@ -14,6 +14,7 @@ import { AddNoteForm } from "./add-note-form";
 import { SidebarNav } from "./sidebar-nav";
 import { AuthModal } from "./auth-modal";
 import { cn } from "@/lib/cn";
+import { DeleteConfirmationModal } from "./delete-confirmation-modal";
 
 export function SecondBrain() {
   const [notes, setNotes] = React.useState<LearningItem[]>([]);
@@ -38,6 +39,10 @@ export function SecondBrain() {
   const [pendingNote, setPendingNote] = React.useState<LearningItem | null>(
     null,
   );
+  const [noteToDelete, setNoteToDelete] = React.useState<LearningItem | null>(
+    null,
+  );
+  const [isDeletingNote, setIsDeletingNote] = React.useState(false);
 
   // Gamification state
   const [globalStats, setGlobalStats] = React.useState<{
@@ -196,27 +201,33 @@ export function SecondBrain() {
     }
   };
 
-  const handleDeleteNote = async (
-    note: LearningItem,
-    forceAuthorized = false,
-  ) => {
-    if (!isAuthorized && !forceAuthorized) {
-      setPendingNote(note);
-      setPendingAction("delete");
-      setIsAuthModalOpen(true);
-      return;
-    }
+  const handleDeleteNote = React.useCallback(
+    (note: LearningItem, forceAuthorized = false) => {
+      if (!isAuthorized && !forceAuthorized) {
+        setPendingNote(note);
+        setPendingAction("delete");
+        setIsAuthModalOpen(true);
+        return;
+      }
 
-    if (!confirm("Are you sure you want to delete this note?")) return;
+      setNoteToDelete(note);
+    },
+    [isAuthorized],
+  );
+
+  const handleConfirmDelete = async () => {
+    if (!noteToDelete) return;
+    setIsDeletingNote(true);
 
     try {
       const passkey = localStorage.getItem("brain_key") || "";
-      const res = await fetch(`/api/notes?id=${note.id}`, {
+      const res = await fetch(`/api/notes?id=${noteToDelete.id}`, {
         method: "DELETE",
         headers: { "x-admin-passkey": passkey },
       });
       if (res.ok) {
-        setNotes((prev) => prev.filter((n) => n.id !== note.id));
+        setNotes((prev) => prev.filter((n) => n.id !== noteToDelete.id));
+        setNoteToDelete(null);
       } else {
         setIsAuthorized(false);
         localStorage.removeItem("brain_key");
@@ -224,6 +235,8 @@ export function SecondBrain() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsDeletingNote(false);
     }
   };
 
@@ -511,6 +524,14 @@ export function SecondBrain() {
               setPendingNote(null);
             }}
             onSuccess={handleAuthSuccess}
+          />
+
+          <DeleteConfirmationModal
+            isOpen={!!noteToDelete}
+            note={noteToDelete}
+            onClose={() => setNoteToDelete(null)}
+            onConfirm={handleConfirmDelete}
+            isDeleting={isDeletingNote}
           />
         </section>
       </main>
