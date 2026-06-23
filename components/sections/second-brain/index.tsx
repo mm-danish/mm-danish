@@ -13,6 +13,7 @@ import { ThreadFeed } from "./thread-feed";
 import { AddNoteForm } from "./add-note-form";
 import { SidebarNav } from "./sidebar-nav";
 import { AuthModal } from "./auth-modal";
+import { cn } from "@/lib/cn";
 
 export function SecondBrain() {
   const [notes, setNotes] = React.useState<LearningItem[]>([]);
@@ -26,6 +27,7 @@ export function SecondBrain() {
   );
   const [isAdding, setIsAdding] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
 
   // Auth state
   const [isAuthorized, setIsAuthorized] = React.useState(false);
@@ -324,6 +326,8 @@ export function SecondBrain() {
         onNavigate={handleNavigate}
         isOpenMobile={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={(val) => setIsSidebarCollapsed(val)}
       />
 
       {/* Main Content */}
@@ -332,7 +336,12 @@ export function SecondBrain() {
         className="flex-1 min-w-0 h-full overflow-y-auto custom-scrollbar"
       >
         <section className="min-h-full bg-background pt-12 pb-28 font-sans md:pt-16 md:pb-32">
-          <div className="mx-auto w-full max-w-3xl px-5 sm:px-8">
+          <div
+            className={cn(
+              "mx-auto w-full px-5 sm:px-8",
+              isSidebarCollapsed ? "max-w-6xl" : "max-w-3xl",
+            )}
+          >
             {/* Sticky Spatial Header */}
             <div className="sticky top-3 sm:top-6 z-40 mb-6 sm:mb-10 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-[1.25rem] bg-background/60 backdrop-blur-xl border border-border/50 px-3 py-2.5 sm:p-3 shadow-xl shadow-foreground/5 transition-all">
               {/* Left: Brain Icon + Title + Mobile Add Note */}
@@ -455,7 +464,7 @@ export function SecondBrain() {
               ) : filteredNotes.length === 0 && searchQuery ? (
                 <div className="py-20 text-center">
                   <p className="text-muted-foreground text-sm">
-                    No matches found for "{searchQuery}"
+                    No matches found for &quot;{searchQuery}&quot;
                   </p>
                 </div>
               ) : (

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Trash2, Edit2, MoreVertical } from "lucide-react";
+import { Trash2, Edit2, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { LearningItem, CategoryMeta } from "@/data/learning";
 import { getCategoryColor } from "@/data/learning";
@@ -41,7 +41,6 @@ function useTilt() {
 
 interface ThreadFeedProps {
   notes: LearningItem[];
-  category: CategoryMeta;
   onEdit: (note: LearningItem) => void;
   onDelete: (note: LearningItem) => void;
   myMasteredNotes: Set<string>;
@@ -56,7 +55,6 @@ interface ThreadFeedProps {
 
 export function ThreadFeed({
   notes,
-  category,
   onEdit,
   onDelete,
   myMasteredNotes,
@@ -77,7 +75,6 @@ export function ThreadFeed({
         <ThreadItem
           key={note.id}
           note={note}
-          category={category}
           onEdit={onEdit}
           onDelete={onDelete}
           myMasteredNotes={myMasteredNotes}
@@ -93,7 +90,6 @@ export function ThreadFeed({
 
 function ThreadItem({
   note,
-  category,
   onEdit,
   onDelete,
   myMasteredNotes,
@@ -103,7 +99,6 @@ function ThreadItem({
   onMarkMastered,
 }: {
   note: LearningItem;
-  category: CategoryMeta;
   onEdit: (note: LearningItem) => void;
   onDelete: (note: LearningItem) => void;
   myMasteredNotes: Set<string>;
@@ -117,7 +112,6 @@ function ThreadItem({
 }) {
   const [showMenu, setShowMenu] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
-  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -130,15 +124,6 @@ function ThreadItem({
     onDelete(note);
     setShowMenu(false);
   };
-
-  if (isDeleting) {
-    return (
-      <div className="py-4 animate-pulse opacity-50 flex items-center gap-2">
-        <Trash2 className="h-4 w-4" />
-        <span className="text-[12px] font-medium italic">Removing note...</span>
-      </div>
-    );
-  }
 
   const accent = getCategoryColor(note.category);
   const isMastered = myMasteredNotes.has(note.id);
