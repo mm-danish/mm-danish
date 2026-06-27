@@ -41,6 +41,7 @@ function useTilt() {
 
 interface ThreadFeedProps {
   notes: LearningItem[];
+  category: CategoryMeta;
   onEdit: (note: LearningItem) => void;
   onDelete: (note: LearningItem) => void;
   myMasteredNotes: Set<string>;
@@ -55,6 +56,7 @@ interface ThreadFeedProps {
 
 export function ThreadFeed({
   notes,
+  category,
   onEdit,
   onDelete,
   myMasteredNotes,
@@ -65,7 +67,9 @@ export function ThreadFeed({
 }: ThreadFeedProps) {
   if (notes.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm py-10">No notes here yet.</p>
+      <p className="text-muted-foreground text-sm py-10">
+        No notes in {category.name} yet.
+      </p>
     );
   }
 
