@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { Trash2, Edit2, Eye, EyeOff, Trophy } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash2, Edit2, Eye, EyeOff, Trophy, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { LearningItem, CategoryMeta } from "@/data/learning";
 import { getCategoryColor } from "@/data/learning";
 import { MiniHighlighter } from "./mini-highlighter";
+import { ThreadReplies } from "./thread-replies";
 
 /* ── Spatial 3D tilt on hover ─────────────────────────────────── */
 function useTilt() {
@@ -52,6 +53,7 @@ interface ThreadFeedProps {
   };
   onReveal: (id: string) => void;
   onMarkMastered: (id: string) => void;
+  isAuthorized: boolean;
 }
 
 export function ThreadFeed({
@@ -64,6 +66,7 @@ export function ThreadFeed({
   globalStats,
   onReveal,
   onMarkMastered,
+  isAuthorized,
 }: ThreadFeedProps) {
   if (notes.length === 0) {
     return (
@@ -86,6 +89,7 @@ export function ThreadFeed({
           globalStats={globalStats}
           onReveal={onReveal}
           onMarkMastered={onMarkMastered}
+          isAuthorized={isAuthorized}
         />
       ))}
     </div>
@@ -101,6 +105,7 @@ function ThreadItem({
   globalStats,
   onReveal,
   onMarkMastered,
+  isAuthorized,
 }: {
   note: LearningItem;
   onEdit: (note: LearningItem) => void;
@@ -113,8 +118,11 @@ function ThreadItem({
   };
   onReveal: (id: string) => void;
   onMarkMastered: (id: string) => void;
+  isAuthorized: boolean;
 }) {
   const [copied, setCopied] = React.useState(false);
+  const [showReplies, setShowReplies] = React.useState(false);
+  const [replyCount, setReplyCount] = React.useState<number | null>(null);
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -125,6 +133,26 @@ function ThreadItem({
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     onDelete(note);
+  };
+
+  // Fetch reply count on mount (lightweight — just array length)
+  React.useEffect(() => {
+    fetch(`/api/replies?noteId=${note.id}`)
+      .then((r) => r.json())
+      .then((data: unknown[]) => setReplyCount(data.length))
+      .catch(() => setReplyCount(0));
+  }, [note.id]);
+
+  // When replies panel is closed after posting, re-sync count
+  const handleToggleReplies = () => {
+    if (showReplies) {
+      // Closing: re-fetch count
+      fetch(`/api/replies?noteId=${note.id}`)
+        .then((r) => r.json())
+        .then((data: unknown[]) => setReplyCount(data.length))
+        .catch(() => {});
+    }
+    setShowReplies((v) => !v);
   };
 
   const accent = getCategoryColor(note.category);
@@ -190,7 +218,9 @@ function ThreadItem({
                 <EyeOff className="h-3.5 w-3.5" />
               )}
               {revealCount > 0 && (
-                <span className="text-[10px] font-semibold leading-none">{revealCount}</span>
+                <span className="text-[10px] font-semibold leading-none">
+                  {revealCount}
+                </span>
               )}
             </button>
             {/* Master icon + count */}
@@ -206,26 +236,28 @@ function ThreadItem({
             >
               <Trophy className="h-3.5 w-3.5" />
               {masterCount > 0 && (
-                <span className="text-[10px] font-semibold leading-none">{masterCount}</span>
+                <span className="text-[10px] font-semibold leading-none">
+                  {masterCount}
+                </span>
               )}
             </button>
 
             {/* Divider */}
             <span className="mx-1 h-3.5 w-px bg-border/40" />
 
-            {/* Edit */}
+            {/* Edit — always visible on mobile, hover-only on desktop */}
             <button
               onClick={() => onEdit(note)}
               title="Edit"
-              className="p-1.5 rounded-lg text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
+              className="p-1.5 rounded-lg text-muted-foreground/50 opacity-100 md:opacity-0 md:group-hover/item:opacity-100 hover:text-foreground hover:bg-muted/60 active:scale-90 transition-all duration-200"
             >
               <Edit2 className="h-3.5 w-3.5" />
             </button>
-            {/* Delete */}
+            {/* Delete — always visible on mobile, hover-only on desktop */}
             <button
               onClick={handleDelete}
               title="Delete"
-              className="p-1.5 rounded-lg text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+              className="p-1.5 rounded-lg text-muted-foreground/50 opacity-100 md:opacity-0 md:group-hover/item:opacity-100 hover:text-red-400 hover:bg-red-500/10 active:scale-90 transition-all duration-200"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -298,11 +330,38 @@ function ThreadItem({
               </div>
             )}
           </div>
-
-
         </div>
 
+        {/* ── Reply toggle ── */}
+        <button
+          onClick={handleToggleReplies}
+          className={cn(
+            "mt-3 flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-medium transition-all duration-200",
+            showReplies
+              ? "text-foreground/70 bg-muted/40"
+              : "text-muted-foreground/40 hover:text-foreground/60 hover:bg-muted/30",
+          )}
+        >
+          <MessageCircle className="h-3.5 w-3.5" />
+          {replyCount === null ? (
+            <span>Replies</span>
+          ) : replyCount === 0 ? (
+            <span>Reply</span>
+          ) : (
+            <span>{replyCount} {replyCount === 1 ? "reply" : "replies"}</span>
+          )}
+        </button>
 
+        {/* ── Reply thread panel (inline, animated) ── */}
+        <AnimatePresence>
+          {showReplies && (
+            <ThreadReplies
+              noteId={note.id}
+              accentHex={accent.hex}
+              isAuthorized={isAuthorized}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

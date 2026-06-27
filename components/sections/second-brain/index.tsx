@@ -499,6 +499,7 @@ export function SecondBrain() {
                       globalStats={globalStats}
                       onMarkMastered={handleMarkMastered}
                       onReveal={handleReveal}
+                      isAuthorized={isAuthorized}
                     />
                   );
                 })
@@ -549,6 +550,7 @@ function CategorySection({
   globalStats,
   onMarkMastered,
   onReveal,
+  isAuthorized,
 }: {
   category: CategoryMeta;
   categoryNotes: LearningItem[];
@@ -562,6 +564,7 @@ function CategorySection({
   };
   onMarkMastered: (id: string) => void;
   onReveal: (id: string) => void;
+  isAuthorized: boolean;
 }) {
   const [isOpen, setIsOpen] = React.useState(true);
   const accent = getCategoryColor(category.name);
@@ -616,6 +619,7 @@ function CategorySection({
                     globalStats={globalStats}
                     onMarkMastered={onMarkMastered}
                     onReveal={onReveal}
+                    isAuthorized={isAuthorized}
                   />
                 </div>
               ))}

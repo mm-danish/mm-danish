@@ -23,6 +23,14 @@ export interface LearningItem {
   date: string;
 }
 
+export interface ThreadReply {
+  id: string;
+  noteId: string;
+  author: string;   // display name, defaults to "Neuron"
+  content: string;
+  date: string;     // ISO timestamp
+}
+
 export interface CategoryMeta {
   name: LearningCategory;
 }
