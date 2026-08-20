@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
 interface HighlighterProps {
   code: string;
@@ -22,13 +22,14 @@ export function MiniHighlighter({ code }: HighlighterProps) {
       { regex: /(['"`])(.*?)\1/g, class: "text-emerald-400" },
       // Keywords (using word boundaries)
       {
-        regex: /\b(export|function|const|let|var|await|async|return|if|else|import|from|try|catch|throw|new|type|interface|class|default)\b/g,
-        class: "text-blue-400 font-medium"
+        regex:
+          /\b(export|function|const|let|var|await|async|return|if|else|import|from|try|catch|throw|new|type|interface|class|default)\b/g,
+        class: "text-blue-400 font-medium",
       },
       // Methods/Functions
       { regex: /(\w+)(?=\s*\()/g, class: "text-amber-300 font-medium" },
       // Numbers
-      { regex: /\b(\d+)\b/g, class: "text-orange-400" }
+      { regex: /\b(\d+)\b/g, class: "text-orange-400" },
     ];
 
     // 3. Use an intermediate map to avoid "replacing a replacement"
@@ -54,7 +55,10 @@ export function MiniHighlighter({ code }: HighlighterProps) {
     for (let i = patterns.length - 1; i >= 0; i--) {
       const patternTokenBase = `__TOKEN_${i}_`;
       tokens.forEach((html, tokenIdx) => {
-        result = result.replace(new RegExp(`__TOKEN_${i}_${tokenIdx}__`, 'g'), html);
+        result = result.replace(
+          new RegExp(`__TOKEN_${i}_${tokenIdx}__`, "g"),
+          html,
+        );
       });
     }
 
@@ -62,7 +66,7 @@ export function MiniHighlighter({ code }: HighlighterProps) {
   };
 
   return (
-    <pre className="p-4 text-[13px] font-mono text-neutral-300 leading-relaxed bg-[#0d1117] whitespace-pre-wrap break-words overflow-x-hidden border border-white/5 rounded-b-lg">
+    <pre className="p-4 text-[13px] font-mono text-neutral-300 leading-relaxed bg-background whitespace-pre-wrap break-words overflow-x-hidden border border-white/5 rounded-b-lg">
       <code
         className="block"
         dangerouslySetInnerHTML={{ __html: highlight(code) }}

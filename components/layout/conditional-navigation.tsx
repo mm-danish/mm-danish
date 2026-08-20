@@ -13,13 +13,16 @@ export function ConditionalNavigation({
   footer: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isSecondBrain = pathname === '/second-brain';
+  const hideChrome =
+    pathname === '/second-brain' ||
+    pathname === '/notes' ||
+    pathname.startsWith('/notes/');
 
   return (
     <>
-      {!isSecondBrain && header}
+      {!hideChrome && header}
       {children}
-      {!isSecondBrain && footer}
+      {!hideChrome && footer}
     </>
   );
 }

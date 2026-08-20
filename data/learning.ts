@@ -20,6 +20,7 @@ export interface LearningItem {
   title: string;
   content: string;
   code?: string;
+  color?: string;
   date: string;
 }
 
@@ -68,6 +69,32 @@ export const CATEGORIES: CategoryMeta[] = [
   { name: 'Engineering' },
 ];
 
+/** Tag pills shown in the note editor — maps display label to stored category. */
+export const NOTE_TAGS: { label: string; category: LearningCategory }[] = [
+  { label: 'nodejs', category: 'Node.js' },
+  { label: 'react', category: 'React.js' },
+  { label: 'nextjs', category: 'Next.js' },
+  { label: 'typescript', category: 'TypeScript' },
+  { label: 'mongodb', category: 'MongoDB' },
+  { label: 'express', category: 'Express.js' },
+  { label: 'architecture', category: 'Engineering' },
+  { label: 'prisma', category: 'Prisma' },
+  { label: 'tailwind', category: 'TailwindCSS' },
+];
+
+/** Accent colors for the note editor color picker. */
+export const NOTE_ACCENT_COLORS = [
+  { id: 'gray', hex: '#6b7280' },
+  { id: 'red', hex: '#ef4444' },
+  { id: 'orange', hex: '#f97316' },
+  { id: 'yellow', hex: '#eab308' },
+  { id: 'green', hex: '#22c55e' },
+  { id: 'cyan', hex: '#06b6d4' },
+  { id: 'blue', hex: '#3b82f6' },
+  { id: 'purple', hex: '#a855f7' },
+  { id: 'pink', hex: '#ec4899' },
+] as const;
+
 const fallbackColors = [
   { hex: '#ec4899', text: 'text-[#ec4899]', bg: 'bg-[#ec4899]/10', border: 'border-[#ec4899]/30' }, // Pink
   { hex: '#a855f7', text: 'text-[#a855f7]', bg: 'bg-[#a855f7]/10', border: 'border-[#a855f7]/30' }, // Purple
@@ -103,6 +130,35 @@ export function getCategoryColor(category: string) {
   
   const index = Math.abs(hash) % fallbackColors.length;
   return fallbackColors[index];
+}
+
+export function getNoteAccent(note: Pick<LearningItem, 'category' | 'color'>) {
+  if (note.color) {
+    return {
+      hex: note.color,
+      text: '',
+      bg: '',
+      border: '',
+    };
+  }
+  return getCategoryColor(note.category);
+}
+
+/** Merge stored content + code into one editor body (markdown-style). */
+export function combineNoteBody(content: string, code?: string) {
+  if (!code?.trim()) return content;
+  const trimmed = content.trimEnd();
+  return trimmed ? `${trimmed}\n\n\`\`\`javascript\n${code.trim()}\n\`\`\`` : `\`\`\`javascript\n${code.trim()}\n\`\`\``;
+}
+
+/** Split editor body back into content + optional code block. */
+export function splitNoteBody(body: string): { content: string; code?: string } {
+  const match = body.match(/```(?:\w+)?\n([\s\S]*?)```/);
+  if (!match) return { content: body.trim() };
+
+  const code = match[1]?.trim();
+  const content = body.replace(match[0], '').trim();
+  return { content, code: code || undefined };
 }
 
 export const NOTES = notesData as LearningItem[];
