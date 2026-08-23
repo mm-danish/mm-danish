@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ExternalLink, Github, ArrowUpRight, FolderCode } from 'lucide-react';
-import { Project } from '@/types/project';
-import { Card, CardContent } from '@/components/ui/card';
+import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { ExternalLink, Github, ArrowUpRight, FolderCode } from "lucide-react";
+import { Project } from "@/types/project";
+import { Card, CardContent } from "@/components/ui/card";
+import { trackCta } from "@/components/analytics/portfolio-tracker";
 
 interface ProjectCardProps {
   project: Project;
@@ -22,9 +23,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       transition={{ delay: index * 0.1, duration: 0.6 }}
       className="group"
     >
-      <Card className="h-full border-border/40 bg-card/40 backdrop-blur-2xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative rounded-[2.5rem] border-[1px] shadow-lg group-hover:-translate-y-2">
+      <Card className="h-full border-border/40 bg-card/40 backdrop-blur-2xl hover:border-primary/40 transition-all duration-500 overflow-hidden relative rounded-[2.5rem] border shadow-lg group-hover:-translate-y-2">
         {/* Project Image Container */}
-        <div className="relative w-full aspect-[16/10] overflow-hidden">
+        <div className="relative w-full aspect-video overflow-hidden">
           <Image
             src={project.image}
             alt={project.title}
@@ -37,13 +38,28 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
 
           {/* Floating Actions */}
-          <div className="absolute top-6 right-6 flex flex-col gap-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="absolute top-6 right-6 flex flex-col gap-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500"
+            onClick={(e) => e.stopPropagation()}
+          >
             {project.githubUrl && (
-              <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl">
+              <Link
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCta("github_link")}
+                className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl"
+              >
                 <Github className="h-5 w-5" />
               </Link>
             )}
-            <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl">
+            <Link
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCta("live_demo")}
+              className="p-3 rounded-2xl bg-background/80 backdrop-blur-md text-foreground hover:bg-primary hover:text-white transition-all shadow-xl"
+            >
               <ExternalLink className="h-5 w-5" />
             </Link>
           </div>
@@ -69,7 +85,10 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           <div className="space-y-6 mt-auto">
             <div className="flex flex-wrap gap-2">
               {project.technologies.slice(0, 4).map((tech) => (
-                <span key={tech} className="px-3 py-1 rounded-lg bg-background/50 border border-border/50 text-[11px] font-bold uppercase tracking-tighter text-muted-foreground/60">
+                <span
+                  key={tech}
+                  className="px-3 py-1 rounded-lg bg-background/50 border border-border/50 text-[11px] font-bold uppercase tracking-tighter text-muted-foreground/60"
+                >
                   {tech}
                 </span>
               ))}

@@ -10,6 +10,11 @@ import { siteConfig } from "@/config/site";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+// NEW COMPONENTS
+import { PortfolioTracker } from "@/components/analytics/portfolio-tracker";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { BackToTop } from "@/components/ui/back-to-top";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -87,8 +92,6 @@ export default function RootLayout({
   modal,
 }: Readonly<{
   children: React.ReactNode;
-  // @modal parallel slot — renders project detail modals
-  // when navigating client-side to /projects/[slug]
   modal: React.ReactNode;
 }>) {
   return (
@@ -98,12 +101,10 @@ export default function RootLayout({
       className={`${inter.variable} ${plusJakarta.variable}`}
     >
       <head>
-        {/* JSON-LD: Person */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
         />
-        {/* JSON-LD: WebSite */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
@@ -116,15 +117,28 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Skip to main content for accessibility */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
+          >
+            Skip to content
+          </a>
+
+          <PortfolioTracker />
+          <ScrollProgress />
+
           <div className="flex flex-col min-h-screen">
             <ConditionalNavigation header={<Header />} footer={<Footer />}>
-              <main className="flex-1">{children}</main>
+              <main id="main-content" className="flex-1">
+                {children}
+              </main>
             </ConditionalNavigation>
           </div>
 
-          {/* Parallel route slot — mounts modal on top of current page */}
           {modal}
 
+          <BackToTop />
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>

@@ -8,6 +8,7 @@ import { Download, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CV_DOWNLOAD_URL } from '@/lib/constants';
 import { siteConfig } from '@/config/site';
+import { trackCta } from '@/components/analytics/portfolio-tracker';
 
 export function Hero() {
   return (
@@ -55,13 +56,13 @@ export function Hero() {
               </motion.p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-16">
-                <Link href="#contact" className="w-full sm:w-fit">
+                <Link href="#contact" className="w-full sm:w-fit" onClick={() => trackCta('lets_connect')}>
                   <Button size="lg" className="rounded-full px-8 h-12 text-sm shadow-xl hover:shadow-primary/20 transition-all w-full font-bold group">
                     <Mail className="h-4 w-4 mr-2" />
                     Let's Connect
                   </Button>
                 </Link>
-                <Link href={CV_DOWNLOAD_URL} download className="w-full sm:w-fit">
+                <Link href={CV_DOWNLOAD_URL} download className="w-full sm:w-fit" onClick={() => trackCta('download_cv')}>
                   <Button size="lg" variant="outline" className="rounded-full px-8 h-12 text-sm border border-border hover:bg-muted transition-all w-full font-bold">
                     <Download className="h-4 w-4 mr-2" />
                     Download CV
