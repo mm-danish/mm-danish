@@ -342,7 +342,7 @@ export default function AboutPage() {
         </div>
 
         {/* Experience Timeline */}
-        <div className="mb-20">
+        {/* <div className="mb-20">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -440,7 +440,7 @@ export default function AboutPage() {
               </motion.div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Interests */}
         <motion.div
