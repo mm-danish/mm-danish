@@ -9,7 +9,7 @@ export const NAV_LINKS = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Projects", href: "/projects" },
-  { name: "Experience", href: "/#experience" },
+  // { name: "Experience", href: "/#experience" },
   { name: "Skills", href: "/#skills" },
   { name: "Blog", href: "/blog" },
   // { name: 'Notes', href: '/notes' },

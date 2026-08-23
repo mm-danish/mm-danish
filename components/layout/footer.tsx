@@ -1,9 +1,8 @@
-import Link from 'next/link';
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
-import { SOCIAL_LINKS, NAV_LINKS } from '@/lib/constants';
-import { siteConfig } from '@/config/site';
-import Image from 'next/image';
-import { Badge } from '@/components/ui/badge';
+import Link from "next/link";
+import { Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { SOCIAL_LINKS, NAV_LINKS } from "@/lib/constants";
+import { siteConfig } from "@/config/site";
+import Image from "next/image";
 
 const socialIcons = {
   github: Github,
@@ -38,19 +37,19 @@ export function Footer() {
                 <span className="text-xl font-bold font-heading tracking-tight">
                   MM <span className="text-primary">Danish</span>
                 </span>
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 uppercase tracking-wider font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 select-none">
-                  Beta
-                </Badge>
               </div>
             </Link>
             <p className="text-muted-foreground max-w-sm leading-relaxed">
-              Crafting exceptional digital experiences through clean code and innovative engineering. Let's build the future together.
+              Crafting exceptional digital experiences through clean code and
+              innovative engineering. Let's build the future together.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-6 font-heading">Sitemap</h3>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-6 font-heading">
+              Sitemap
+            </h3>
             <ul className="space-y-4 text-sm font-medium">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
@@ -68,7 +67,9 @@ export function Footer() {
 
           {/* Connect */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-6 font-heading">Social</h3>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-6 font-heading">
+              Social
+            </h3>
             <div className="flex flex-col space-y-4">
               {Object.entries(SOCIAL_LINKS).map(([key, url]) => {
                 const Icon = socialIcons[key as keyof typeof socialIcons];
@@ -93,7 +94,8 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} {siteConfig.name}. Designed with passion.
+            © {new Date().getFullYear()} {siteConfig.name}. Designed with
+            passion.
           </p>
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 font-medium">
             <span>Next.js 16</span>
@@ -107,4 +109,3 @@ export function Footer() {
     </footer>
   );
 }
-
