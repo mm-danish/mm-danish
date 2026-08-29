@@ -110,9 +110,9 @@ export default function AboutPage() {
                 <span className="text-foreground font-semibold">
                   Software Engineer
                 </span>{" "}
-                based in Islamabad, Pakistan. I specialize in architecting
-                high-performance full-stack applications with a focus on clean
-                code, scalable systems, and exceptional user experiences.
+                .I specialize in architecting high-performance full-stack
+                applications with a focus on clean code, scalable systems, and
+                exceptional user experiences.
               </p>
             </div>
 

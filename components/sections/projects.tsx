@@ -1,19 +1,27 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Github, ExternalLink, ArrowUpRight, Code2, ArrowRight } from 'lucide-react';
-import { projects } from '@/data/projects';
+import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import {
+  Github,
+  ExternalLink,
+  ArrowUpRight,
+  Code2,
+  ArrowRight,
+} from "lucide-react";
+import { projects } from "@/data/projects";
 
 export function Projects() {
   const featuredProjects = projects.filter((p) => p.featured);
 
   return (
-    <section id="projects" className="py-24 relative bg-background overflow-hidden">
+    <section
+      id="projects"
+      className="pt-24 relative bg-background overflow-hidden"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-2">
           <div className="space-y-3">
             <motion.div
@@ -41,7 +49,8 @@ export function Projects() {
             transition={{ delay: 0.1 }}
             className="text-muted-foreground text-sm font-light max-w-xs leading-relaxed"
           >
-            A curated list of high-performance builds focused on scalability and precision.
+            A curated list of high-performance builds focused on scalability and
+            precision.
           </motion.p>
         </header>
 
@@ -81,13 +90,26 @@ export function Projects() {
                 </div>
 
                 {/* Floating Actions */}
-                <div className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-30" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-30"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {project.githubUrl && (
-                    <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg">
+                    <Link
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg"
+                    >
                       <Github className="h-4 w-4" />
                     </Link>
                   )}
-                  <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg">
+                  <Link
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-xl bg-background/90 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-primary transition-colors hover:shadow-lg"
+                  >
                     <ExternalLink className="h-4 w-4" />
                   </Link>
                 </div>
@@ -101,7 +123,10 @@ export function Projects() {
                       {project.title}
                     </h3>
                   </Link>
-                  <Link href={`/projects/${project.slug}`} className="text-muted-foreground/30 hover:text-primary transition-colors">
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="text-muted-foreground/30 hover:text-primary transition-colors"
+                  >
                     <ArrowUpRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -112,12 +137,17 @@ export function Projects() {
 
                 <div className="pt-4 mt-auto flex flex-wrap gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                   {project.technologies.slice(0, 3).map((tech) => (
-                    <span key={tech} className="px-2 py-0.5 rounded-md bg-muted text-[9px] font-bold uppercase tracking-tight text-muted-foreground border border-border/50">
+                    <span
+                      key={tech}
+                      className="px-2 py-0.5 rounded-md bg-muted text-[9px] font-bold uppercase tracking-tight text-muted-foreground border border-border/50"
+                    >
                       {tech}
                     </span>
                   ))}
                   {project.technologies.length > 3 && (
-                    <span className="text-[9px] font-bold text-muted-foreground/30 self-center ml-1">+{project.technologies.length - 3}</span>
+                    <span className="text-[9px] font-bold text-muted-foreground/30 self-center ml-1">
+                      +{project.technologies.length - 3}
+                    </span>
                   )}
                 </div>
               </div>

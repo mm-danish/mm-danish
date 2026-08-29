@@ -1,29 +1,34 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { Download, Mail, MapPin, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CV_DOWNLOAD_URL } from '@/lib/constants';
-import { siteConfig } from '@/config/site';
-import { trackCta } from '@/components/analytics/portfolio-tracker';
+import * as React from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Download, Mail, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CV_DOWNLOAD_URL } from "@/lib/constants";
+import { siteConfig } from "@/config/site";
+import { trackCta } from "@/components/analytics/portfolio-tracker";
 
 export function Hero() {
   return (
-    <section id="home" className="min-h-[90vh] flex items-center justify-center relative overflow-hidden pt-24 pb-16 bg-background">
+    <section
+      id="home"
+      className="min-h-[90vh] flex items-center justify-center relative overflow-hidden pt-24  bg-background"
+    >
       {/* Refined Background Architecture */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div
+          className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full animate-pulse-slow"
+          style={{ animationDelay: "2s" }}
+        />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay" />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-
             {/* Left side - Precision Content */}
             <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
               <motion.div
@@ -52,18 +57,39 @@ export function Hero() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light"
               >
-                I'm <span className="text-foreground font-medium">{siteConfig.name}</span>, a senior software engineer specialized in architecting high-performance systems and cinematic user experiences.
+                I'm{" "}
+                <span className="text-foreground font-medium">
+                  {siteConfig.name}
+                </span>
+                , a senior software engineer specialized in architecting
+                high-performance systems and cinematic user experiences.
               </motion.p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-16">
-                <Link href="#contact" className="w-full sm:w-fit" onClick={() => trackCta('lets_connect')}>
-                  <Button size="lg" className="rounded-full px-8 h-12 text-sm shadow-xl hover:shadow-primary/20 transition-all w-full font-bold group">
+                <Link
+                  href="#contact"
+                  className="w-full sm:w-fit"
+                  onClick={() => trackCta("lets_connect")}
+                >
+                  <Button
+                    size="lg"
+                    className="rounded-full px-8 h-12 text-sm shadow-xl hover:shadow-primary/20 transition-all w-full font-bold group"
+                  >
                     <Mail className="h-4 w-4 mr-2" />
                     Let's Connect
                   </Button>
                 </Link>
-                <Link href={CV_DOWNLOAD_URL} download className="w-full sm:w-fit" onClick={() => trackCta('download_cv')}>
-                  <Button size="lg" variant="outline" className="rounded-full px-8 h-12 text-sm border border-border hover:bg-muted transition-all w-full font-bold">
+                <Link
+                  href={CV_DOWNLOAD_URL}
+                  download
+                  className="w-full sm:w-fit"
+                  onClick={() => trackCta("download_cv")}
+                >
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="rounded-full px-8 h-12 text-sm border border-border hover:bg-muted transition-all w-full font-bold"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download CV
                   </Button>
@@ -78,13 +104,17 @@ export function Hero() {
                 className="flex items-center justify-center lg:justify-start gap-8 pt-8 border-t border-border/10"
               >
                 {[
-                  { label: 'Experience', val: '3+ Years' },
-                  { label: 'Projects', val: '20+ Built' },
-                  { label: 'Expertise', val: 'Full-Stack' }
+                  { label: "Experience", val: "3+ Years" },
+                  { label: "Projects", val: "20+ Built" },
+                  { label: "Expertise", val: "Full-Stack" },
                 ].map((stat, i) => (
                   <div key={i} className="flex flex-col gap-1">
-                    <span className="text-lg font-bold font-heading leading-none">{stat.val}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</span>
+                    <span className="text-lg font-bold font-heading leading-none">
+                      {stat.val}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+                      {stat.label}
+                    </span>
                   </div>
                 ))}
               </motion.div>
@@ -114,16 +144,27 @@ export function Hero() {
                 {/* Micro-Badges */}
                 <motion.div
                   animate={{ y: [0, -1, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                   className="absolute -top-4 -right-2 sm:-top-6 sm:-right-8 flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl bg-card/80 backdrop-blur-xl border border-primary/20 shadow-2xl z-20"
                 >
                   <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                  <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">Based in Islamabad</span>
+                  <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">
+                    world wide
+                  </span>
                 </motion.div>
 
                 <motion.div
                   animate={{ y: [0, 1, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1,
+                  }}
                   className="absolute bottom-4 -left-4 sm:bottom-12 sm:-left-12 flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-2xl bg-card/80 backdrop-blur-xl border border-blue-500/20 shadow-2xl z-20"
                 >
                   <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-md overflow-hidden flex items-center justify-center bg-primary/10">
@@ -135,11 +176,12 @@ export function Hero() {
                       className="object-cover"
                     />
                   </div>
-                  <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">Software Engineer</span>
+                  <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">
+                    Software Engineer
+                  </span>
                 </motion.div>
               </div>
             </motion.div>
-
           </div>
         </div>
       </div>
@@ -152,7 +194,9 @@ export function Hero() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:block"
       >
         <div className="flex flex-col items-center gap-3 text-muted-foreground/30">
-          <span className="text-[9px] font-black uppercase tracking-[0.3em]">Explore</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.3em]">
+            Explore
+          </span>
           <div className="w-px h-10 bg-gradient-to-b from-border/50 to-transparent" />
         </div>
       </motion.div>
