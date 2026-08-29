@@ -12,7 +12,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // NEW COMPONENTS
 import { PortfolioTracker } from "@/components/analytics/portfolio-tracker";
-import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 
 const inter = Inter({
@@ -126,7 +125,6 @@ export default function RootLayout({
           </a>
 
           <PortfolioTracker />
-          <ScrollProgress />
 
           <div className="flex flex-col min-h-screen">
             <ConditionalNavigation header={<Header />} footer={<Footer />}>

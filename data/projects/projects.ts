@@ -38,33 +38,6 @@ export const projects: Project[] = [
   },
   {
     id: "2",
-    title: "lawWiz",
-    description:
-      "Client project delivered using React with focus on quality delivery and improved branding.",
-    longDescription:
-      "A professional legal toolkit platform built with React. Managed multiple client projects simultaneously ensuring quality delivery, presented solutions directly to stakeholders, and improved the overall product branding and user experience. Collaborated closely with backend engineers and the design team.",
-    image: "/projects/lawwiz.png",
-    liveUrl: "https://lawwiz.com/",
-    technologies: ["React", "JavaScript", "CSS", "HTML", "Git"],
-    featured: true,
-    category: "frontend",
-    year: 2023,
-    slug: "lawWiz",
-    role: "React Developer",
-    highlights: [
-      "Rebuilt key UI sections in React, improving page load times and responsiveness.",
-      "Worked directly with stakeholders to translate business requirements into features.",
-      "Standardized component library and naming conventions for maintainability.",
-      "Improved overall branding consistency across all public-facing pages.",
-      "Managed parallel client deliverables with disciplined Git branching.",
-    ],
-    challenge:
-      "Coordinating multiple simultaneous client deliveries while maintaining consistent quality and meeting tight deadlines.",
-    outcome:
-      "Delivered all milestones on time, resulting in a stronger visual identity and improved user engagement for the legal platform.",
-  },
-  {
-    id: "3",
     title: "Sadpara Experts",
     description:
       "High-altitude mountaineering and trekking platform built for the legendary Sadpara family.",

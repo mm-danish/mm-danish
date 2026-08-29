@@ -57,21 +57,4 @@ export const experience: Experience[] = [
       "Tailwind CSS",
     ],
   },
-  {
-    id: "3",
-    company: "lawWiz",
-    position: "React Developer",
-    location: "Remote",
-    startDate: "2023-06-01",
-    endDate: "2023-12-01",
-    current: false,
-    website: "https://lawwiz.com",
-    description: [
-      "Delivered client projects using React.js framework.",
-      "Managed multiple projects simultaneously ensuring quality delivery.",
-      "Presented solutions to stakeholders and improved overall branding.",
-      "Collaborated with design and backend teams to implement features.",
-    ],
-    technologies: ["React", "JavaScript", "CSS", "HTML", "Git"],
-  },
 ];

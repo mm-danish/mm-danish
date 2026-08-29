@@ -39,21 +39,21 @@
 }
 
 .notes-shell {
-  --background: 0 0% 6%;
-  --foreground: 0 0% 94%;
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 94%;
-  --primary: 0 0% 96%;
-  --primary-foreground: 0 0% 7%;
-  --secondary: 0 0% 13%;
-  --secondary-foreground: 0 0% 94%;
-  --muted: 0 0% 13%;
-  --muted-foreground: 0 0% 66%;
-  --accent: 0 0% 16%;
-  --accent-foreground: 0 0% 96%;
-  --border: 0 0% 19%;
-  --input: 0 0% 19%;
-  --ring: 0 0% 78%;
+  --background: 40 20% 97%;
+  --foreground: 30 10% 12%;
+  --card: 40 20% 99%;
+  --card-foreground: 30 10% 12%;
+  --primary: 30 10% 12%;
+  --primary-foreground: 40 20% 97%;
+  --secondary: 40 12% 93%;
+  --secondary-foreground: 30 10% 20%;
+  --muted: 40 12% 93%;
+  --muted-foreground: 30 5% 45%;
+  --accent: 40 18% 90%;
+  --accent-foreground: 30 10% 12%;
+  --border: 35 10% 86%;
+  --input: 35 10% 86%;
+  --ring: 30 10% 35%;
 }
 
 @theme {

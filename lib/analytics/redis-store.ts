@@ -1,4 +1,4 @@
-import { redis } from '@/lib/redis';
+import { redis } from "@/lib/redis";
 import type {
   PageviewEvent,
   SectionDwellEvent,
@@ -10,22 +10,24 @@ import type {
   TopPage,
   ReferrerMetric,
   DeviceMetric,
-} from './types';
+  CountryMetric,
+} from "./types";
 
 // ── Key helpers ───────────────────────────────────────────────────────────────
 const today = () => new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
 
 const KEYS = {
-  totalViews: 'analytics:total_views',
-  uniqueVisitors: 'analytics:unique_visitors',  // HLL
+  totalViews: "analytics:total_views",
+  uniqueVisitors: "analytics:unique_visitors", // HLL
   dailyViews: (date: string) => `analytics:daily_views:${date}`,
   dailyUnique: (date: string) => `analytics:daily_unique:${date}`,
-  sections: 'analytics:section_views',         // hash  { section -> count }
-  sectionDwell: 'analytics:section_dwell',     // hash  { section -> total_ms }
-  ctas: 'analytics:cta_clicks',               // hash  { label -> count }
-  pages: 'analytics:page_views',              // hash  { path -> count }
-  referrers: 'analytics:referrers',           // hash  { referrer -> count }
-  devices: 'analytics:devices',              // hash  { device -> count }
+  sections: "analytics:section_views", // hash  { section -> count }
+  sectionDwell: "analytics:section_dwell", // hash  { section -> total_ms }
+  ctas: "analytics:cta_clicks", // hash  { label -> count }
+  pages: "analytics:page_views", // hash  { path -> count }
+  referrers: "analytics:referrers", // hash  { referrer -> count }
+  devices: "analytics:devices", // hash  { device -> count }
+  countries: "analytics:countries", // hash  { country -> count }
 };
 
 // ── Writers ───────────────────────────────────────────────────────────────────
@@ -53,6 +55,10 @@ export async function recordPageview(event: PageviewEvent) {
   // Device
   if (event.device) {
     pipeline.hincrby(KEYS.devices, event.device, 1);
+  }
+
+  if (event.country) {
+    pipeline.hincrby(KEYS.countries, event.country, 1);
   }
 
   // Expire daily keys after 90 days
@@ -86,6 +92,7 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
     pagesHash,
     referrersHash,
     devicesHash,
+    countriesHash,
   ] = await Promise.all([
     redis.get<number>(KEYS.totalViews),
     redis.pfcount(KEYS.uniqueVisitors),
@@ -95,6 +102,7 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
     redis.hgetall<Record<string, number>>(KEYS.pages),
     redis.hgetall<Record<string, number>>(KEYS.referrers),
     redis.hgetall<Record<string, number>>(KEYS.devices),
+    redis.hgetall<Record<string, number>>(KEYS.countries),
   ]);
 
   // ── Build last-30-day daily stats ────────────────────────────────────────
@@ -108,7 +116,9 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
     dailyKeys.push(KEYS.dailyViews(dateStr), KEYS.dailyUnique(dateStr));
   }
 
-  const dailyRaw = await Promise.all(dailyKeys.map((k) => redis.get<number>(k)));
+  const dailyRaw = await Promise.all(
+    dailyKeys.map((k) => redis.get<number>(k)),
+  );
 
   const daily: DailyStats[] = dailyDates.map((date, i) => ({
     date,
@@ -121,8 +131,15 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
   const monthViews = daily.reduce((s, d) => s + d.views, 0);
 
   // ── Section metrics ───────────────────────────────────────────────────────
-  const SECTIONS_ORDER = ['hero', 'about', 'skills', 'projects', 'contact', 'blog'];
-  const heroViews = sectionsHash?.['hero'] ?? 1; // avoid division by zero
+  const SECTIONS_ORDER = [
+    "hero",
+    "about",
+    "skills",
+    "projects",
+    "contact",
+    "blog",
+  ];
+  const heroViews = sectionsHash?.["hero"] ?? 1; // avoid division by zero
 
   const sections: SectionMetric[] = SECTIONS_ORDER.map((section) => {
     const totalViews = sectionsHash?.[section] ?? 0;
@@ -142,22 +159,24 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
 
   // ── CTAs ──────────────────────────────────────────────────────────────────
   const CTA_LABELS: Record<string, string> = {
-    download_cv: 'Download CV',
+    download_cv: "Download CV",
     lets_connect: "Let's Connect",
-    github_link: 'GitHub Link',
-    live_demo: 'Live Demo',
-    social_github: 'Social → GitHub',
-    social_linkedin: 'Social → LinkedIn',
-    social_twitter: 'Social → Twitter',
-    view_all_projects: 'View All Projects',
-    read_more: 'Read More (Blog)',
+    github_link: "GitHub Link",
+    live_demo: "Live Demo",
+    social_github: "Social → GitHub",
+    social_linkedin: "Social → LinkedIn",
+    social_twitter: "Social → Twitter",
+    view_all_projects: "View All Projects",
+    read_more: "Read More (Blog)",
   };
 
-  const ctas: CtaMetric[] = Object.entries(ctasHash ?? {}).map(([label, clicks]) => ({
-    label,
-    displayName: CTA_LABELS[label] ?? label,
-    clicks: Number(clicks),
-  })).sort((a, b) => b.clicks - a.clicks);
+  const ctas: CtaMetric[] = Object.entries(ctasHash ?? {})
+    .map(([label, clicks]) => ({
+      label,
+      displayName: CTA_LABELS[label] ?? label,
+      clicks: Number(clicks),
+    }))
+    .sort((a, b) => b.clicks - a.clicks);
 
   // ── Top pages ─────────────────────────────────────────────────────────────
   const topPages: TopPage[] = Object.entries(pagesHash ?? {})
@@ -176,6 +195,11 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
     .map(([device, count]) => ({ device, count: Number(count) }))
     .sort((a, b) => b.count - a.count);
 
+  const countries: CountryMetric[] = Object.entries(countriesHash ?? {})
+    .map(([country, visits]) => ({ country, visits: Number(visits) }))
+    .sort((a, b) => b.visits - a.visits)
+    .slice(0, 10);
+
   return {
     overview: {
       totalViews: totalViews ?? 0,
@@ -190,30 +214,31 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
     topPages,
     referrers,
     devices,
+    countries,
   };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function normaliseReferrer(ref: string): string {
-  if (!ref) return 'direct';
+  if (!ref) return "direct";
   try {
-    const host = new URL(ref).hostname.replace('www.', '');
-    if (host.includes('google')) return 'google';
-    if (host.includes('linkedin')) return 'linkedin';
-    if (host.includes('github')) return 'github';
-    if (host.includes('twitter') || host.includes('x.com')) return 'twitter';
-    if (host.includes('bing')) return 'bing';
+    const host = new URL(ref).hostname.replace("www.", "");
+    if (host.includes("google")) return "google";
+    if (host.includes("linkedin")) return "linkedin";
+    if (host.includes("github")) return "github";
+    if (host.includes("twitter") || host.includes("x.com")) return "twitter";
+    if (host.includes("bing")) return "bing";
     return host;
   } catch {
-    return 'direct';
+    return "direct";
   }
 }
 
 function buildRecommendation(
   section: string,
   reachRate: number,
-  avgDwellMs: number
+  avgDwellMs: number,
 ): string {
   const avgSecs = avgDwellMs / 1000;
 
@@ -223,13 +248,13 @@ function buildRecommendation(
   if (reachRate < 60) {
     return `📉 ${reachRate}% reach rate. Consider adding a CTA or scroll prompt in the section above to guide visitors down.`;
   }
-  if (avgSecs < 5 && section !== 'hero') {
+  if (avgSecs < 5 && section !== "hero") {
     return `⏱️ Visitors spend only ~${avgSecs.toFixed(1)}s here. Add more engaging content, visuals, or interactive elements.`;
   }
-  if (section === 'contact' && reachRate < 50) {
+  if (section === "contact" && reachRate < 50) {
     return `📬 Low reach for Contact section. Try adding a quick email link earlier in the page.`;
   }
-  if (section === 'projects' && avgSecs < 10) {
+  if (section === "projects" && avgSecs < 10) {
     return `🚀 Projects section has low engagement. Try adding live demo previews or case-study CTAs to each card.`;
   }
   return `✅ Good engagement — ${reachRate}% reach, ~${avgSecs.toFixed(1)}s average dwell.`;
