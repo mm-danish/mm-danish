@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Download, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, Download, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CV_DOWNLOAD_URL } from "@/lib/constants";
 import { siteConfig } from "@/config/site";
@@ -38,7 +38,7 @@ export function Hero() {
                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-8"
               >
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span>Open for collaborations</span>
+                <span>Seeking AI research opportunities</span>
               </motion.div>
 
               <motion.h1
@@ -47,8 +47,8 @@ export function Hero() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-4xl sm:text-6xl md:text-7xl font-black font-heading tracking-tight mb-8 leading-[1.05]"
               >
-                Building digital <br />
-                <span className="text-gradient">products with purpose.</span>
+                Engineering intelligent <br />
+                <span className="text-gradient">systems with purpose.</span>
               </motion.h1>
 
               <motion.p
@@ -61,22 +61,23 @@ export function Hero() {
                 <span className="text-foreground font-medium">
                   {siteConfig.name}
                 </span>
-                , a senior software engineer specialized in architecting
-                high-performance systems and cinematic user experiences.
+                , a software engineer applying for graduate study in AI. I build
+                reliable AI-assisted products and am interested in LLM agents,
+                trustworthy AI, NLP, and intelligent systems.
               </motion.p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-16">
                 <Link
-                  href="#contact"
+                  href="/research"
                   className="w-full sm:w-fit"
-                  onClick={() => trackCta("lets_connect")}
+                  onClick={() => trackCta("view_research_profile")}
                 >
                   <Button
                     size="lg"
                     className="rounded-full px-8 h-12 text-sm shadow-xl hover:shadow-primary/20 transition-all w-full font-bold group"
                   >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Let's Connect
+                    <ArrowUpRight className="h-4 w-4 mr-2" />
+                    Research Profile
                   </Button>
                 </Link>
                 <Link
@@ -105,8 +106,8 @@ export function Hero() {
               >
                 {[
                   { label: "Experience", val: "3+ Years" },
-                  { label: "Projects", val: "20+ Built" },
-                  { label: "Expertise", val: "Full-Stack" },
+                  { label: "Focus", val: "AI Systems" },
+                  { label: "Foundation", val: "BS CS" },
                 ].map((stat, i) => (
                   <div key={i} className="flex flex-col gap-1">
                     <span className="text-lg font-bold font-heading leading-none">
@@ -177,7 +178,7 @@ export function Hero() {
                     />
                   </div>
                   <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">
-                    Software Engineer
+                    AI & Software Systems
                   </span>
                 </motion.div>
               </div>

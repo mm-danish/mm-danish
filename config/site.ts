@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "M Murtaza Danish",
-  title: "M Murtaza Danish – Full Stack Developer | Next.js & Node.js Expert",
+  title: "M Murtaza Danish | Software Engineer & AI Research Applicant",
   description:
-    "M Murtaza Danish is a Full Stack Software Engineer with 3+ years of experience building scalable, production-grade web applications using Next.js, TypeScript, Node.js, PostgreSQL, and modern cloud technologies.",
+    "M Murtaza Danish is a software engineer and AI research applicant from Islamabad, Pakistan, with experience in AI-assisted software systems, full-stack engineering, and applied machine learning.",
   url: "https://mmdanish.com",
   ogImage: "/og-image.png",
   links: {
@@ -35,12 +35,20 @@ export const siteConfig = {
     "Frontend Developer",
     "JavaScript Developer",
     "Freelance Developer Pakistan",
+    "AI Research Applicant",
+    "Machine Learning Pakistan",
+    "Large Language Models",
+    "LLM Agents",
+    "Trustworthy AI",
+    "Natural Language Processing",
+    "AI Assisted Software Engineering",
+    "Graduate Research Portfolio",
   ],
   twitterHandle: "@mmdanishdev",
   author: {
     name: "M Murtaza Danish",
     location: "Islamabad, Pakistan",
-    role: "Full Stack Software Engineer",
+    role: "Software Engineer and AI Research Applicant",
     experience: "3+ years",
   },
 } as const;

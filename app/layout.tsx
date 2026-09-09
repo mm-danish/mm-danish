@@ -36,7 +36,7 @@ const personSchema = {
   name: "M Murtaza Danish",
   url: siteConfig.url,
   image: `${siteConfig.url}/profile.png`,
-  jobTitle: "Full Stack Software Engineer",
+  jobTitle: "Software Engineer and AI Research Applicant",
   description: siteConfig.description,
   email: "mmdanish.cs@gmail.com",
   address: {
@@ -61,6 +61,12 @@ const personSchema = {
     "Redis",
     "Full Stack Web Development",
     "Software Engineering",
+    "Large Language Models",
+    "LLM Agents",
+    "Trustworthy AI",
+    "AI-Assisted Software Engineering",
+    "Applied Deep Learning",
+    "Natural Language Processing",
   ],
 };
 
