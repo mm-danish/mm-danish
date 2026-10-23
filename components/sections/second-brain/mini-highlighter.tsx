@@ -66,7 +66,7 @@ export function MiniHighlighter({ code }: HighlighterProps) {
   };
 
   return (
-    <pre className="p-4 text-[13px] font-mono text-neutral-300 leading-relaxed bg-background whitespace-pre-wrap break-words overflow-x-hidden border border-white/5 rounded-b-lg">
+    <pre className="overflow-x-auto whitespace-pre-wrap break-words bg-transparent px-5 pb-5 pt-2 font-mono text-[13px] leading-relaxed text-slate-300">
       <code
         className="block"
         dangerouslySetInnerHTML={{ __html: highlight(code) }}

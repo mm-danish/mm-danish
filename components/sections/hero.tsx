@@ -126,7 +126,7 @@ export function Hero() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex-shrink-0 relative order-1 lg:order-2"
+              className="flex-0 relative order-1 lg:order-2"
             >
               <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[400px] lg:h-[400px]">
                 {/* Minimalist Aesthetic Frames */}

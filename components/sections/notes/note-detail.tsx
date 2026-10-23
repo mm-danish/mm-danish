@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, Copy, Check, Pencil, Trash2, Loader2 } from "lucide-react";
-import { cn } from "@/lib/cn";
+import { Copy, Check, Pencil, Trash2, Loader2 } from "lucide-react";
 import {
   getNoteAccent,
   getCategoryColor,
@@ -16,36 +15,33 @@ import { MiniHighlighter } from "@/components/sections/second-brain/mini-highlig
 import { NoteEditorFields } from "./note-editor-fields";
 
 interface NoteDetailProps {
-  note: LearningItem | null;
+  note: LearningItem;
   isEditing: boolean;
-  onBack: () => void;
   onStartEdit: (note: LearningItem) => void;
   onCancelEdit: () => void;
   onDelete: (note: LearningItem) => void;
   onSaved: () => void;
-  showBack?: boolean;
 }
 
 const DEFAULT_COLOR = NOTE_ACCENT_COLORS[3].hex;
 
 function formatLongDate(date: string) {
-  return new Date(date).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  return new Date(date)
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "2-digit",
+    })
+    .replaceAll(" ", "/");
 }
 
 export function NoteDetail({
   note,
   isEditing,
-  onBack,
   onStartEdit,
   onCancelEdit,
   onDelete,
   onSaved,
-  showBack = false,
 }: NoteDetailProps) {
   const [copied, setCopied] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -109,39 +105,37 @@ export function NoteDetail({
     }
   };
 
-  if (!note) {
-    return (
-      <div className="hidden md:flex h-full flex-1 items-center justify-center bg-background">
-        <p className="text-sm text-muted-foreground">
-          Select a note to read it here.
-        </p>
-      </div>
-    );
-  }
-
   const accent = getNoteAccent(note);
 
   return (
-    <div className="flex h-full flex-1 flex-col bg-background min-w-0">
-      <div className="flex items-center justify-between px-4 sm:px-10 pt-5 sm:pt-7 pb-3">
-        <button
-          onClick={onBack}
-          className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-            !showBack && "invisible",
-          )}
-          aria-label="Back to notes"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-
-        <div className="flex items-center gap-1">
+    <article
+      id={`note-${note.id}`}
+      className="min-w-0 scroll-mt-8 rounded-2xl bg-card/60 p-5 shadow-sm shadow-black/10 sm:p-7"
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        {!isEditing && (
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
+            <span
+              className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em]"
+              style={{
+                color: accent.hex,
+                backgroundColor: `${accent.hex}18`,
+              }}
+            >
+              {note.category}
+            </span>
+            <p className="text-[10px] text-muted-foreground/75">
+              {formatLongDate(note.date)}
+            </p>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
           {isEditing ? (
             <>
               <button
                 type="button"
                 onClick={onCancelEdit}
-                className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Cancel
               </button>
@@ -149,36 +143,44 @@ export function NoteDetail({
                 type="button"
                 onClick={handleSave}
                 disabled={isSaving || !title.trim() || !body.trim()}
-                className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                Save
+                {isSaving ? "Saving…" : "Save changes"}
               </button>
             </>
           ) : (
             <>
               <button
                 onClick={() => onStartEdit(note)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Edit note"
+                title="Edit note"
               >
-                <Pencil className="h-4 w-4" />
+                <Pencil className="h-3.5 w-3.5" strokeWidth={1.7} />
               </button>
               <button
                 onClick={() => onDelete(note)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-red-500/15 hover:text-red-400"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Delete note"
+                title="Delete note"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" strokeWidth={1.7} />
               </button>
             </>
           )}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-5 sm:px-10 lg:px-14 pb-16">
-        <div className="mx-auto max-w-2xl pt-2 sm:pt-4">
-          {isEditing ? (
+      <div>
+        {isEditing ? (
+          <section className="rounded-2xl bg-card/35 p-4 sm:p-6">
+            <div className="mb-5">
+              <h2 className="text-sm font-semibold text-foreground">Edit note</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Update the title, category, and content below.
+              </p>
+            </div>
             <NoteEditorFields
               title={title}
               onTitleChange={setTitle}
@@ -190,61 +192,55 @@ export function NoteDetail({
               onBodyChange={setBody}
               autoFocusTitle
             />
-          ) : (
-            <>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-heading text-foreground leading-tight">
-                {note.title}
-              </h1>
-              <div className="mt-3 flex flex-wrap items-center gap-2.5">
-                <p className="text-sm text-muted-foreground">
-                  {formatLongDate(note.date)}
-                </p>
-                <span
-                  className="text-xs text-muted-foreground"
-                  style={{ color: accent.hex }}
-                >
-                  #{note.category.toLowerCase().replace(/\s+/g, "")}
-                </span>
-              </div>
+          </section>
+        ) : (
+          <>
+            <h2 className="mt-2 text-lg font-semibold tracking-tight font-heading text-foreground leading-snug sm:text-xl">
+              {note.title}
+            </h2>
 
-              <p className="mt-8 text-[15px] sm:text-base leading-relaxed text-foreground/85 whitespace-pre-wrap">
-                {note.content}
-              </p>
+            <p className="mt-6 max-w-prose whitespace-pre-wrap text-sm leading-7 text-foreground/80 sm:text-[15px]">
+              {note.content}
+            </p>
 
-              {note.code && (
-                <div className="mt-8 overflow-hidden rounded-lg border border-border">
-                  <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-white/5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-[#ff5f57]" />
-                      <span className="h-2 w-2 rounded-full bg-[#febc2e]" />
-                      <span className="h-2 w-2 rounded-full bg-[#28c840]" />
-                    </div>
-                    <button
-                      onClick={() => copyCode(note.code!)}
-                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="h-3 w-3" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" />
-                          Copy
-                        </>
-                      )}
-                    </button>
+            {note.code && (
+              <div className="mt-6 overflow-hidden rounded-xl bg-background/70 shadow-sm shadow-black/10 ring-1 ring-white/[0.05]">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex gap-1.5" aria-hidden="true">
+                      <span className="h-2 w-2 rounded-full bg-rose-400/80" />
+                      <span className="h-2 w-2 rounded-full bg-amber-300/80" />
+                      <span className="h-2 w-2 rounded-full bg-emerald-400/80" />
+                    </span>
+                    <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                      JavaScript
+                    </span>
                   </div>
-                  <div className="bg-zinc-950">
-                    <MiniHighlighter code={note.code} />
-                  </div>
+                  <button
+                    onClick={() => copyCode(note.code!)}
+                    className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-3.5 w-3.5" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy
+                      </>
+                    )}
+                  </button>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+                <div className="bg-transparent">
+                  <MiniHighlighter code={note.code} />
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </div>
+    </article>
   );
 }
