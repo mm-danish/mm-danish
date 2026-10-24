@@ -209,20 +209,24 @@ export default function AboutPage() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-20 p-8 sm:p-12 rounded-3xl border border-border/40 bg-card/30 backdrop-blur-xl"
+          className="relative mb-20 overflow-hidden p-8 sm:p-12 rounded-3xl border border-border/40 bg-card/30 backdrop-blur-xl"
         >
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest mb-6">
-              <Target className="h-3 w-3" />
-              <span>My Story</span>
+          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+          <div className="relative grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest mb-6">
+                <Target className="h-3 w-3" />
+                <span>My Story</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black font-heading tracking-tight leading-tight">
+                Engineering products with
+                <br />
+                <span className="text-gradient">precision and purpose.</span>
+              </h2>
+              <div className="mt-7 h-1 w-16 rounded-full bg-gradient-to-r from-primary to-blue-500" />
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black font-heading tracking-tight mb-6 leading-tight">
-              Engineering products with
-              <br />
-              <span className="text-gradient">precision and purpose.</span>
-            </h2>
-            <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p className="text-lg font-light">
+            <div className="space-y-5 border-l-2 border-primary/20 pl-5 sm:pl-7 text-muted-foreground leading-relaxed lg:self-center">
+              <p className="text-base sm:text-lg font-light">
                 I started my journey in software engineering with a passion for
                 solving real-world problems through code. With a{" "}
                 <span className="text-foreground font-semibold">

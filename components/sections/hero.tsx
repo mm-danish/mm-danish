@@ -38,7 +38,7 @@ export function Hero() {
                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-8"
               >
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span>Seeking AI research opportunities</span>
+                <span>Software engineer · AI research applicant</span>
               </motion.div>
 
               <motion.h1
@@ -47,8 +47,8 @@ export function Hero() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-4xl sm:text-6xl md:text-7xl font-black font-heading tracking-tight mb-8 leading-[1.05]"
               >
-                Engineering intelligent <br />
-                <span className="text-gradient">systems with purpose.</span>
+                Building reliable <br />
+                <span className="text-gradient">AI products.</span>
               </motion.h1>
 
               <motion.p
@@ -62,8 +62,8 @@ export function Hero() {
                   {siteConfig.name}
                 </span>
                 , a software engineer applying for graduate study in AI. I build
-                reliable AI-assisted products and am interested in LLM agents,
-                trustworthy AI, NLP, and intelligent systems.
+                reliable AI-assisted products, with research interests in LLM
+                agents, trustworthy AI, and natural language processing.
               </motion.p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-16">
@@ -133,7 +133,7 @@ export function Hero() {
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-[3rem] -rotate-3 scale-105" />
                 <div className="absolute inset-0 bg-card rounded-[3rem] border border-border/50 shadow-2xl overflow-hidden">
                   <Image
-                    src="/main.png"
+                    src="/profieler.png"
                     alt={siteConfig.name}
                     fill
                     className="object-cover"
@@ -154,7 +154,7 @@ export function Hero() {
                 >
                   <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                   <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">
-                    world wide
+                    {siteConfig.author.location}
                   </span>
                 </motion.div>
 
@@ -178,7 +178,7 @@ export function Hero() {
                     />
                   </div>
                   <span className="text-[9px] sm:text-[11px] font-extrabold tracking-tight">
-                    AI & Software Systems
+                    LLM agents · NLP · Trustworthy AI
                   </span>
                 </motion.div>
               </div>
