@@ -69,19 +69,6 @@ export default function AboutPage() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         {/* Back */}
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="mb-12"
-        >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors group"
-          >
-            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </Link>
-        </motion.div>
 
         {/* Hero section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24">
@@ -161,7 +148,7 @@ export default function AboutPage() {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-[3rem] -rotate-3 scale-105" />
               <div className="absolute inset-0 bg-card rounded-[3rem] border border-border/50 shadow-2xl overflow-hidden">
                 <Image
-                  src="/main.png"
+                  src="/profieler.png"
                   alt={siteConfig.name}
                   fill
                   className="object-cover"

@@ -24,12 +24,6 @@ export default function NotFound() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-8">
-          <Link href="/">
-            <Button size="lg" className="rounded-full px-8">
-              <Home className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
           <Link href="/projects">
             <Button
               size="lg"
