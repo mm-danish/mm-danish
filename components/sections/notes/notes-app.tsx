@@ -2,12 +2,70 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, Search, X } from "lucide-react";
+import { Brain, Check, ChevronLeft, ChevronRight, Eye, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { getNoteAccent, type LearningItem } from "@/data/learning";
 import { NoteDetail } from "./note-detail";
 import { AddNoteForm } from "@/components/sections/second-brain/add-note-form";
 import { AuthModal } from "@/components/sections/second-brain/auth-modal";
 import { DeleteConfirmationModal } from "@/components/sections/second-brain/delete-confirmation-modal";
+
+function ScrollFadeArea({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [hasContentAbove, setHasContentAbove] = React.useState(false);
+  const [hasContentBelow, setHasContentBelow] = React.useState(false);
+
+  React.useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
+
+    const updateFades = () => {
+      setHasContentAbove(element.scrollTop > 2);
+      setHasContentBelow(
+        element.scrollHeight - element.scrollTop - element.clientHeight > 2,
+      );
+    };
+
+    updateFades();
+    element.addEventListener("scroll", updateFades, { passive: true });
+    const resizeObserver = new ResizeObserver(updateFades);
+    resizeObserver.observe(element);
+    Array.from(element.children).forEach((child) => resizeObserver.observe(child));
+
+    return () => {
+      element.removeEventListener("scroll", updateFades);
+      resizeObserver.disconnect();
+    };
+  }, [children]);
+
+  return (
+    <div className="relative h-full min-h-0">
+      <div
+        ref={scrollRef}
+        className={`h-full min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}
+      >
+        {children}
+      </div>
+      {hasContentAbove && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 h-6 bg-gradient-to-b from-background/85 to-transparent"
+        />
+      )}
+      {hasContentBelow && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-background/90 to-transparent"
+        />
+      )}
+    </div>
+  );
+}
 
 export function NotesApp() {
   const router = useRouter();
@@ -35,6 +93,13 @@ export function NotesApp() {
     null,
   );
   const [isDeletingNote, setIsDeletingNote] = React.useState(false);
+  const [isReviewing, setIsReviewing] = React.useState(false);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const [reviewIndex, setReviewIndex] = React.useState(0);
+  const [isAnswerVisible, setIsAnswerVisible] = React.useState(false);
+  const [rememberedIds, setRememberedIds] = React.useState<Set<string>>(new Set());
 
   const fetchNotes = React.useCallback(async () => {
     try {
@@ -61,6 +126,12 @@ export function NotesApp() {
   React.useEffect(() => {
     if (typeof window === "undefined") return;
     setIsAuthorized(!!localStorage.getItem("brain_key"));
+    try {
+      const stored = JSON.parse(localStorage.getItem("notes_remembered") || "[]");
+      if (Array.isArray(stored)) setRememberedIds(new Set(stored.filter((id): id is string => typeof id === "string")));
+    } catch {
+      setRememberedIds(new Set());
+    }
   }, []);
 
   React.useEffect(() => {
@@ -72,6 +143,10 @@ export function NotesApp() {
       setSelectedId(noteParam);
     }
   }, [noteParam]);
+
+  React.useEffect(() => {
+    if (isSearchOpen) searchInputRef.current?.focus();
+  }, [isSearchOpen]);
 
   React.useEffect(() => {
     if (!noteParam || loading) return;
@@ -103,6 +178,21 @@ export function NotesApp() {
   }, [notes, searchQuery, categoryFilter]);
 
   const showSearchResults = isSearchFocused && !!searchQuery.trim();
+  const reviewNote = filteredNotes.length ? filteredNotes[reviewIndex % filteredNotes.length] : null;
+
+  const advanceReview = () => {
+    setIsAnswerVisible(false);
+    setReviewIndex((index) => filteredNotes.length ? (index + 1) % filteredNotes.length : 0);
+  };
+
+  const markRemembered = () => {
+    if (!reviewNote) return;
+    const next = new Set(rememberedIds);
+    next.add(reviewNote.id);
+    setRememberedIds(next);
+    localStorage.setItem("notes_remembered", JSON.stringify([...next]));
+    advanceReview();
+  };
 
   const selectNote = (note: LearningItem) => {
     setEditingId(null);
@@ -174,137 +264,78 @@ export function NotesApp() {
 
   return (
     <div className="notes-shell flex h-screen flex-col overflow-hidden bg-background">
-      <header className="sticky top-0 z-20 mx-auto flex w-full max-w-4xl shrink-0 flex-col px-5 py-4 backdrop-blur-xl sm:px-10 sm:py-5 lg:px-14">
-        <div className="flex w-full items-center gap-1 rounded-full bg-card/70 p-1 ring-1 ring-white/[0.07] transition-colors focus-within:ring-white/15 sm:gap-1.5">
-          <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-              onKeyDown={(event) => {
-                if (event.key === "Escape") {
-                  setSearchQuery("");
-                  setIsSearchFocused(false);
-                  event.currentTarget.blur();
-                }
-                if (
-                  event.key === "Enter" &&
-                  searchQuery.trim() &&
-                  filteredNotes[0]
-                ) {
-                  selectNote(filteredNotes[0]);
-                }
-              }}
-              placeholder="Search your notes..."
-              aria-label="Search notes by title, content, code, or category"
-              aria-expanded={showSearchResults}
-              className="h-10 w-full rounded-full bg-transparent pl-10 pr-10 text-sm text-foreground outline-none placeholder:text-muted-foreground/70"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                aria-label="Clear search"
-              >
-                <X className="h-4 w-4" />
-              </button>
+      <header className="sticky top-0 z-20 flex w-full shrink-0 justify-center px-5 py-1.5">
+        <div className="flex items-center gap-0.5">
+          <div className={`relative flex h-8 items-center overflow-visible rounded-lg transition-[width,background-color] duration-300 ease-out ${isSearchOpen ? "w-56 bg-muted/70 sm:w-64" : "w-8"}`}>
+            {!isSearchOpen ? (
+              <button type="button" onClick={() => setIsSearchOpen(true)} aria-label="Search notes" title="Search notes" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><Search className="h-3.5 w-3.5" /></button>
+            ) : (
+              <>
+                <Search className="pointer-events-none absolute left-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                <input ref={searchInputRef} type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} onFocus={() => setIsSearchFocused(true)} onBlur={() => setIsSearchFocused(false)} onKeyDown={(event) => { if (event.key === "Escape") { setSearchQuery(""); setIsSearchFocused(false); setIsSearchOpen(false); } if (event.key === "Enter" && searchQuery.trim() && filteredNotes[0]) { selectNote(filteredNotes[0]); setIsSearchOpen(false); } }} placeholder="Search notes..." aria-label="Search notes by title, content, code, or category" aria-expanded={showSearchResults} className="h-8 min-w-0 flex-1 bg-transparent pl-8 pr-1 text-sm text-foreground outline-none placeholder:text-muted-foreground/70" />
+                <button type="button" onClick={() => { setSearchQuery(""); setIsSearchFocused(false); setIsSearchOpen(false); }} aria-label="Close search" title="Close search" className="mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground"><X className="h-3.5 w-3.5" /></button>
+              </>
             )}
-
-            {showSearchResults && (
-              <div
-                role="listbox"
-                aria-label="Matching notes"
-                className="absolute left-0 right-0 top-full mt-2 max-h-[min(60vh,28rem)] overflow-y-auto rounded-2xl bg-card p-2 shadow-2xl shadow-black/40 ring-1 ring-white/10"
-              >
-                {filteredNotes.length > 0 ? (
-                  filteredNotes.map((note) => {
-                    const accent = getNoteAccent(note);
-                    const preview = note.content.replace(/\s+/g, " ").trim();
-                    return (
-                      <button
-                        key={note.id}
-                        type="button"
-                        role="option"
-                        aria-selected={note.id === selectedId}
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => selectNote(note)}
-                        className="w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span
-                            className="h-2 w-2 shrink-0 rounded-full"
-                            style={{ backgroundColor: accent.hex }}
-                          />
-                          <span className="truncate text-sm font-medium text-foreground">
-                            {note.title}
-                          </span>
-                          <span
-                            className="ml-auto shrink-0 text-[11px]"
-                            style={{ color: accent.hex }}
-                          >
-                            {note.category}
-                          </span>
-                        </span>
-                        <span className="mt-1 block truncate pl-4 text-xs text-muted-foreground">
-                          {preview || "No preview available"}
-                        </span>
-                      </button>
-                    );
-                  })
-                ) : (
-                  <p className="px-3 py-6 text-center text-sm text-muted-foreground">
-                    No notes match &ldquo;{searchQuery.trim()}&rdquo;.
-                  </p>
-                )}
-              </div>
-            )}
+            {isSearchOpen && showSearchResults && <div role="listbox" aria-label="Matching notes" className="absolute left-0 top-full z-30 mt-2 max-h-[min(60vh,24rem)] w-[min(88vw,24rem)] overflow-y-auto rounded-xl border border-border/70 bg-card p-1.5 shadow-xl shadow-black/20">
+              {filteredNotes.length ? filteredNotes.map((note) => { const accent = getNoteAccent(note); const preview = note.content.replace(/\s+/g, " ").trim(); return <button key={note.id} type="button" role="option" aria-selected={note.id === selectedId} onMouseDown={(event) => event.preventDefault()} onClick={() => { selectNote(note); setIsSearchOpen(false); }} className="w-full rounded-lg px-3 py-2.5 text-left hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"><span className="flex items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: accent.hex }} /><span className="truncate text-sm font-medium text-foreground">{note.title}</span><span className="ml-auto shrink-0 text-[11px]" style={{ color: accent.hex }}>{note.category}</span></span><span className="mt-1 block truncate pl-4 text-xs text-muted-foreground">{preview || "No preview available"}</span></button>; }) : <p className="px-3 py-5 text-center text-sm text-muted-foreground">No notes match &ldquo;{searchQuery.trim()}&rdquo;.</p>}
+            </div>}
           </div>
-          <button
-            type="button"
-            onClick={() => requireAuth("add")}
-            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-            aria-label="Create a new note"
-          >
-            <Plus className="h-4 w-4" strokeWidth={1.8} />
-            Add
-          </button>
-        </div>
-        <div
-          className="flex flex-wrap gap-2 pt-1"
-          aria-label="Filter notes by category"
-        >
-          {categories.map((category) => {
-            const isActive = categoryFilter === category;
-            return (
-              <button
-                key={category}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => setCategoryFilter(category)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  isActive
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                {category}
-              </button>
-            );
-          })}
+          <div className="group relative">
+            <button type="button" onClick={() => setIsCategoryOpen((open) => !open)} aria-label="Filter by category" aria-expanded={isCategoryOpen} title="Filter by category" className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${categoryFilter !== "All" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}><SlidersHorizontal className="h-3.5 w-3.5" /></button>
+            <div className={`absolute left-1/2 top-full z-30 mt-1.5 w-56 -translate-x-1/2 rounded-xl border border-border/70 bg-card p-1.5 shadow-xl shadow-black/20 ${isCategoryOpen ? "block" : "hidden group-hover:block group-focus-within:block"}`} aria-label="Filter notes by category">
+              {categories.map((category) => <button key={category} type="button" aria-pressed={categoryFilter === category} onClick={() => { setCategoryFilter(category); setReviewIndex(0); setIsAnswerVisible(false); setIsCategoryOpen(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition-colors ${categoryFilter === category ? "bg-primary/10 font-semibold text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}><span>{category}</span>{categoryFilter === category && <Check className="h-3.5 w-3.5" />}</button>)}
+            </div>
+          </div>
+          <button type="button" onClick={() => { setIsReviewing((value) => !value); setIsAnswerVisible(false); setReviewIndex(0); }} aria-pressed={isReviewing} aria-label={isReviewing ? "Exit review" : "Review notes"} title={isReviewing ? "Exit review" : "Review notes"} className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isReviewing ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}><Brain className="h-3.5 w-3.5" /></button>
+          <button type="button" onClick={() => requireAuth("add")} aria-label="Create a new note" title="Create a new note" className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><Plus className="h-4 w-4" strokeWidth={1.8} /></button>
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto custom-scrollbar">
-        <div className="mx-auto max-w-4xl space-y-5 px-5 py-6 sm:px-10 sm:py-8 lg:px-14">
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="mx-auto h-full max-w-4xl overflow-hidden px-5 py-4 sm:px-10 sm:py-5 lg:px-14">
+          <main className="h-full min-h-0 min-w-0">
+            <ScrollFadeArea>
+              <div className="mx-auto max-w-4xl space-y-3 py-4">
           {loading ? (
             <p className="py-16 text-center text-sm text-muted-foreground">
               Loading notes...
             </p>
+          ) : isReviewing ? (
+            reviewNote ? (
+              <section className="mx-auto max-w-2xl rounded-3xl border border-border/60 bg-card/60 p-6 shadow-xl shadow-black/10 sm:p-10" aria-label="Note review card">
+                <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                  <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary">{reviewNote.category}</span>
+                  <span>{(reviewIndex % filteredNotes.length) + 1} / {filteredNotes.length} · {rememberedIds.size} remembered</span>
+                </div>
+                <h1 className="mt-8 text-2xl font-bold leading-tight tracking-tight font-heading sm:text-3xl">{reviewNote.title}</h1>
+                <div className="mt-7 min-h-36 rounded-2xl border border-border/50 bg-background/50 p-5 sm:p-6">
+                  {isAnswerVisible ? (
+                    <>
+                      <p className="whitespace-pre-wrap text-sm leading-7 text-foreground/85 sm:text-base">{reviewNote.content || "This note has no written explanation."}</p>
+                      {reviewNote.code && <pre className="mt-5 overflow-x-auto rounded-xl bg-background p-4 text-xs leading-6 text-foreground/85"><code>{reviewNote.code}</code></pre>}
+                    </>
+                  ) : (
+                    <div className="flex min-h-24 flex-col items-center justify-center gap-2 text-center text-sm text-muted-foreground">
+                      <Eye className="h-5 w-5" />
+                      <span>Try to recall the key idea before revealing the note.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+                  <button type="button" onClick={() => { setIsAnswerVisible(false); setReviewIndex((index) => (index - 1 + filteredNotes.length) % filteredNotes.length); }} className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted"><ChevronLeft className="h-4 w-4" />Previous</button>
+                  {!isAnswerVisible ? (
+                    <button type="button" onClick={() => setIsAnswerVisible(true)} className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background hover:opacity-85"><Eye className="h-4 w-4" />Show answer</button>
+                  ) : (
+                    <div className="flex gap-2">
+                      <button type="button" onClick={advanceReview} className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted">Review again <ChevronRight className="ml-1 inline h-4 w-4" /></button>
+                      <button type="button" onClick={markRemembered} className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"><Check className="h-4 w-4" />Remembered</button>
+                    </div>
+                  )}
+                </div>
+              </section>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">No notes match the current search or category. Clear a filter to review your notes.</div>
+            )
           ) : filteredNotes.length > 0 ? (
             filteredNotes.map((note) => (
               <NoteDetail
@@ -324,6 +355,10 @@ export function NotesApp() {
                 : "No notes to display."}
             </p>
           )}
+              </div>
+            </ScrollFadeArea>
+          </main>
+
         </div>
       </div>
 

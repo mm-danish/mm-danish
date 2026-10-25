@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Copy, Check, Pencil, Trash2, Loader2 } from "lucide-react";
 import {
-  getNoteAccent,
   getCategoryColor,
   combineNoteBody,
   splitNoteBody,
@@ -105,31 +104,23 @@ export function NoteDetail({
     }
   };
 
-  const accent = getNoteAccent(note);
-
   return (
     <article
       id={`note-${note.id}`}
-      className="min-w-0 scroll-mt-8 rounded-2xl bg-card/60 p-5 shadow-sm shadow-black/10 sm:p-7"
+      className="flex min-w-0 scroll-mt-6 flex-col py-4"
     >
-      <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="order-2 mt-3 flex items-center justify-start gap-2">
         {!isEditing && (
-          <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
-            <span
-              className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em]"
-              style={{
-                color: accent.hex,
-                backgroundColor: `${accent.hex}18`,
-              }}
-            >
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+            <span className="font-medium">
               {note.category}
             </span>
-            <p className="text-[10px] text-muted-foreground/75">
+            <p className="text-muted-foreground/65">
               {formatLongDate(note.date)}
             </p>
           </div>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-0">
           {isEditing ? (
             <>
               <button
@@ -153,26 +144,26 @@ export function NoteDetail({
             <>
               <button
                 onClick={() => onStartEdit(note)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 aria-label="Edit note"
                 title="Edit note"
               >
-                <Pencil className="h-3.5 w-3.5" strokeWidth={1.7} />
+                <Pencil className="h-3 w-3" strokeWidth={1.7} />
               </button>
               <button
                 onClick={() => onDelete(note)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground/60 transition-colors hover:text-rose-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 aria-label="Delete note"
                 title="Delete note"
               >
-                <Trash2 className="h-3.5 w-3.5" strokeWidth={1.7} />
+                <Trash2 className="h-3 w-3" strokeWidth={1.7} />
               </button>
             </>
           )}
         </div>
       </div>
 
-      <div>
+      <div className="order-1">
         {isEditing ? (
           <section className="rounded-2xl bg-card/35 p-4 sm:p-6">
             <div className="mb-5">
@@ -195,16 +186,16 @@ export function NoteDetail({
           </section>
         ) : (
           <>
-            <h2 className="mt-2 text-lg font-semibold tracking-tight font-heading text-foreground leading-snug sm:text-xl">
+            <h2 className="text-2xl font-bold tracking-tight font-heading text-foreground leading-snug sm:text-3xl">
               {note.title}
             </h2>
 
-            <p className="mt-6 max-w-prose whitespace-pre-wrap text-sm leading-7 text-foreground/80 sm:text-[15px]">
+            <p className="mt-2 max-w-3xl whitespace-pre-wrap text-sm leading-6 text-foreground/80 sm:text-[15px]">
               {note.content}
             </p>
 
             {note.code && (
-              <div className="mt-6 overflow-hidden rounded-xl bg-background/70 shadow-sm shadow-black/10 ring-1 ring-white/[0.05]">
+              <div className="mt-4 overflow-hidden rounded-lg border border-border/50 bg-background/50">
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
                     <span className="flex gap-1.5" aria-hidden="true">

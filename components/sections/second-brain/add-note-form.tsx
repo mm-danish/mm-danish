@@ -33,6 +33,9 @@ export function AddNoteForm({
   const [category, setCategory] = React.useState<LearningCategory>("Node.js");
   const [accentColor, setAccentColor] = React.useState<string>(DEFAULT_COLOR);
   const [body, setBody] = React.useState("");
+  const contentScrollRef = React.useRef<HTMLDivElement>(null);
+  const [hasContentAbove, setHasContentAbove] = React.useState(false);
+  const [hasContentBelow, setHasContentBelow] = React.useState(false);
 
   const resetForm = React.useCallback(() => {
     setNoteId(undefined);
@@ -113,12 +116,36 @@ export function AddNoteForm({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, handleClose]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const element = contentScrollRef.current;
+    if (!element) return;
+
+    const updateFades = () => {
+      setHasContentAbove(element.scrollTop > 2);
+      setHasContentBelow(
+        element.scrollHeight - element.scrollTop - element.clientHeight > 2,
+      );
+    };
+
+    updateFades();
+    element.addEventListener("scroll", updateFades, { passive: true });
+    const resizeObserver = new ResizeObserver(updateFades);
+    resizeObserver.observe(element);
+    Array.from(element.children).forEach((child) => resizeObserver.observe(child));
+
+    return () => {
+      element.removeEventListener("scroll", updateFades);
+      resizeObserver.disconnect();
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-background/60"
+        className="absolute inset-0 bg-background/55 backdrop-blur-[2px]"
         onClick={handleClose}
         aria-hidden="true"
       />
@@ -127,13 +154,13 @@ export function AddNoteForm({
         role="dialog"
         aria-modal="true"
         aria-labelledby="new-note-title"
-        className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl max-h-[90vh]"
+        className="relative flex max-h-[86vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border/70 bg-background shadow-xl shadow-black/20"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-2 py-1">
           <h2
             id="new-note-title"
-            className="text-sm font-medium text-foreground"
+            className="text-base font-semibold tracking-tight text-foreground"
           >
             {noteId ? "Edit Note" : "New Note"}
           </h2>
@@ -141,39 +168,46 @@ export function AddNoteForm({
             type="button"
             aria-label="Close"
             onClick={handleClose}
-            className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-4">
-            <NoteEditorFields
-              title={title}
-              onTitleChange={setTitle}
-              category={category}
-              onCategoryChange={setCategory}
-              accentColor={accentColor}
-              onAccentColorChange={setAccentColor}
-              body={body}
-              onBodyChange={setBody}
-              autoFocusTitle
-            />
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-col overflow-hidden">
+          <div className="relative min-h-0">
+            <div
+              ref={contentScrollRef}
+              className="max-h-[calc(86vh-10rem)] overflow-y-auto px-4 py-3.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              <NoteEditorFields
+                title={title}
+                onTitleChange={setTitle}
+                category={category}
+                onCategoryChange={setCategory}
+                accentColor={accentColor}
+                onAccentColorChange={setAccentColor}
+                body={body}
+                onBodyChange={setBody}
+                autoFocusTitle
+              />
+            </div>
+            {hasContentAbove && <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-10 h-5 bg-gradient-to-b from-background/90 to-transparent" />}
+            {hasContentBelow && <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-7 bg-gradient-to-t from-background/90 to-transparent" />}
           </div>
 
-          <div className="flex items-center justify-end gap-3 px-4 py-3">
+          <div className="flex items-center justify-end gap-2  px-2 py-2">
             <button
               type="button"
               onClick={handleClose}
-              className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+              className="rounded-full border border-border/80 px-5 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !title.trim() || !body.trim()}
-              className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40"
             >
               {isSubmitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Save

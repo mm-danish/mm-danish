@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   NOTE_TAGS,
   NOTE_ACCENT_COLORS,
@@ -30,9 +31,18 @@ export function NoteEditorFields({
   onBodyChange,
   autoFocusTitle,
 }: NoteEditorFieldsProps) {
+  const contentRef = React.useRef<HTMLTextAreaElement>(null);
+
+  React.useEffect(() => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [body]);
+
   return (
-    <div className="space-y-5">
-      <label className="block space-y-2">
+    <div className="space-y-3">
+      <label className="block space-y-1.5">
         <span className="text-xs font-medium text-muted-foreground">Title</span>
         <input
           required
@@ -40,11 +50,11 @@ export function NoteEditorFields({
           placeholder="Give your note a clear title"
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
-          className="w-full rounded-full border border-border bg-background/60 px-5 py-2.5 text-base font-semibold tracking-tight text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary/50 focus:ring-2 focus:ring-ring/20"
+          className="w-full rounded-xl border border-border/70 bg-transparent px-3.5 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary/50"
         />
       </label>
 
-      <fieldset className="space-y-2">
+      <fieldset className="space-y-1.5">
         <legend className="text-xs font-medium text-muted-foreground">Category</legend>
         <div className="flex flex-wrap gap-2">
           {NOTE_TAGS.map((tag) => {
@@ -56,10 +66,10 @@ export function NoteEditorFields({
                 aria-pressed={isSelected}
                 onClick={() => onCategoryChange(tag.category)}
                 className={cn(
-                  "shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40",
                   isSelected
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-foreground hover:bg-muted",
+                    ? "border-primary/50 bg-primary/5 text-primary"
+                    : "border-border/70 text-muted-foreground hover:border-border hover:text-foreground",
                 )}
               >
                 {tag.label}
@@ -69,9 +79,9 @@ export function NoteEditorFields({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-2">
+      <fieldset className="space-y-1.5">
         <legend className="text-xs font-medium text-muted-foreground">Accent color</legend>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {NOTE_ACCENT_COLORS.map((color) => {
             const isSelected = accentColor === color.hex;
             return (
@@ -92,17 +102,18 @@ export function NoteEditorFields({
         </div>
       </fieldset>
 
-      <label className="block space-y-2">
+      <label className="block space-y-1.5">
         <span className="text-xs font-medium text-muted-foreground">Content</span>
         <textarea
+          ref={contentRef}
           required
-          rows={14}
+          rows={3}
           placeholder={
             "Write your note...\n\nUse ``` for code blocks:\n\n```javascript\nfunction example() {}\n```"
           }
           value={body}
           onChange={(e) => onBodyChange(e.target.value)}
-          className="min-h-60 w-full resize-y rounded-2xl border border-border bg-background/60 px-3.5 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary/50 focus:ring-2 focus:ring-ring/20 font-mono"
+          className="min-h-28 w-full resize-none overflow-hidden rounded-xl border border-border/70 bg-transparent px-3.5 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary/50 font-mono"
         />
       </label>
     </div>
