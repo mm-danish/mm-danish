@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, AlertTriangle, X, Loader2 } from 'lucide-react';
-import { LearningItem } from '@/data/learning';
-import { cn } from '@/lib/cn';
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash2, X, Loader2 } from "lucide-react";
+import { LearningItem } from "@/data/learning";
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
@@ -24,10 +23,10 @@ export function DeleteConfirmationModal({
   // Handle Escape key to close modal
   React.useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    if (isOpen) window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    if (isOpen) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, onClose]);
 
   if (!note) return null;
@@ -36,7 +35,7 @@ export function DeleteConfirmationModal({
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-110 flex items-center justify-center p-4 sm:p-6"
           role="none"
         >
           {/* Backdrop */}
@@ -45,7 +44,7 @@ export function DeleteConfirmationModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-background/80 backdrop-blur-md"
+            className="absolute inset-0 bg-background/45 backdrop-blur-[2px]"
             aria-hidden="true"
           />
 
@@ -58,49 +57,42 @@ export function DeleteConfirmationModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="relative w-full max-w-sm rounded-[2rem] border border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden p-6 flex flex-col"
+            className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border/70 bg-background p-4 shadow-2xl shadow-black/25"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 text-muted-foreground/50 hover:text-foreground transition-colors rounded-full p-1.5 hover:bg-muted/40"
+              className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               aria-label="Close dialog"
             >
               <X className="h-4 w-4" />
             </button>
 
             {/* Content area */}
-            <div className="flex flex-col items-center text-center mt-3">
-              {/* Alert icon with soft red glow */}
-              <div className="relative mb-4">
-                <div className="absolute inset-0 rounded-2xl bg-destructive/10 blur-md animate-pulse" />
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 text-destructive shadow-inner">
-                  <AlertTriangle className="h-5 w-5" />
-                </div>
-              </div>
-
-              {/* Title */}
+            <div className="pr-8 text-left">
               <h2
                 id="delete-dialog-title"
-                className="text-base font-bold tracking-tight text-foreground font-heading"
+                className="font-heading text-lg font-semibold tracking-tight text-foreground"
               >
                 Delete note?
               </h2>
 
-              {/* Description */}
-              <p className="text-xs text-muted-foreground mt-2 leading-relaxed px-2">
-                Are you sure you want to delete <span className="font-semibold text-foreground">&ldquo;{note.title}&rdquo;</span>? This will permanently remove it from your Second Brain and this action cannot be undone.
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                This will permanently delete{" "}
+                <span className="font-medium text-foreground">
+                  &ldquo;{note.title}&rdquo;
+                </span>
+                . This action cannot be undone.
               </p>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center gap-3 mt-6">
+            <div className="mt-6 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isDeleting}
-                className="flex-1 rounded-2xl border border-border/50 bg-background/50 hover:bg-muted/40 text-xs font-bold text-muted-foreground h-10 transition-all active:scale-98 disabled:opacity-50"
+                className="h-10 rounded-full border border-border/70 px-5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -108,7 +100,7 @@ export function DeleteConfirmationModal({
                 type="button"
                 onClick={onConfirm}
                 disabled={isDeleting}
-                className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl bg-destructive hover:bg-destructive/90 text-destructive-foreground text-xs font-bold h-10 transition-all active:scale-98 disabled:opacity-50 shadow-[0_2px_10px_rgba(239,68,68,0.15)]"
+                className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
               >
                 {isDeleting ? (
                   <>
