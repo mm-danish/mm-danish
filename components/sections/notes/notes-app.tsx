@@ -296,9 +296,9 @@ export function NotesApp() {
   return (
     <div className="notes-shell relative flex h-dvh flex-col overflow-hidden bg-background">
       <header className="pointer-events-none absolute inset-x-0 top-2 z-20 flex w-full justify-end px-4 py-1.5 sm:px-5 lg:px-8 lg:py-3">
-        <div className="pointer-events-auto flex items-center gap-0.5 rounded-full border border-border/50 bg-background/65 p-1.5 shadow-lg shadow-black/10 backdrop-blur-xl">
+        <div className="pointer-events-auto flex max-w-full items-center gap-0.5 rounded-full border border-border/50 bg-background/65 p-1.5 shadow-lg shadow-black/10 backdrop-blur-xl">
           <div
-            className={`relative flex h-8 items-center overflow-visible rounded-full transition-[width,background-color] duration-300 ease-out ${isSearchOpen ? "w-56 bg-muted/70 sm:w-64" : "w-8"}`}
+            className={`relative flex h-8 items-center overflow-visible rounded-full transition-[width,background-color] duration-300 ease-out ${isSearchOpen ? "w-[min(calc(100vw-4rem),16rem)] bg-muted/70 sm:w-64" : "w-8"}`}
           >
             {!isSearchOpen ? (
               <button
@@ -338,7 +338,7 @@ export function NotesApp() {
                   placeholder="Search notes..."
                   aria-label="Search notes by title, content, code, or category"
                   aria-expanded={showSearchResults}
-                  className="h-8 min-w-0 flex-1 bg-transparent pl-8 pr-1 text-sm text-foreground outline-none placeholder:text-muted-foreground/70"
+                  className="h-8 min-w-0 flex-1 bg-transparent pl-8 pr-1 text-base text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-sm"
                 />
                 <button
                   type="button"
@@ -407,7 +407,7 @@ export function NotesApp() {
               </div>
             )}
           </div>
-          <div className="group relative flex items-center">
+          <div className={`group relative flex items-center ${isSearchOpen ? "hidden sm:flex" : ""}`}>
             <button
               type="button"
               onClick={() => setIsCategoryOpen((open) => !open)}
@@ -479,7 +479,7 @@ export function NotesApp() {
             aria-pressed={isReviewing}
             aria-label={isReviewing ? "Exit review" : "Review notes"}
             title={isReviewing ? "Exit review" : "Review notes"}
-            className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isReviewing ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+            className={`${isSearchOpen ? "hidden sm:flex" : "flex"} h-8 w-8 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isReviewing ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
           >
             <Brain className="h-3.5 w-3.5" />
           </button>
@@ -488,7 +488,7 @@ export function NotesApp() {
             onClick={() => requireAuth("add")}
             aria-label="Create a new note"
             title="Create a new note"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className={`${isSearchOpen ? "hidden sm:flex" : "flex"} h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
           >
             <Plus className="h-4 w-4" strokeWidth={1.8} />
           </button>

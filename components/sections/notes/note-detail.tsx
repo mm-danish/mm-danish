@@ -107,7 +107,7 @@ export function NoteDetail({
       id={`note-${note.id}`}
       className="flex min-w-0 scroll-mt-6 flex-col py-4"
     >
-      <div className="order-2 mt-3 flex items-center justify-start gap-2">
+      <div className={`order-2 mt-3 flex items-center gap-2 ${isEditing ? "justify-end" : "justify-start"}`}>
         {!isEditing && (
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5 font-medium">
@@ -119,13 +119,13 @@ export function NoteDetail({
             </p>
           </div>
         )}
-        <div className="flex items-center gap-0">
+        <div className={`flex items-center ${isEditing ? "gap-2" : "gap-0"}`}>
           {isEditing ? (
             <>
               <button
                 type="button"
                 onClick={onCancelEdit}
-                className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-full border border-border/80 px-5 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Cancel
               </button>
@@ -133,7 +133,7 @@ export function NoteDetail({
                 type="button"
                 onClick={handleSave}
                 disabled={isSaving || !title.trim() || !body.trim()}
-                className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {isSaving ? "Saving…" : "Save changes"}
