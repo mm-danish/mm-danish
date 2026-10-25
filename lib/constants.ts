@@ -13,6 +13,7 @@ export const NAV_LINKS = [
   { name: "Skills", href: "/#skills" },
   { name: "Blog", href: "/blog" },
   { name: "Research", href: "/research" },
+  { name: "German", href: "/german" },
   // { name: 'Notes', href: '/notes' },
   { name: "Contact", href: "/contact" },
 ] as const;

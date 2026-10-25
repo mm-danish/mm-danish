@@ -16,7 +16,9 @@ export function ConditionalNavigation({
   const hideChrome =
     pathname === '/second-brain' ||
     pathname === '/notes' ||
-    pathname.startsWith('/notes/');
+    pathname.startsWith('/notes/') ||
+    pathname === '/german' ||
+    pathname.startsWith('/german/');
 
   return (
     <>

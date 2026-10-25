@@ -3,9 +3,11 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function BackToTop() {
   const [isVisible, setIsVisible] = React.useState(false);
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const toggleVisibility = () => {
@@ -22,6 +24,8 @@ export function BackToTop() {
       behavior: "smooth",
     });
   };
+
+  if (pathname === "/german" || pathname.startsWith("/german/")) return null;
 
   return (
     <AnimatePresence>

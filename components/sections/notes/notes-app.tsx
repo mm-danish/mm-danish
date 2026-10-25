@@ -294,7 +294,7 @@ export function NotesApp() {
   };
 
   return (
-    <div className="notes-shell relative flex h-dvh flex-col overflow-hidden bg-background">
+    <div className="relative flex h-dvh flex-col overflow-hidden bg-background text-foreground">
       <header className="pointer-events-none absolute inset-x-0 top-2 z-20 flex w-full justify-end px-4 py-1.5 sm:px-5 lg:px-8 lg:py-3">
         <div className="pointer-events-auto flex max-w-full items-center gap-0.5 rounded-full border border-border/50 bg-background/65 p-1.5 shadow-lg shadow-black/10 backdrop-blur-xl">
           <div

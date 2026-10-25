@@ -201,13 +201,13 @@ export function NoteDetail({
                       <span className="h-2 w-2 rounded-full bg-amber-300/80" />
                       <span className="h-2 w-2 rounded-full bg-emerald-400/80" />
                     </span>
-                    <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                    <span className="rounded-md bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                       JavaScript
                     </span>
                   </div>
                   <button
                     onClick={() => copyCode(note.code!)}
-                    className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     {copied ? (
                       <>

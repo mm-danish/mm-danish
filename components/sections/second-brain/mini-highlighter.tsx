@@ -17,19 +17,19 @@ export function MiniHighlighter({ code }: HighlighterProps) {
     // 2. Define patterns in order of priority (Strings and Comments first to avoid keyword collisions)
     const patterns = [
       // Comments
-      { regex: /(\/\/.*)/g, class: "text-neutral-500 italic" },
+      { regex: /(\/\/.*)/g, class: "text-muted-foreground italic" },
       // Strings
-      { regex: /(['"`])(.*?)\1/g, class: "text-emerald-400" },
+      { regex: /(['"`])(.*?)\1/g, class: "text-emerald-700 dark:text-emerald-400" },
       // Keywords (using word boundaries)
       {
         regex:
           /\b(export|function|const|let|var|await|async|return|if|else|import|from|try|catch|throw|new|type|interface|class|default)\b/g,
-        class: "text-blue-400 font-medium",
+          class: "text-blue-700 dark:text-blue-400 font-medium",
       },
       // Methods/Functions
-      { regex: /(\w+)(?=\s*\()/g, class: "text-amber-300 font-medium" },
+      { regex: /(\w+)(?=\s*\()/g, class: "text-amber-700 dark:text-amber-300 font-medium" },
       // Numbers
-      { regex: /\b(\d+)\b/g, class: "text-orange-400" },
+      { regex: /\b(\d+)\b/g, class: "text-orange-700 dark:text-orange-400" },
     ];
 
     // 3. Use an intermediate map to avoid "replacing a replacement"
@@ -66,7 +66,7 @@ export function MiniHighlighter({ code }: HighlighterProps) {
   };
 
   return (
-    <pre className="overflow-x-auto whitespace-pre-wrap break-words bg-transparent px-5 pb-5 pt-2 font-mono text-[13px] leading-relaxed text-slate-300">
+    <pre className="overflow-x-auto whitespace-pre-wrap break-words bg-transparent px-5 pb-5 pt-2 font-mono text-[13px] leading-relaxed text-foreground/80">
       <code
         className="block"
         dangerouslySetInnerHTML={{ __html: highlight(code) }}
