@@ -3,10 +3,9 @@
 import * as React from "react";
 import { Copy, Check, Pencil, Trash2, Loader2 } from "lucide-react";
 import {
-  getCategoryColor,
+  getNoteAccent,
   combineNoteBody,
   splitNoteBody,
-  NOTE_ACCENT_COLORS,
   type LearningItem,
   type LearningCategory,
 } from "@/data/learning";
@@ -15,14 +14,13 @@ import { NoteEditorFields } from "./note-editor-fields";
 
 interface NoteDetailProps {
   note: LearningItem;
+  categoryOptions?: string[];
   isEditing: boolean;
   onStartEdit: (note: LearningItem) => void;
   onCancelEdit: () => void;
   onDelete: (note: LearningItem) => void;
   onSaved: () => void;
 }
-
-const DEFAULT_COLOR = NOTE_ACCENT_COLORS[3].hex;
 
 function formatLongDate(date: string) {
   return new Date(date)
@@ -36,6 +34,7 @@ function formatLongDate(date: string) {
 
 export function NoteDetail({
   note,
+  categoryOptions,
   isEditing,
   onStartEdit,
   onCancelEdit,
@@ -46,14 +45,12 @@ export function NoteDetail({
   const [isSaving, setIsSaving] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [category, setCategory] = React.useState<LearningCategory>("Node.js");
-  const [accentColor, setAccentColor] = React.useState<string>(DEFAULT_COLOR);
   const [body, setBody] = React.useState("");
 
   React.useEffect(() => {
     if (!note || !isEditing) return;
     setTitle(note.title);
     setCategory(note.category);
-    setAccentColor(note.color ?? getCategoryColor(note.category).hex);
     setBody(combineNoteBody(note.content, note.code));
   }, [note, isEditing]);
 
@@ -79,11 +76,10 @@ export function NoteDetail({
         },
         body: JSON.stringify({
           id: note.id,
-          category,
+          category: category.trim(),
           title: title.trim(),
           content,
           code: code ?? "",
-          color: accentColor,
         }),
       });
 
@@ -104,6 +100,8 @@ export function NoteDetail({
     }
   };
 
+  const accent = getNoteAccent(note);
+
   return (
     <article
       id={`note-${note.id}`}
@@ -112,7 +110,8 @@ export function NoteDetail({
       <div className="order-2 mt-3 flex items-center justify-start gap-2">
         {!isEditing && (
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-            <span className="font-medium">
+            <span className="inline-flex items-center gap-1.5 font-medium">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent.hex }} aria-hidden="true" />
               {note.category}
             </span>
             <p className="text-muted-foreground/65">
@@ -177,8 +176,7 @@ export function NoteDetail({
               onTitleChange={setTitle}
               category={category}
               onCategoryChange={setCategory}
-              accentColor={accentColor}
-              onAccentColorChange={setAccentColor}
+              categoryOptions={categoryOptions}
               body={body}
               onBodyChange={setBody}
               autoFocusTitle

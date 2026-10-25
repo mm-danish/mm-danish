@@ -181,6 +181,14 @@ export function NotesApp() {
     () => ["All", ...Array.from(new Set(notes.map((note) => note.category)))],
     [notes],
   );
+  const categoryOptions = React.useMemo(
+    () => categories.filter((category) => category !== "All"),
+    [categories],
+  );
+  const activeCategoryAccent = React.useMemo(() => {
+    const note = notes.find((item) => item.category === categoryFilter);
+    return note ? getNoteAccent(note).hex : undefined;
+  }, [notes, categoryFilter]);
 
   const filteredNotes = React.useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -287,7 +295,7 @@ export function NotesApp() {
 
   return (
     <div className="notes-shell relative flex h-dvh flex-col overflow-hidden bg-background">
-      <header className="pointer-events-none absolute inset-x-0 top-2 z-20 flex w-full justify-center px-5 py-1.5 lg:justify-end lg:px-8 lg:py-3">
+      <header className="pointer-events-none absolute inset-x-0 top-2 z-20 flex w-full justify-end px-4 py-1.5 sm:px-5 lg:px-8 lg:py-3">
         <div className="pointer-events-auto flex items-center gap-0.5 rounded-full border border-border/50 bg-background/65 p-1.5 shadow-lg shadow-black/10 backdrop-blur-xl">
           <div
             className={`relative flex h-8 items-center overflow-visible rounded-full transition-[width,background-color] duration-300 ease-out ${isSearchOpen ? "w-56 bg-muted/70 sm:w-64" : "w-8"}`}
@@ -399,19 +407,45 @@ export function NotesApp() {
               </div>
             )}
           </div>
-          <div className="group relative">
+          <div className="group relative flex items-center">
             <button
               type="button"
               onClick={() => setIsCategoryOpen((open) => !open)}
               aria-label="Filter by category"
               aria-expanded={isCategoryOpen}
               title="Filter by category"
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${categoryFilter !== "All" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+              className={`flex h-8 items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${categoryFilter !== "All" ? "rounded-l-full border-y border-l border-border/60 bg-muted/70 pl-2.5 pr-1 text-foreground" : "w-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"}`}
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
+              {categoryFilter !== "All" && (
+                <span className="inline-flex max-w-28 items-center gap-1.5 truncate text-xs font-medium">
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: activeCategoryAccent ?? "currentColor" }}
+                    aria-hidden="true"
+                  />
+                  <span className="truncate">{categoryFilter}</span>
+                </span>
+              )}
             </button>
+            {categoryFilter !== "All" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCategoryFilter("All");
+                  setReviewIndex(0);
+                  setIsAnswerVisible(false);
+                  setIsCategoryOpen(false);
+                }}
+                aria-label={`Clear ${categoryFilter} filter`}
+                title="Clear category filter"
+                className="flex h-8 w-7 items-center justify-center rounded-r-full border-y border-r border-border/60 bg-muted/70 pr-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
             <div
-              className={`absolute left-1/2 top-full z-30 mt-1.5 w-56 -translate-x-1/2 rounded-xl border border-border/70 bg-card p-1.5 shadow-xl shadow-black/20 ${isCategoryOpen ? "block" : "hidden group-hover:block group-focus-within:block"}`}
+              className={`absolute left-1/2 top-full z-30 mt-1.5 w-56 -translate-x-1/2 rounded-xl border border-border/70 bg-card p-1.5 shadow-xl shadow-black/20 ${isCategoryOpen ? "block" : "hidden"}`}
               aria-label="Filter notes by category"
             >
               {categories.map((category) => (
@@ -570,6 +604,7 @@ export function NotesApp() {
                     <NoteDetail
                       key={note.id}
                       note={note}
+                      categoryOptions={categoryOptions}
                       isEditing={editingId === note.id}
                       onStartEdit={(item) => requireAuth("edit", item)}
                       onCancelEdit={() => setEditingId(null)}
@@ -591,6 +626,7 @@ export function NotesApp() {
       </div>
 
       <AddNoteForm
+        categoryOptions={categoryOptions}
         forceOpen={isAdding}
         onClose={() => setIsAdding(false)}
         onSuccess={fetchNotes}

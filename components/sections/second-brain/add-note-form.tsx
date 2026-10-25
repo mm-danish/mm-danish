@@ -3,7 +3,6 @@
 import * as React from "react";
 import { X, Loader2 } from "lucide-react";
 import {
-  NOTE_ACCENT_COLORS,
   combineNoteBody,
   splitNoteBody,
   type LearningCategory,
@@ -12,15 +11,15 @@ import {
 import { NoteEditorFields } from "@/components/sections/notes/note-editor-fields";
 
 interface AddNoteFormProps {
+  categoryOptions?: string[];
   noteToEdit?: LearningItem | null;
   forceOpen?: boolean;
   onClose?: () => void;
   onSuccess?: () => void;
 }
 
-const DEFAULT_COLOR = NOTE_ACCENT_COLORS[3].hex;
-
 export function AddNoteForm({
+  categoryOptions,
   noteToEdit,
   forceOpen,
   onClose,
@@ -30,8 +29,7 @@ export function AddNoteForm({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [noteId, setNoteId] = React.useState<string | undefined>();
   const [title, setTitle] = React.useState("");
-  const [category, setCategory] = React.useState<LearningCategory>("Node.js");
-  const [accentColor, setAccentColor] = React.useState<string>(DEFAULT_COLOR);
+  const [category, setCategory] = React.useState<LearningCategory>("");
   const [body, setBody] = React.useState("");
   const contentScrollRef = React.useRef<HTMLDivElement>(null);
   const [hasContentAbove, setHasContentAbove] = React.useState(false);
@@ -40,8 +38,7 @@ export function AddNoteForm({
   const resetForm = React.useCallback(() => {
     setNoteId(undefined);
     setTitle("");
-    setCategory("Node.js");
-    setAccentColor(DEFAULT_COLOR);
+    setCategory("");
     setBody("");
   }, []);
 
@@ -50,7 +47,6 @@ export function AddNoteForm({
     setNoteId(noteToEdit.id);
     setTitle(noteToEdit.title);
     setCategory(noteToEdit.category);
-    setAccentColor(noteToEdit.color ?? DEFAULT_COLOR);
     setBody(combineNoteBody(noteToEdit.content, noteToEdit.code));
     setIsOpen(true);
   }, [noteToEdit]);
@@ -73,11 +69,10 @@ export function AddNoteForm({
 
     const submissionData = {
       id: noteId,
-      category,
+      category: category.trim(),
       title: title.trim(),
       content,
       code: code ?? "",
-      color: accentColor,
     };
 
     try {
@@ -185,8 +180,7 @@ export function AddNoteForm({
                 onTitleChange={setTitle}
                 category={category}
                 onCategoryChange={setCategory}
-                accentColor={accentColor}
-                onAccentColorChange={setAccentColor}
+                categoryOptions={categoryOptions}
                 body={body}
                 onBodyChange={setBody}
                 autoFocusTitle
